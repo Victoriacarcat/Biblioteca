@@ -18,35 +18,58 @@
 <body>
     <jsp:include page="/WEB-INF/fragments/header.jsp" />
     
-    <main class="container" style="padding: 2.5rem 0 4rem;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;">
+    <main class="container module-page">
+        <div class="module-header">
             <div>
-                <h1 style="font-size:2.2rem;font-weight:700;color:#0b1a33;">
-                    <i class="fas fa-book" style="color:#394eff;"></i> Book Catalog
-                </h1>
-                <p style="color:#6a7a92;font-size:1.1rem;">Explore our collection of books.</p>
+                <h1><i class="fas fa-book" style="color: #394eff;"></i> Book Catalog</h1>
+                <p class="module-subtitle">Explore our collection of books.</p>
             </div>
             <div>
-                <a href="${pageContext.request.contextPath}/books/new.jsp" class="btn-primary" style="padding:0.7rem 2rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;">
-                    <i class="fas fa-plus"></i> New Book
-                </a>
+                <a href="${pageContext.request.contextPath}/books/new.jsp" class="btn-primary">New Book</a>
             </div>
         </div>
         
-        <div class="grid" style="margin-top:1.5rem;">
-            <c:forEach var="i" begin="1" end="8">
+        <form action="${pageContext.request.contextPath}/books" method="GET" class="search-box">
+            <input type="text" name="search" placeholder="Search by title or author..." value="${param.search}">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+        </form>
+        
+        <div class="grid">
+            <c:forEach var="book" items="${books}">
                 <div class="book-card">
-                    <div class="book-cover"><i class="fas fa-book" style="font-size:3rem;"></i></div>
-                    <div class="book-title">Book ${i}</div>
-                    <div class="book-author">Author ${i}</div>
-                    <div class="book-meta">
-                        <span><i class="fas fa-tag"></i> Fiction</span>
-                        <span><i class="fas fa-calendar-alt"></i> 2024</span>
+                    <div class="book-cover">
+                        <c:choose>
+                            <c:when test="${not empty book.imageUrl}">
+                                <img src="${book.imageUrl}" alt="${book.title}" class="book-cover-img">
+                            </c:when>
+                            <c:otherwise>
+                                <div class="no-image">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
-                    <div class="book-status">Available</div>
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-author">${book.author}</div>
+                    <div class="book-meta">
+                        <span><i class="fas fa-tag"></i> ${book.category}</span>
+                        <span><i class="fas fa-calendar-alt"></i> ${book.year}</span>
+                    </div>
+                    <div class="book-status ${book.stock > 0 ? 'available' : 'unavailable'}">
+                        <i class="fas ${book.stock > 0 ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        ${book.stock > 0 ? 'Available' : 'Unavailable'}
+                    </div>
                     <button class="add-circle"><i class="fas fa-plus"></i></button>
                 </div>
             </c:forEach>
+            
+            <c:if test="${empty books}">
+                <div class="empty-state empty-state-full">
+                    <i class="fas fa-book"></i>
+                    <h3>No books found</h3>
+                    <p>Try adjusting your search or add a new book.</p>
+                </div>
+            </c:if>
         </div>
     </main>
     

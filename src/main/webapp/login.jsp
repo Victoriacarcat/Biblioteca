@@ -29,12 +29,12 @@
                     <label><i class="fas fa-lock"></i> Password</label>
                     <input type="password" name="password" placeholder="Enter your password" required>
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%;justify-content:center;padding:0.9rem;">Login</button>
+                <button type="submit" class="btn-primary btn-full">Login</button>
             </form>
 
             <div class="auth-footer">
                 <p>Don't have an account? <a href="${pageContext.request.contextPath}/register.jsp">Register here</a></p>
-                <p style="margin-top: 0.5rem; font-size: 0.85rem; color: #8a9aaa;">Demo: <strong>admin</strong> / <strong>admin123</strong></p>
+                <p class="demo-hint">Demo: <strong>admin</strong> / <strong>admin123</strong></p>
             </div>
         </div>
     </main>

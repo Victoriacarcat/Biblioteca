@@ -11,60 +11,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Book - WiseBooks</title>
+    <title>New Author - WiseBooks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 <body>
     <jsp:include page="/WEB-INF/fragments/header.jsp" />
     
-    <main class="container" style="padding: 2.5rem 0 4rem; max-width: 600px;">
-        <div style="margin-bottom:1.5rem;">
-            <a href="${pageContext.request.contextPath}/books/index.jsp" style="color:#394eff;font-weight:500;text-decoration:none;">
-                <i class="fas fa-arrow-left"></i> Back to Catalog
-            </a>
+    <main class="container form-page">
+        <div class="back-link">
+            <a href="${pageContext.request.contextPath}/authors/index.jsp"><i class="fas fa-arrow-left"></i> Back to Authors</a>
         </div>
         
-        <div style="background:#fff;border-radius:20px;padding:2.5rem;border:1px solid #eef2f6;">
-            <h1 style="font-size:2rem;font-weight:700;color:#0b1a33;margin-bottom:0.5rem;">
-                <i class="fas fa-plus-circle" style="color:#394eff;"></i> New Book
-            </h1>
-            <p style="color:#6a7a92;margin-bottom:2rem;">Add a new book to the catalog.</p>
+        <div class="form-container">
+            <h1><i class="fas fa-user-plus" style="color: #394eff;"></i> New Author</h1>
+            <p class="form-subtitle">Add a new author to the library system.</p>
             
-            <form action="${pageContext.request.contextPath}/books" method="POST">
+            <form action="${pageContext.request.contextPath}/authors" method="POST">
                 <div class="form-group">
-                    <label>Title *</label>
-                    <input type="text" name="title" required>
+                    <label>Full Name *</label>
+                    <input type="text" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label>Author *</label>
-                    <input type="text" name="author" required>
+                    <label>Nationality</label>
+                    <input type="text" name="nationality">
                 </div>
                 <div class="form-group">
-                    <label>ISBN</label>
-                    <input type="text" name="isbn">
+                    <label>Birth Year</label>
+                    <input type="number" name="birthYear">
                 </div>
                 <div class="form-group">
-                    <label>Year</label>
-                    <input type="number" name="year">
+                    <label>Biography</label>
+                    <textarea name="biography" rows="4"></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Category</label>
-                    <select name="category">
-                        <option value="Fiction">Fiction</option>
-                        <option value="Non-Fiction">Non-Fiction</option>
-                        <option value="Science">Science</option>
-                        <option value="History">History</option>
-                        <option value="Technology">Technology</option>
-                    </select>
-                </div>
-                <div style="display:flex;gap:1rem;margin-top:1.5rem;">
-                    <button type="submit" class="btn-primary" style="padding:0.8rem 2rem;border:none;cursor:pointer;">
-                        <i class="fas fa-save"></i> Save Book
-                    </button>
-                    <a href="${pageContext.request.contextPath}/books/index.jsp" class="btn-outline" style="padding:0.8rem 2rem;text-decoration:none;text-align:center;">
-                        <i class="fas fa-times"></i> Cancel
-                    </a>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save Author</button>
+                    <a href="${pageContext.request.contextPath}/authors/index.jsp" class="btn-outline">Cancel</a>
                 </div>
             </form>
         </div>

@@ -1,4 +1,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core" %>
+<%
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,13 +18,13 @@
 <body>
     <jsp:include page="/WEB-INF/fragments/header.jsp" />
     
-    <main class="container" style="padding: 2.5rem 0 4rem;">
-        <h1 style="font-size: 2.2rem; font-weight: 700; color: #0b1a33; margin-bottom: 0.5rem;">
-            <i class="fas fa-heart" style="color: #394eff;"></i> Favorites
-        </h1>
-        <p style="color: #6a7a92; font-size: 1.1rem; margin-bottom: 2rem;">Content for Favorites page.</p>
-        <div style="background: #fff; padding: 2rem; border-radius: 16px; border: 1px solid #eef2f6;">
-            <p style="color: #4a5a72; font-size: 1.05rem; line-height: 1.8;">This page is under construction. Content will be added soon.</p>
+    <main class="container module-page">
+        <h1><i class="fas fa-heart" style="color: #394eff;"></i> Favorites</h1>
+        <p class="module-subtitle">Your favorite books and authors.</p>
+        
+        <div class="empty-state">
+            <i class="fas fa-heart"></i>
+            <p>You haven't added any favorites yet.</p>
         </div>
     </main>
     
