@@ -18,48 +18,44 @@
 <body>
     <jsp:include page="/WEB-INF/fragments/header.jsp" />
     
-    <main class="container" style="padding: 2.5rem 0 4rem;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;">
+    <main class="container module-page">
+        <div class="module-header">
             <div>
-                <h1 style="font-size:2.2rem;font-weight:700;color:#0b1a33;">
-                    <i class="fas fa-users" style="color:#394eff;"></i> Authors
-                </h1>
-                <p style="color:#6a7a92;font-size:1.1rem;">Manage authors in the library system.</p>
+                <h1><i class="fas fa-users" style="color: #394eff;"></i> Authors</h1>
+                <p class="module-subtitle">Manage authors in the library system.</p>
             </div>
             <div>
-                <a href="${pageContext.request.contextPath}/authors/new.jsp" class="btn-primary" style="padding:0.7rem 2rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;">
-                    <i class="fas fa-plus"></i> New Author
-                </a>
+                <a href="${pageContext.request.contextPath}/authors/new.jsp" class="btn-primary">New Author</a>
             </div>
         </div>
         
-        <form action="${pageContext.request.contextPath}/authors" method="GET" class="search-box" style="margin-bottom:2rem;">
-            <input type="text" name="search" placeholder="Search authors by name..." value="${param.search}" style="flex:1;border:none;padding:0.9rem 0;font-size:1rem;outline:none;background:transparent;">
+        <form action="${pageContext.request.contextPath}/authors" method="GET" class="search-box">
+            <input type="text" name="search" placeholder="Search authors by name..." value="${param.search}">
             <button type="submit"><i class="fas fa-search"></i> Search</button>
         </form>
         
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:2rem;">
-            <c:forEach var="i" begin="1" end="6">
+        <div class="authors-grid">
+            <c:forEach var="author" items="${authors}">
                 <div class="author-card">
                     <div class="author-avatar">
                         <i class="fas fa-user"></i>
                     </div>
-                    <div class="author-name">Author ${i}</div>
-                    <div class="author-nationality">Nationality</div>
-                    <div class="author-books-count"><i class="fas fa-book"></i> ${i * 3} books</div>
-                    <div style="margin-top:1rem;display:flex;gap:0.6rem;justify-content:center;">
-                        <a href="${pageContext.request.contextPath}/authors/detail.jsp?id=${i}" class="btn-outline" style="padding:0.4rem 1.5rem;font-size:0.85rem;text-decoration:none;">View</a>
-                        <a href="${pageContext.request.contextPath}/authors/edit.jsp?id=${i}" class="btn-outline" style="padding:0.4rem 1.5rem;font-size:0.85rem;border-color:#f39c12;color:#f39c12;text-decoration:none;">Edit</a>
-                        <a href="#" class="btn-outline" style="padding:0.4rem 1.5rem;font-size:0.85rem;border-color:#e74c3c;color:#e74c3c;text-decoration:none;" onclick="return confirm('Delete this author?')">Delete</a>
+                    <div class="author-name">${author.name}</div>
+                    <div class="author-nationality">${author.nationality}</div>
+                    <div class="author-books-count"><i class="fas fa-book"></i> ${author.bookCount} books</div>
+                    <div class="author-actions">
+                        <a href="${pageContext.request.contextPath}/authors/detail.jsp?id=${author.id}" class="btn-outline btn-sm">View</a>
+                        <a href="${pageContext.request.contextPath}/authors/edit.jsp?id=${author.id}" class="btn-outline btn-sm btn-warning">Edit</a>
+                        <a href="${pageContext.request.contextPath}/authors?action=delete&id=${author.id}" class="btn-outline btn-sm btn-danger" onclick="return confirm('Delete this author?')">Delete</a>
                     </div>
                 </div>
             </c:forEach>
         </div>
         
         <c:if test="${empty authors}">
-            <div style="text-align:center;padding:4rem 0;color:#6a7a92;">
-                <i class="fas fa-users" style="font-size:4rem;color:#eef3ff;display:block;margin-bottom:1rem;"></i>
-                <h3 style="color:#0b1a33;margin-bottom:0.5rem;">No authors registered</h3>
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <h3>No authors registered</h3>
                 <p>Add your first author using the "New Author" button.</p>
             </div>
         </c:if>

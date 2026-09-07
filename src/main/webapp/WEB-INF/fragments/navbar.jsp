@@ -39,9 +39,10 @@
             </a>
         </li>
         
+        <!-- ADMIN LINKS - CORREGIDOS -->
         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'ADMIN'}">
             <li class="dropdown">
-                <a href="${pageContext.request.contextPath}/admin/index.jsp" style="color:#e74c3c;">
+                <a href="${pageContext.request.contextPath}/admin/index.jsp" class="admin-link">
                     <i class="fas fa-shield-alt"></i> Admin <i class="fas fa-chevron-down"></i>
                 </a>
                 <ul class="dropdown-menu">
@@ -52,9 +53,10 @@
             </li>
         </c:if>
         
+        <!-- EMPLOYEE LINKS -->
         <c:if test="${sessionScope.user != null && sessionScope.user.role == 'EMPLOYEE'}">
             <li>
-                <a href="${pageContext.request.contextPath}/employee/index.jsp" style="color:#f39c12;">
+                <a href="${pageContext.request.contextPath}/employee/index.jsp" class="employee-link">
                     <i class="fas fa-user-tie"></i> Employee
                 </a>
             </li>

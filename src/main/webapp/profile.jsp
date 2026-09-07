@@ -1,4 +1,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="jakarta.tags.core" %>
+<%
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,13 +18,33 @@
 <body>
     <jsp:include page="/WEB-INF/fragments/header.jsp" />
     
-    <main class="container" style="padding: 2.5rem 0 4rem;">
-        <h1 style="font-size: 2.2rem; font-weight: 700; color: #0b1a33; margin-bottom: 0.5rem;">
-            <i class="fas fa-user" style="color: #394eff;"></i> Profile
-        </h1>
-        <p style="color: #6a7a92; font-size: 1.1rem; margin-bottom: 2rem;">Content for Profile page.</p>
-        <div style="background: #fff; padding: 2rem; border-radius: 16px; border: 1px solid #eef2f6;">
-            <p style="color: #4a5a72; font-size: 1.05rem; line-height: 1.8;">This page is under construction. Content will be added soon.</p>
+    <main class="container form-page">
+        <div class="form-container">
+            <h1><i class="fas fa-user" style="color: #394eff;"></i> My Profile</h1>
+            <p class="form-subtitle">Manage your account information.</p>
+            
+            <form action="${pageContext.request.contextPath}/profile" method="POST">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="fullName" value="${sessionScope.user.fullName}" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" value="${sessionScope.user.email}" required>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" value="${sessionScope.user.username}" required readonly>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <input type="text" value="${sessionScope.user.role.name}" disabled style="background:#f8fafc;">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Update Profile</button>
+                    <a href="${pageContext.request.contextPath}/index.jsp" class="btn-outline">Cancel</a>
+                </div>
+            </form>
         </div>
     </main>
     

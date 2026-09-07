@@ -4,8 +4,7 @@
     <div class="footer-content">
         <div class="footer-brand">
             <div class="logo">
-                <i class="fas fa-book-open"></i>
-                <span>WiseBooks</span>
+                <img src="${pageContext.request.contextPath}/images/logo.png" alt="WiseBooks" style="height:32px; width:auto; filter: brightness(10);">
             </div>
             <p>Modern and efficient library management system.</p>
         </div>

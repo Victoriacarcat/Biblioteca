@@ -33,7 +33,7 @@
                     <label><i class="fas fa-lock"></i> Password</label>
                     <input type="password" name="password" placeholder="Create a password" required>
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%;justify-content:center;padding:0.9rem;">Register</button>
+                <button type="submit" class="btn-primary btn-full">Register</button>
             </form>
 
             <div class="auth-footer">
