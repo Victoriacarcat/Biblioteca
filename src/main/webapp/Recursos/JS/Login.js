@@ -1,38 +1,35 @@
-// login.js
-// Lógica del formulario de login. No hay backend todavía: "iniciar sesión"
-// solo valida que los campos estén completos y guarda una sesión simulada
-// (rol + correo) usando las funciones de auth.js.
+// Login.js
+// Lógica exclusiva de Login.jsp
 
-const formularioLogin = document.getElementById("login-form");
-const campoCorreo = document.getElementById("correo");
-const campoContrasena = document.getElementById("contrasena");
-const campoRol = document.getElementById("rol");
-const mensajeErrorLogin = document.getElementById("login-error");
-const checkboxMostrarContrasena = document.getElementById("mostrar-contrasena");
-
-// Oculto el mensaje de error hasta que realmente haga falta mostrarlo.
-mensajeErrorLogin.hidden = true;
-
-// Alternar visibilidad de la contraseña.
-checkboxMostrarContrasena.addEventListener("change", function () {
-    campoContrasena.type = checkboxMostrarContrasena.checked ? "text" : "password";
+const inputContrasena = document.getElementById("contrasena");
+document.getElementById("mostrar-contrasena").addEventListener("change", (e) => {
+    inputContrasena.type = e.target.checked ? "text" : "password";
 });
 
-formularioLogin.addEventListener("submit", function (evento) {
-    evento.preventDefault();
+const formularioLogin = document.getElementById("login-form");
+const cajaErrorLogin = document.getElementById("login-error");
 
-    const correo = campoCorreo.value.trim();
-    const contrasena = campoContrasena.value;
-    const rol = campoRol.value;
+formularioLogin.addEventListener("submit", (e) => {
+    e.preventDefault();
 
+    const correo = document.getElementById("correo").value.trim();
+    const contrasena = document.getElementById("contrasena").value.trim();
+    const rol = document.getElementById("rol").value;
+
+    // Validación mínima de frontend. La validación real (credenciales
+    // contra la BD) llegará con el backend (Servlet + DAO).
     if (!correo || !contrasena || !rol) {
-        mensajeErrorLogin.hidden = false;
+        cajaErrorLogin.textContent = "Completa correo, contraseña y selecciona un rol para continuar.";
+        cajaErrorLogin.hidden = false;
         return;
     }
 
-    mensajeErrorLogin.hidden = true;
-    iniciarSesionSimulada(rol, correo);
-    window.location.href = "catalogo.html";
-});
+    cajaErrorLogin.hidden = true;
 
+    iniciarSesionSimulada(rol, correo);
+
+    // TODO: esta ruta es temporal. Cuando exista un servlet controlador,
+    // el flujo real será: Servlet valida credenciales -> forward a Catalogo.jsp.
+    window.location.href = "../Catalogo/Catalogo.jsp";
+});
 

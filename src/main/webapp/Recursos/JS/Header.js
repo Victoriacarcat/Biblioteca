@@ -7,34 +7,44 @@
  * Devuelve el HTML del header. Los enlaces con data-rol se muestran u
  * ocultan según el rol activo (ver aplicarVisibilidadPorRol). Los enlaces
  * sin data-rol son públicos (siempre visibles, ej. "Inicio", "Libros").
+ *
+ * NOTA sobre los href: todos apuntan a "#" por ahora. Los .jsp viven dentro
+ * de WEB-INF/Frontend, que el navegador no puede pedir directamente; hace
+ * falta un Servlet mapeado a una URL limpia (ej. @WebServlet("/catalogo"))
+ * que haga forward() al .jsp físico. Hasta que existan esos servlets,
+ * ningún enlace es funcional -- ni los que ya tienen .jsp construido ni
+ * los pendientes. Cuando se definan las rutas, se reemplaza cada "#" por
+ * la ruta real (ej. "/catalogo").
  */
 function crearHeaderHTML() {
     return `
         <div class="encabezado-marca">
-            <a href="catalogo.html" class="logo-auth">
+            <a href="#" class="logo-auth"><!-- Catalogo.jsp -->
                 <span class="nombre-marca">WiseBooks</span>
             </a>
         </div>
         <nav class="encabezado-nav">
-            <a href="catalogo.html">Inicio</a>
-            <a href="catalogo.html">Libros</a>
+            <a href="#"><!-- Catalogo.jsp -->Inicio</a>
+            <a href="#"><!-- Catalogo.jsp -->Libros</a>
 
-            <a href="login.html" data-rol="visitante">Iniciar sesión</a>
-            <a href="registro.html" data-rol="visitante">Crear cuenta</a>
+            <a href="#" data-rol="visitante"><!-- Login.jsp -->Iniciar sesión</a>
+            <a href="#" data-rol="visitante"><!-- CrearCuenta.jsp -->Crear cuenta</a>
 
-            <a href="mis-prestamos.html" data-rol="lector">Préstamos</a>
-            <a href="reservas.html" data-rol="lector">Reservas</a>
-            <a href="favoritos.html" data-rol="lector">Favoritos</a>
+            <a href="#" data-rol="lector"><!-- MisPrestamos.jsp pendiente -->Préstamos</a>
+            <a href="#" data-rol="lector"><!-- MisReservas.jsp pendiente -->Reservas</a>
+            <a href="#" data-rol="lector"><!-- Favoritos.jsp -->Favoritos</a>
 
-            <a href="prestamos.html" data-rol="bibliotecario">Préstamos</a>
-            <a href="reservas.html" data-rol="bibliotecario">Reservas</a>
-            <a href="devoluciones.html" data-rol="bibliotecario">Devoluciones</a>
-            <a href="inventario.html" data-rol="bibliotecario">Inventario</a>
+            <a href="#" data-rol="bibliotecario,administrador"><!-- Prestamos.jsp pendiente -->Préstamos</a>
+            <a href="#" data-rol="bibliotecario,administrador"><!-- Reservas.jsp pendiente -->Reservas</a>
+            <a href="#" data-rol="bibliotecario,administrador"><!-- Devoluciones.jsp pendiente -->Devoluciones</a>
+            <a href="#" data-rol="bibliotecario,administrador"><!-- Inventario.jsp pendiente -->Inventario</a>
 
-            <!-- TODO: definir enlaces de Administrador (pendiente de decisión) -->
+            <a href="#" data-rol="administrador"><!-- Libros.jsp pendiente -->Libros</a>
+            <a href="#" data-rol="administrador"><!-- Usuarios.jsp pendiente -->Usuarios</a>
+            <a href="#" data-rol="administrador"><!-- Reportes.jsp pendiente -->Reportes</a>
 
             <div class="encabezado-usuario" data-rol="lector,bibliotecario,administrador">
-                <span class="encabezado-usuario-icono" aria-hidden="true">👤</span>
+                <span class="encabezado-usuario-icono" aria-hidden="true">Icono</span>
                 <span class="encabezado-usuario-nombre" id="encabezado-nombre-usuario"></span>
                 <button type="button" id="btn-cerrar-sesion" class="btn btn-outline-secondary btn-sm">Cerrar sesión</button>
             </div>
@@ -82,5 +92,4 @@ function insertarHeader() {
 // Este script debe cargarse después de auth.js y del <div id="header-placeholder">
 // en el <body>, así que el DOM ya está disponible al ejecutarse.
 insertarHeader();
-
 

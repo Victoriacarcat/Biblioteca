@@ -1,59 +1,46 @@
-// registro.js
-// Lógica del formulario de crear cuenta. No hay backend todavía: solo se
-// valida que los campos estén completos, que las contraseñas coincidan y
-// que se acepten los términos. No inicia sesión ni guarda nada: al validar
-// correctamente, redirige a login.html para que el usuario inicie sesión.
+// Registro.js
+// Lógica exclusiva de CrearCuenta.jsp
+//
+// Importante: el registro NO inicia sesión automáticamente. Solo valida
+// el formulario y, si todo está correcto, redirige a Login.jsp para que
+// el usuario inicie sesión aparte (igual que en un flujo real).
+// TODO: cuando exista el backend, aquí se hará un INSERT vía DAO
+// (con validación de duplicados de correo/documento).
 
 const formularioRegistro = document.getElementById("registro-form");
-const mensajeErrorRegistro = document.getElementById("registro-error");
+const cajaErrorRegistro = document.getElementById("registro-error");
 
-const camposRequeridos = [
-    document.getElementById("nombre"),
-    document.getElementById("apellido"),
-    document.getElementById("tipo-documento"),
-    document.getElementById("documento"),
-    document.getElementById("telefono"),
-    document.getElementById("correo-reg"),
-    document.getElementById("contrasena-reg"),
-    document.getElementById("confirmar-contrasena"),
-];
+formularioRegistro.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-const campoContrasenaReg = document.getElementById("contrasena-reg");
-const campoConfirmarContrasena = document.getElementById("confirmar-contrasena");
-const checkboxTerminos = document.getElementById("terminos");
+    const camposTexto = [
+        "nombre", "apellido", "documento", "telefono",
+        "correo-reg", "contrasena-reg", "confirmar-contrasena"
+    ];
+    const hayVacios = camposTexto.some((id) => document.getElementById(id).value.trim() === "");
+    const tipoDocVacio = document.getElementById("tipo-documento").value === "";
+    const contrasena = document.getElementById("contrasena-reg").value;
+    const confirmacion = document.getElementById("confirmar-contrasena").value;
+    const aceptaTerminos = document.getElementById("terminos").checked;
 
-// Oculto el mensaje de error hasta que realmente haga falta mostrarlo.
-mensajeErrorRegistro.hidden = true;
-
-function mostrarErrorRegistro(mensaje) {
-    mensajeErrorRegistro.textContent = mensaje;
-    mensajeErrorRegistro.hidden = false;
-}
-
-formularioRegistro.addEventListener("submit", function (evento) {
-    evento.preventDefault();
-
-    const hayCampoVacio = camposRequeridos.some(function (campo) {
-        return campo.value.trim() === "";
-    });
-
-    if (hayCampoVacio) {
-        mostrarErrorRegistro("Completa todos los campos para continuar.");
+    if (hayVacios || tipoDocVacio) {
+        cajaErrorRegistro.textContent = "Completa todos los campos obligatorios.";
+        cajaErrorRegistro.hidden = false;
+        return;
+    }
+    if (contrasena !== confirmacion) {
+        cajaErrorRegistro.textContent = "Las contraseñas no coinciden.";
+        cajaErrorRegistro.hidden = false;
+        return;
+    }
+    if (!aceptaTerminos) {
+        cajaErrorRegistro.textContent = "Debes aceptar los términos y condiciones para continuar.";
+        cajaErrorRegistro.hidden = false;
         return;
     }
 
-    if (campoContrasenaReg.value !== campoConfirmarContrasena.value) {
-        mostrarErrorRegistro("Las contraseñas no coinciden.");
-        return;
-    }
+    cajaErrorRegistro.hidden = true;
 
-    if (!checkboxTerminos.checked) {
-        mostrarErrorRegistro("Debes aceptar los términos y condiciones.");
-        return;
-    }
-
-    mensajeErrorRegistro.hidden = true;
-    window.location.href = "login.html";
+    window.location.href = "Login.jsp";
 });
-
 
