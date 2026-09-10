@@ -25,18 +25,18 @@ function crearCardLibro(libro) {
 
             <button class="btn btn-primary boton-ver-detalles">Ver detalles</button>
 
-            <button class="btn btn-outline-secondary boton-favoritos" data-rol="Lector" hidden>
+            <button class="btn btn-outline-secondary boton-favoritos" data-rol="lector" hidden>
                 ♡ Favoritos
             </button>
-            <button class="btn btn-outline-secondary boton-reservar" data-rol="Lector" hidden>
+            <button class="btn btn-outline-secondary boton-reservar" data-rol="lector" hidden>
                 Reservar
             </button>
 
-            <button class="btn btn-outline-secondary boton-gestionar-ejemplares" data-rol="Bibliotecario,Administrador" hidden>
+            <button class="btn btn-outline-secondary boton-gestionar-ejemplares" data-rol="bibliotecario,administrador" hidden>
                 Gestionar ejemplares
             </button>
 
-            <button class="btn btn-outline-secondary boton-editar" data-rol="Administrador" hidden>
+            <button class="btn btn-outline-secondary boton-editar" data-rol="administrador" hidden>
                 Editar
             </button>
         </div>
@@ -65,5 +65,3 @@ function pintarLibros(listaLibros) {
 document.addEventListener("DOMContentLoaded", () => {
     pintarLibros(libros);
 });
-
-

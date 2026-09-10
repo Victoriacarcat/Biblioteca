@@ -56,9 +56,9 @@
                         <label for="rol">Seleccionar rol</label>
                         <select id="rol" class="form-select" required>
                             <option value="" disabled selected>Seleccionar rol ▾</option>
-                            <option value="Lector">Lector</option>
-                            <option value="Bibliotecario">Bibliotecario</option>
-                            <option value="Administrador">Administrador</option>
+                            <option value="lector">Lector</option>
+                            <option value="bibliotecario">Bibliotecario</option>
+                            <option value="administrador">Administrador</option>
                         </select>
                     </div>
 
@@ -72,7 +72,7 @@
             </form>
 
             <p class="texto-enlace-auth">
-                ¿No tienes una cuenta? <a href="CrearCuenta.jsp">Crear cuenta</a>
+                ¿No tienes una cuenta? <a href="#"><!-- CrearCuenta.jsp -->Crear cuenta</a>
             </p>
         </div>
     </main>

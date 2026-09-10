@@ -41,6 +41,8 @@ formularioRegistro.addEventListener("submit", (e) => {
 
     cajaErrorRegistro.hidden = true;
 
-    window.location.href = "Login.jsp";
+    // TODO: ruta temporal ("#"). Login.jsp vive dentro de WEB-INF y no es
+    // alcanzable directo por el navegador. Cuando exista el servlet
+    // controlador, reemplazar por la URL limpia real (ej. "/login").
+    window.location.href = "#";
 });
-

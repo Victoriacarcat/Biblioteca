@@ -92,7 +92,7 @@
             </form>
 
             <p class="texto-enlace-auth">
-                ¿Ya tienes una cuenta? <a href="Login.jsp">Iniciar sesión</a>
+                ¿Ya tienes una cuenta? <a href="#"><!-- Login.jsp -->Iniciar sesión</a>
             </p>
         </div>
     </main>
