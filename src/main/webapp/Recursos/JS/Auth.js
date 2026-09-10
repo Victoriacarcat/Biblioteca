@@ -5,7 +5,7 @@
 const CLAVE_ROL = "wisebooks_rol";
 const CLAVE_CORREO = "wisebooks_correo";
 
-// Roles válidos del sistema (deben coincidir con los que usa el <select> de login.html)
+// Roles válidos del sistema (deben coincidir con los que usa el <select> de Login.jsp)
 const ROLES_VALIDOS = ["lector", "bibliotecario", "administrador"];
 
 /**
@@ -19,7 +19,7 @@ function obtenerRolActual() {
 
 /**
  * Guarda la sesión simulada (rol + correo) en localStorage.
- * La llamará login.js cuando el usuario "inicie sesión".
+ * La llamará Login.js cuando el usuario "inicie sesión".
  */
 function iniciarSesionSimulada(rol, correo) {
     if (!ROLES_VALIDOS.includes(rol)) {
@@ -32,11 +32,15 @@ function iniciarSesionSimulada(rol, correo) {
 
 /**
  * Cierra la sesión simulada y redirige al catálogo.
+ * NOTA: sin servlet todavía no hay una URL limpia real a la que redirigir
+ * (Catalogo.jsp vive dentro de WEB-INF, inalcanzable por el navegador).
+ * Se deja "#" como placeholder, igual que en header.js, hasta que exista
+ * la ruta de servlet (ej. "/catalogo").
  */
 function cerrarSesion() {
     localStorage.removeItem(CLAVE_ROL);
     localStorage.removeItem(CLAVE_CORREO);
-    window.location.href = "catalogo.html";
+    window.location.href = "#"; // TODO: reemplazar por ruta de servlet, ej. "/catalogo"
 }
 
 /**
@@ -46,5 +50,3 @@ function cerrarSesion() {
 function obtenerCorreoActual() {
     return localStorage.getItem(CLAVE_CORREO) || "";
 }
-
-

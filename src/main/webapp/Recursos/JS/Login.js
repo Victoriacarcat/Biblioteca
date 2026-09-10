@@ -14,7 +14,9 @@ formularioLogin.addEventListener("submit", (e) => {
 
     const correo = document.getElementById("correo").value.trim();
     const contrasena = document.getElementById("contrasena").value.trim();
-    const rol = document.getElementById("rol").value;
+    // Normalizado a minúscula para que coincida con ROLES_VALIDOS de auth.js,
+    // sin importar si el <select> quedó en mayúscula por error.
+    const rol = document.getElementById("rol").value.trim().toLowerCase();
 
     // Validación mínima de frontend. La validación real (credenciales
     // contra la BD) llegará con el backend (Servlet + DAO).
@@ -28,8 +30,9 @@ formularioLogin.addEventListener("submit", (e) => {
 
     iniciarSesionSimulada(rol, correo);
 
-    // TODO: esta ruta es temporal. Cuando exista un servlet controlador,
-    // el flujo real será: Servlet valida credenciales -> forward a Catalogo.jsp.
-    window.location.href = "../Catalogo/Catalogo.jsp";
+    // TODO: ruta temporal ("#"). Catalogo.jsp vive dentro de WEB-INF y no es
+    // alcanzable directo por el navegador. Cuando exista un servlet
+    // controlador, el flujo real será: Servlet valida credenciales -> forward
+    // a Catalogo.jsp mediante una URL limpia (ej. "/catalogo").
+    window.location.href = "#";
 });
-

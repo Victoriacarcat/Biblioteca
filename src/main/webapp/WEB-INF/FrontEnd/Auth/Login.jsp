@@ -20,7 +20,6 @@
         <div class="tarjeta-auth">
 
             <div class="auth-logo">
-                <div class="brand-mark">W</div>
                 <span class="brand-name">WiseBooks</span>
             </div>
 
