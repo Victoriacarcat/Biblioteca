@@ -19,7 +19,7 @@
 
     <main class="contenedor-dashboard container">
 
-        <!-- ================= VISITANTE ================= -->
+        <!-- Visitante-->
         <section class="bloque-dashboard-visitante" data-rol="visitante" hidden>
             <div class="bloque-bienvenida">
                 <h1 class="titulo-bienvenida">Bienvenido a WiseBooks</h1>
@@ -56,7 +56,7 @@
             </div>
         </section>
 
-        <!-- ================= LECTOR ================= -->
+        <!-- Lector -->
         <section class="bloque-dashboard-lector" data-rol="lector" hidden>
             <section class="franja-titulo">
                 <div class="icono-circulo">
@@ -107,7 +107,7 @@
             </section>
         </section>
 
-        <!-- ================= BIBLIOTECARIO ================= -->
+        <!-- Bibliotecario-->
         <section class="bloque-dashboard-bibliotecario" data-rol="bibliotecario" hidden>
             <section class="franja-titulo">
                 <div class="icono-circulo">
@@ -297,7 +297,6 @@
 
     </main>
 
-    <!-- Scripts: sesión/rol -> header -> datos -> lógica del dashboard -->
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>

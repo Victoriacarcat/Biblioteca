@@ -14,7 +14,7 @@
 </head>
 <body>
 
-    <!-- Vista de Bibliotecario/Administrador -->
+    <!-- Vista de Bibliotecario y Administrador -->
     <div id="header-placeholder"></div>
 
     <main class="contenedor-devoluciones container">
@@ -50,7 +50,6 @@
 
     </main>
 
-    <!-- Scripts: sesión/rol -> header -> datos -> lógica de devoluciones -->
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>

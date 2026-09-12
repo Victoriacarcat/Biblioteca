@@ -38,7 +38,6 @@
         </script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
         <script>
-            // Guard de rol a nivel de página: Favoritos es exclusivo de "lector".
             (function verificarAccesoFavoritos() {
                 if (obtenerRolActual() !== "lector") {
                     window.location.href = contextPath + "/FrontEnd/Catalogo/Catalogo.jsp";

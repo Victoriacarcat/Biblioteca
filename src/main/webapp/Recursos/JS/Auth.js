@@ -31,15 +31,13 @@ function iniciarSesionSimulada(rol, correo) {
 }
 
 /**
- * Cierra la sesión simulada y redirige a Home (la misma página de
- * bienvenida que ve cualquier visitante).
+ * Cierra la sesión simulada y redirige a Home
  */
 function cerrarSesion() {
     localStorage.removeItem(CLAVE_ROL);
     localStorage.removeItem(CLAVE_CORREO);
     window.location.href = contextPath + "/FrontEnd/Home/Home.jsp"; // TODO: reemplazar por ruta de servlet, ej. "/home"
 }
-
 /**
  * Devuelve el correo guardado de la sesión simulada (o "" si no hay sesión).
  * La usa header.js para mostrarlo junto al ícono de usuario.

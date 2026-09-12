@@ -13,7 +13,6 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/Recursos/CSS/Styles.css">
     </head>
     <body>
-
         <!-- Aquí Header.js inserta el header según el rol -->
         <div id="header-placeholder"></div>
 
@@ -118,7 +117,7 @@
                         </select>
                     </div>
 
-                    <!-- Aquí Catalogo.js inserta las cards de libros -->
+                    <!--Catalogo.js inserta las cards de libros -->
                     <div id="contenedor-libros" class="contenedor-libros row"></div>
 
                 </section>

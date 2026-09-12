@@ -14,9 +14,6 @@
 </head>
 <body>
 
-    <!-- Vista de Bibliotecario/Administrador. "Eliminar" un ejemplar es
-         exclusivo del Administrador (ver data-rol en Inventario.js);
-         Bibliotecario solo puede darlo de baja. -->
     <div id="header-placeholder"></div>
 
     <main class="contenedor-inventario container">
@@ -103,7 +100,6 @@
 
     </main>
 
-    <!-- Scripts: sesión/rol -> header -> datos -> lógica de inventario -->
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>

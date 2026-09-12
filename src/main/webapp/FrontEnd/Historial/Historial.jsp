@@ -47,7 +47,6 @@
 
     </main>
 
-    <!-- Scripts: sesión/rol -> header -> datos -> lógica de historial -->
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>

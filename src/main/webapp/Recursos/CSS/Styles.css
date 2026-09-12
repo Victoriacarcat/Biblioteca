@@ -1,19 +1,6 @@
-/* =========================================================
-   WiseBooks — Styles.css
-   Paleta y tipografía tomadas de las referencias visuales
-   (verde/menta, encabezados serif, marca en cursiva).
-
-   IMPORTANTE: este archivo es una CAPA SOBRE Bootstrap 5.3.3
-   (cargado por CDN en cada .jsp). No reemplaza sus utilidades
-   (container, row, form-control, btn...), las sobrescribe.
-   Por eso varias reglas de aquí repiten selectores de Bootstrap
-   a propósito: es necesario para ganarles especificidad.
-   ========================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-  /* Paleta Original */
   --verde:          #2F6B4C;
   --verde-hover:    #255A3F;
   --verde-oscuro:   #1E4030;
@@ -32,8 +19,6 @@
   --dorado:         #C6963B;
   --dorado-hover:   #AD7F2C;
   --dorado-suave:   #F5E9D2;
-
-  /* Nuevos colores para romper la monotonía del verde */
   --arena-fondo:    #FDFBF7;
   --pizarra:        #2E3A4A;
   --pizarra-suave:  #E7EAEE;
@@ -44,18 +29,6 @@
   --vino-hover:     #632E3B;
   --vino-suave:     #F3E4E7;
 
-  /* ---------------------------------------------------------------
-     Paleta de acento por MÓDULO: cada pantalla tipo tabla usa un
-     color propio (variante del acento + versión suave para fondos +
-     h1 en el tono oscuro), para que Préstamos, Devoluciones, Reservas,
-     Sanciones, Usuarios, Inventario e Historial dejen de verse todas
-     iguales. Se usan con las clases .franja-titulo--<color> e
-     .icono-circulo-<color> definidas más abajo.
-     Prestamos/MisPrestamos → verde | Devoluciones → dorado
-     Historial → dorado (suave) | Reservas → terracota
-     Sanciones → rojo (reutiliza --error) | Usuarios → vino
-     Inventario → pizarra
-     --------------------------------------------------------------- */
 
   /* Tipografía */
   --fuente-marca:    'Caveat', cursive;
@@ -75,7 +48,7 @@ h1, h2, h3, h4 {
   color: var(--tinta);
 }
 
-/* ---------- Botones (sobrescribe Bootstrap) ---------- */
+/*  Botones (sobrescribe Bootstrap)  */
 
 .btn-primary {
   --bs-btn-bg: var(--verde);
@@ -118,8 +91,6 @@ h1, h2, h3, h4 {
   padding-inline: 1.4rem;
   font-weight: 500;
 }
-
-/* Nuevo botón de acento terracota */
 .btn-terracota {
   background-color: var(--terracota);
   border-color: var(--terracota);
@@ -165,7 +136,7 @@ h1, h2, h3, h4 {
   color: #fff;
 }
 
-/* ---------- Encabezado / navbar ---------- */
+/*  Header */
 
 .encabezado-app {
   background: #fff;
@@ -272,7 +243,7 @@ h1, h2, h3, h4 {
   height: 22px;
 }
 
-/* ---------- Etiqueta de sección (eyebrow) ---------- */
+/*  Etiqueta de sección */
 
 .etiqueta-seccion {
   display: inline-flex;
@@ -290,7 +261,7 @@ h1, h2, h3, h4 {
   height: 14px;
 }
 
-/* ---------- Franja superior de título ---------- */
+/* Franja superior de título*/
 
 .franja-titulo {
   background: var(--gris-panel);
@@ -312,10 +283,6 @@ h1, h2, h3, h4 {
   max-width: 60ch;
   margin: 0 auto;
 }
-
-/* Variantes de color por módulo: fondo suave + textura de puntos +
-   título en el tono oscuro del acento, para que cada pantalla se
-   sienta distinta sin salirse de la paleta de la marca. */
 .franja-titulo--verde {
   background-color: var(--menta);
   background-image: radial-gradient(var(--menta-borde) 1px, transparent 1px);
@@ -358,7 +325,7 @@ h1, h2, h3, h4 {
 }
 .franja-titulo--rojo h1 { color: var(--error-texto); }
 
-/* ---------- Sección menta de cuenta (Login / Crear cuenta) ---------- */
+/* Sección menta de cuenta Login y Crear cuenta*/
 
 .seccion-cuenta {
   background-color: var(--menta);
@@ -472,7 +439,7 @@ h1, h2, h3, h4 {
   margin-bottom: 1.1rem;
 }
 
-/* ---------- Elementos de auth sueltos ---------- */
+/* Elementos de auth sueltos */
 
 .contenedor-auth { padding-bottom: 4rem; }
 .auth-logo { display: flex; align-items: center; gap: 0.5rem; }
@@ -491,7 +458,7 @@ h1, h2, h3, h4 {
   color: var(--verde-oscuro);
 }
 
-/* ---------- Foto + sello en auth-intro ---------- */
+/*  Foto y sello en auth-intro */
 
 .tarjeta-foto-intro {
   position: relative;
@@ -525,7 +492,7 @@ h1, h2, h3, h4 {
   transform: rotate(8deg);
 }
 
-/* ---------- Footer ---------- */
+/*  Footer */
 
 .pie-app {
   background: var(--footer-bg);
@@ -554,7 +521,7 @@ h1, h2, h3, h4 {
 .pie-app a:hover { color: #fff; }
 .pie-app p { color: var(--footer-texto); font-size: 0.88rem; }
 
-/* ---------- Responsive Basico ---------- */
+/* Responsive */
 
 @media (max-width: 860px) {
   .encabezado-nav { gap: 0.9rem; }
@@ -563,7 +530,7 @@ h1, h2, h3, h4 {
   .franja-titulo { padding: 2rem 1.25rem; margin-top: 1rem; }
 }
 
-/* ---------- Catálogo ---------- */
+/* Catálogo  */
 
 .contenedor-catalogo {
   padding-top: 2rem;
@@ -918,7 +885,7 @@ h1, h2, h3, h4 {
   border-radius: 999px;
 }
 
-/* ---------- Home ---------- */
+/* Home  */
 
 .contenedor-home { overflow-x: clip; }
 
@@ -1063,7 +1030,7 @@ h1, h2, h3, h4 {
   .hero-home-split { grid-template-columns: 1fr; gap: 1.5rem; }
 }
 
-/* ---------- Logo (header) ---------- */
+/* Logo (header)*/
 
 .logo-wisebooks {
   display: block;
@@ -1074,7 +1041,7 @@ h1, h2, h3, h4 {
   .logo-wisebooks { height: 56px; }
 }
 
-/* ---------- Íconos SVG ---------- */
+/* Íconos SVG  */
 
 .icono-svg {
   width: 1em;
@@ -1207,7 +1174,7 @@ h1, h2, h3, h4 {
   margin: 0;
 }
 
-/* ---------- Pastillas de estado ---------- */
+/* Pastillas de estado */
 
 .estado-prestamo,
 .estado-reserva,
@@ -1243,7 +1210,7 @@ h1, h2, h3, h4 {
 .estado-alerta   { background: var(--alerta-bg); color: var(--alerta-texto); }
 .estado-neutro   { background: #EDF2F7; color: var(--tinta-suave); }
 
-/* ---------- Tablas ---------- */
+/*Tablas */
 
 .table {
   --bs-table-border-color: var(--menta-borde);
@@ -1292,7 +1259,7 @@ h1, h2, h3, h4 {
   padding-bottom: 4rem;
 }
 
-/* ---------- Dashboard ---------- */
+/* Dashboard  */
 
 .bloque-bienvenida {
   text-align: center;
@@ -1353,7 +1320,7 @@ h1, h2, h3, h4 {
   background-color: var(--error-borde);
 }
 
-/* ---------- Inventario ---------- */
+/*Inventario */
 
 .bloque-agregar-ejemplar {
   background: var(--gris-panel);

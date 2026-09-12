@@ -5,11 +5,7 @@
     <meta charset="UTF-8">
     <title>Sanciones - Wisebooks</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Bootstrap 5.3.3 (CDN) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Estilos propios -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Recursos/CSS/Styles.css">
 </head>
 <body>

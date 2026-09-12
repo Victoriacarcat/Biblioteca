@@ -15,7 +15,6 @@ formularioLogin.addEventListener("submit", (e) => {
     const correo = document.getElementById("correo").value.trim();
     const contrasena = document.getElementById("contrasena").value.trim();
     // Normalizado a minúscula para que coincida con ROLES_VALIDOS de auth.js,
-    // sin importar si el <select> quedó en mayúscula por error.
     const rol = document.getElementById("rol").value.trim().toLowerCase();
 
     // Validación mínima de frontend. La validación real (credenciales
@@ -31,6 +30,5 @@ formularioLogin.addEventListener("submit", (e) => {
     iniciarSesionSimulada(rol, correo);
 
     // Tras iniciar sesión, Home.jsp es lo primero que ve el usuario
-    // (misma página para todos los roles, con contenido según el rol).
     window.location.href = contextPath + "/FrontEnd/Home/Home.jsp";
 });

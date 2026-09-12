@@ -367,7 +367,7 @@
             </div>
         </section>
 
-        <!-- ================= BOLETÍN ================= -->
+        <!-- Boletín -->
         <section class="banner-boletin">
             <div class="container banner-boletin-contenido">
                 <div class="banner-boletin-texto">
@@ -424,8 +424,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Scripts: sesión/rol -> header -> datos -> lógica del home -->
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
