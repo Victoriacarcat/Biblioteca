@@ -64,7 +64,6 @@
 
     </main>
 
-    <!-- Scripts: sesión/rol -> header -> datos -> lógica de préstamos -->
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>

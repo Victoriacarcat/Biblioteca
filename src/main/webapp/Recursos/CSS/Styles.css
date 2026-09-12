@@ -10,36 +10,63 @@
    a propósito: es necesario para ganarles especificidad.
    ========================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
 
 :root {
-  /* Paleta */
-  --verde:         #2F6B4C;
-  --verde-hover:   #255A3F;
-  --verde-oscuro:  #1E4030;
-  --menta:         #EAF3EC;
-  --menta-borde:   #D6E8DC;
-  --gris-panel:    #F5F5F3;
-  --tinta:         #1C1C18;
-  --tinta-suave:   #5B5E54;
-  --footer-bg:     #15201A;
-  --footer-texto:  #C7D2CB;
-  --error-bg:      #FBEAE7;
-  --error-borde:   #B2503C;
-  --error-texto:   #7C3A2A;
-  --alerta-bg:     #FDF3E2;
-  --alerta-texto:  #8A5A15;
-  --dorado:        #C6963B;
-  --dorado-hover:  #AD7F2C;
-  --dorado-suave:  #F5E9D2;
+  /* Paleta Original */
+  --verde:          #2F6B4C;
+  --verde-hover:    #255A3F;
+  --verde-oscuro:   #1E4030;
+  --menta:          #EAF3EC;
+  --menta-borde:    #D6E8DC;
+  --gris-panel:     #F8F9FA;
+  --tinta:          #1C1C18;
+  --tinta-suave:    #5B5E54;
+  --footer-bg:      #15201A;
+  --footer-texto:   #C7D2CB;
+  --error-bg:       #FBEAE7;
+  --error-borde:    #B2503C;
+  --error-texto:    #7C3A2A;
+  --alerta-bg:      #FDF3E2;
+  --alerta-texto:   #8A5A15;
+  --dorado:         #C6963B;
+  --dorado-hover:   #AD7F2C;
+  --dorado-suave:   #F5E9D2;
+
+  /* Nuevos colores para romper la monotonía del verde */
+  --arena-fondo:    #FDFBF7;
+  --pizarra:        #2E3A4A;
+  --pizarra-suave:  #E7EAEE;
+  --terracota:      #C85A32;
+  --terracota-hover:#A64522;
+  --terracota-suave:#FBE7DE;
+  --vino:           #7A3B4A;
+  --vino-hover:     #632E3B;
+  --vino-suave:     #F3E4E7;
+
+  /* ---------------------------------------------------------------
+     Paleta de acento por MÓDULO: cada pantalla tipo tabla usa un
+     color propio (variante del acento + versión suave para fondos +
+     h1 en el tono oscuro), para que Préstamos, Devoluciones, Reservas,
+     Sanciones, Usuarios, Inventario e Historial dejen de verse todas
+     iguales. Se usan con las clases .franja-titulo--<color> e
+     .icono-circulo-<color> definidas más abajo.
+     Prestamos/MisPrestamos → verde | Devoluciones → dorado
+     Historial → dorado (suave) | Reservas → terracota
+     Sanciones → rojo (reutiliza --error) | Usuarios → vino
+     Inventario → pizarra
+     --------------------------------------------------------------- */
 
   /* Tipografía */
   --fuente-marca:    'Caveat', cursive;
   --fuente-titulos:  'Lora', Georgia, serif;
+  --fuente-cuerpo:   'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
   color: var(--tinta);
+  background-color: var(--arena-fondo);
+  font-family: var(--fuente-cuerpo);
 }
 
 h1, h2, h3, h4 {
@@ -92,17 +119,64 @@ h1, h2, h3, h4 {
   font-weight: 500;
 }
 
+/* Nuevo botón de acento terracota */
+.btn-terracota {
+  background-color: var(--terracota);
+  border-color: var(--terracota);
+  color: #fff;
+  border-radius: 999px;
+  padding-inline: 1.4rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.btn-terracota:hover {
+  background-color: var(--terracota-hover);
+  border-color: var(--terracota-hover);
+  color: #fff;
+}
+
+.btn-pizarra {
+  background-color: var(--pizarra);
+  border-color: var(--pizarra);
+  color: #fff;
+  border-radius: 999px;
+  padding-inline: 1.4rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.btn-pizarra:hover {
+  background-color: #232C38;
+  border-color: #232C38;
+  color: #fff;
+}
+
+.btn-vino {
+  background-color: var(--vino);
+  border-color: var(--vino);
+  color: #fff;
+  border-radius: 999px;
+  padding-inline: 1.4rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.btn-vino:hover {
+  background-color: var(--vino-hover);
+  border-color: var(--vino-hover);
+  color: #fff;
+}
+
 /* ---------- Encabezado / navbar ---------- */
 
 .encabezado-app {
   background: #fff;
-  border-bottom: 1px solid var(--menta-borde);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
   padding: 0.9rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
   flex-wrap: wrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
 
 .encabezado-marca .logo-auth {
@@ -111,7 +185,7 @@ h1, h2, h3, h4 {
 
 .nombre-marca {
   font-family: var(--fuente-marca);
-  font-size: 1.9rem;
+  font-size: 2.1rem;
   color: var(--verde-oscuro);
   line-height: 1;
 }
@@ -216,15 +290,18 @@ h1, h2, h3, h4 {
   height: 14px;
 }
 
-/* ---------- Franja superior de título (fondo gris, como en las capturas) ---------- */
+/* ---------- Franja superior de título ---------- */
 
 .franja-titulo {
   background: var(--gris-panel);
-  border-radius: 12px;
+  border-radius: 16px;
   margin: 2rem auto 0;
   padding: 3rem 2rem;
   max-width: 1100px;
   text-align: center;
+  border: 1px solid rgba(0,0,0,0.04);
+  background-size: 20px 20px;
+  background-position: center;
 }
 .franja-titulo h1 {
   font-size: 2.2rem;
@@ -236,10 +313,57 @@ h1, h2, h3, h4 {
   margin: 0 auto;
 }
 
+/* Variantes de color por módulo: fondo suave + textura de puntos +
+   título en el tono oscuro del acento, para que cada pantalla se
+   sienta distinta sin salirse de la paleta de la marca. */
+.franja-titulo--verde {
+  background-color: var(--menta);
+  background-image: radial-gradient(var(--menta-borde) 1px, transparent 1px);
+  border-color: var(--menta-borde);
+}
+.franja-titulo--verde h1 { color: var(--verde-oscuro); }
+
+.franja-titulo--dorado {
+  background-color: var(--dorado-suave);
+  background-image: radial-gradient(rgba(198,150,59,0.22) 1px, transparent 1px);
+  border-color: rgba(198,150,59,0.25);
+}
+.franja-titulo--dorado h1 { color: var(--dorado-hover); }
+
+.franja-titulo--terracota {
+  background-color: var(--terracota-suave);
+  background-image: radial-gradient(rgba(200,90,50,0.22) 1px, transparent 1px);
+  border-color: rgba(200,90,50,0.22);
+}
+.franja-titulo--terracota h1 { color: var(--terracota-hover); }
+
+.franja-titulo--pizarra {
+  background-color: var(--pizarra-suave);
+  background-image: radial-gradient(rgba(46,58,74,0.18) 1px, transparent 1px);
+  border-color: rgba(46,58,74,0.16);
+}
+.franja-titulo--pizarra h1 { color: var(--pizarra); }
+
+.franja-titulo--vino {
+  background-color: var(--vino-suave);
+  background-image: radial-gradient(rgba(122,59,74,0.2) 1px, transparent 1px);
+  border-color: rgba(122,59,74,0.2);
+}
+.franja-titulo--vino h1 { color: var(--vino-hover); }
+
+.franja-titulo--rojo {
+  background-color: var(--error-bg);
+  background-image: radial-gradient(rgba(178,80,60,0.2) 1px, transparent 1px);
+  border-color: rgba(178,80,60,0.2);
+}
+.franja-titulo--rojo h1 { color: var(--error-texto); }
+
 /* ---------- Sección menta de cuenta (Login / Crear cuenta) ---------- */
 
 .seccion-cuenta {
-  background: var(--menta);
+  background-color: var(--menta);
+  background-image: radial-gradient(var(--menta-borde) 1px, transparent 1px);
+  background-size: 16px 16px;
   margin-top: 2rem;
   padding: 3.5rem 0;
 }
@@ -258,8 +382,6 @@ h1, h2, h3, h4 {
   max-width: 40ch;
 }
 
-/* El panel del formulario no lleva tarjeta propia: los campos van
-   directo sobre el fondo menta, igual que en las capturas. */
 .auth-panel-form .campo,
 .auth-panel-form .campo-checkbox {
   margin-bottom: 1rem;
@@ -332,7 +454,7 @@ h1, h2, h3, h4 {
 }
 .texto-enlace-auth a:hover { text-decoration: underline; }
 
-/* ---------- Formularios (foco, validación) ---------- */
+/* ---------- Formularios ---------- */
 
 .form-control:focus,
 .form-select:focus {
@@ -350,7 +472,7 @@ h1, h2, h3, h4 {
   margin-bottom: 1.1rem;
 }
 
-/* ---------- Elementos de auth sueltos (por si se reutilizan) ---------- */
+/* ---------- Elementos de auth sueltos ---------- */
 
 .contenedor-auth { padding-bottom: 4rem; }
 .auth-logo { display: flex; align-items: center; gap: 0.5rem; }
@@ -367,6 +489,40 @@ h1, h2, h3, h4 {
   font-family: var(--fuente-marca);
   font-size: 1.6rem;
   color: var(--verde-oscuro);
+}
+
+/* ---------- Foto + sello en auth-intro ---------- */
+
+.tarjeta-foto-intro {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 1.75rem;
+  transform: rotate(-2deg);
+  transition: transform 0.3s ease;
+}
+.tarjeta-foto-intro:hover {
+  transform: rotate(0deg) scale(1.01);
+}
+.tarjeta-foto-intro.recorte-invertido {
+  transform: rotate(2deg);
+}
+.foto-intro {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 6px solid #fff;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(28, 28, 24, 0.12);
+}
+.sello-intro {
+  position: absolute;
+  bottom: -24px;
+  right: -26px;
+  width: 74px;
+  height: 74px;
+  transform: rotate(8deg);
 }
 
 /* ---------- Footer ---------- */
@@ -398,7 +554,7 @@ h1, h2, h3, h4 {
 .pie-app a:hover { color: #fff; }
 .pie-app p { color: var(--footer-texto); font-size: 0.88rem; }
 
-/* ---------- Responsive ---------- */
+/* ---------- Responsive Basico ---------- */
 
 @media (max-width: 860px) {
   .encabezado-nav { gap: 0.9rem; }
@@ -458,6 +614,7 @@ h1, h2, h3, h4 {
   border-radius: 4px;
   border: 3px solid #fff;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s ease;
 }
 .libro-apilado:not(:first-child) {
   margin-left: -28px;
@@ -465,6 +622,7 @@ h1, h2, h3, h4 {
 .libro-apilado:nth-child(1) { transform: rotate(-8deg); }
 .libro-apilado:nth-child(2) { transform: translateY(-14px) rotate(2deg); }
 .libro-apilado:nth-child(3) { transform: rotate(9deg); }
+
 @media (max-width: 700px) {
   .pila-libros-decorativa { display: none; }
 }
@@ -481,6 +639,7 @@ h1, h2, h3, h4 {
   border-radius: 999px;
   padding: 0.65rem 1.2rem;
   font-size: 0.95rem;
+  background: #fff;
 }
 .campo-busqueda:focus {
   outline: none;
@@ -494,6 +653,7 @@ h1, h2, h3, h4 {
 /* Sidebar de filtros */
 .sidebar-filtros {
   background: var(--gris-panel);
+  border: 1px solid rgba(0,0,0,0.04);
   border-radius: 12px;
   padding: 1.5rem;
   align-self: start;
@@ -552,25 +712,30 @@ h1, h2, h3, h4 {
 .tarjeta-libro,
 .tarjeta-favorito {
   background: #fff;
-  border: 1px solid var(--menta-borde);
-  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
   padding-bottom: 1.1rem;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 .tarjeta-libro:hover,
 .tarjeta-favorito:hover {
-  box-shadow: 0 8px 24px rgba(28, 28, 24, 0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(28, 28, 24, 0.09);
+  transform: translateY(-4px);
 }
 .portada-libro {
   width: 100%;
   aspect-ratio: 2 / 3;
   object-fit: cover;
   margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+.tarjeta-libro:hover .portada-libro {
+  transform: scale(1.03);
 }
 .titulo-libro {
   font-size: 1.05rem;
@@ -585,8 +750,9 @@ h1, h2, h3, h4 {
 }
 .categoria-libro {
   padding: 0 1rem;
-  color: var(--tinta-suave);
+  color: var(--terracota);
   font-size: 0.8rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   margin-bottom: 0.6rem;
@@ -610,112 +776,121 @@ h1, h2, h3, h4 {
 @media (max-width: 860px) {
   .bloque-buscador { flex-direction: column; }
 }
+
 /* Ficha de detalle de libro */
 .ficha-libro {
-    padding: 3rem 0 2rem;
+  padding: 3rem 0 2rem;
 }
 
 .fila-ficha {
-    display: flex;
-    gap: 32px;
-    align-items: flex-start;
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
 }
 
 .portada-ficha {
-    width: 150px;
-    aspect-ratio: 3 / 4.4;
-    object-fit: cover;
-    border: 1px solid var(--menta-borde);
-    background-color: var(--gris-panel);
+  width: 180px;
+  aspect-ratio: 3 / 4.4;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--menta-borde);
+  background-color: var(--gris-panel);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
 }
 
 .categoria-ficha {
-    font-size: 0.85rem;
-    color: var(--tinta-suave);
-    margin: 0 0 4px;
+  font-size: 0.85rem;
+  color: var(--terracota);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 0 0 4px;
 }
 
 .titulo-ficha {
-    font-family: 'Lora', serif;
-    font-weight: 400;
-    font-size: 2rem;
-    color: var(--tinta);
-    margin: 0 0 4px;
+  font-family: 'Lora', serif;
+  font-weight: 400;
+  font-size: 2rem;
+  color: var(--tinta);
+  margin: 0 0 4px;
 }
 
 .autor-ficha {
-    font-size: 0.95rem;
-    color: var(--tinta-suave);
-    margin: 0 0 20px;
+  font-size: 0.95rem;
+  color: var(--tinta-suave);
+  margin: 0 0 20px;
 }
 
 .datos-libro {
-    border-top: 1px solid var(--menta-borde);
+  border-top: 1px solid var(--menta-borde);
 }
 
 .fila-dato-libro {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--menta-borde);
-    font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--menta-borde);
+  font-size: 0.9rem;
 }
 
 .fila-dato-libro .etiqueta-dato {
-    color: var(--tinta-suave);
+  color: var(--tinta-suave);
 }
 
 .fila-dato-libro .valor-dato {
-    color: var(--tinta);
-    font-weight: 500;
-    text-align: right;
+  color: var(--tinta);
+  font-weight: 500;
+  text-align: right;
 }
 
 .sello-disponibilidad {
-    display: inline-block;
-    border: 1px solid var(--tinta);
-    color: var(--tinta);
-    padding: 4px 12px;
-    font-size: 0.8rem;
+  display: inline-block;
+  border: 1px solid var(--tinta);
+  border-radius: 6px;
+  color: var(--tinta);
+  padding: 4px 12px;
+  font-size: 0.8rem;
 }
 
 .sello-disponibilidad.disponible {
-    border-color: var(--verde);
-    color: var(--verde);
+  border-color: var(--verde);
+  color: var(--verde);
+  background-color: rgba(47, 107, 76, 0.08);
 }
 
 .sello-disponibilidad.no-disponible {
-    border-color: var(--error-texto);
-    color: var(--error-texto);
+  border-color: var(--error-texto);
+  color: var(--error-texto);
+  background-color: var(--error-bg);
 }
 
 .bloque-acciones-libro {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
 }
 
 .seccion-descripcion-libro,
 .seccion-ejemplar-ficha {
-    padding: 2rem 0;
-    border-top: 1px solid var(--menta-borde);
+  padding: 2rem 0;
+  border-top: 1px solid var(--menta-borde);
 }
 
 .titulo-seccion-ficha {
-    font-family: 'Lora', serif;
-    font-weight: 400;
-    font-size: 1.35rem;
-    color: var(--tinta);
-    margin: 0 0 16px;
+  font-family: 'Lora', serif;
+  font-weight: 400;
+  font-size: 1.35rem;
+  color: var(--tinta);
+  margin: 0 0 16px;
 }
 
 .texto-descripcion {
-    color: var(--tinta-suave);
-    line-height: 1.6;
-    max-width: 70ch;
+  color: var(--tinta-suave);
+  line-height: 1.6;
+  max-width: 70ch;
 }
+
 /* ---------- Favoritos ---------- */
 .pagina-favoritos {
   padding-top: 2rem;
@@ -741,41 +916,6 @@ h1, h2, h3, h4 {
 
 .btn-outline-danger {
   border-radius: 999px;
-}
-
-/* ---------- Textura sutil de fondo en seccion-cuenta ---------- */
-.seccion-cuenta {
-  background-color: var(--menta);
-  background-image: radial-gradient(var(--menta-borde) 1px, transparent 1px);
-  background-size: 16px 16px;
-}
-
-/* ---------- Foto + sello en auth-intro ---------- */
-.tarjeta-foto-intro {
-  position: relative;
-  width: 500px;
-  margin-bottom: 1.75rem;
-  transform: rotate(-2deg);
-}
-.tarjeta-foto-intro.recorte-invertido {
-  transform: rotate(2deg);
-}
-.foto-intro {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border: 6px solid #fff;
-  border-radius: 4px;
-  box-shadow: 0 4px 10px rgba(28, 28, 24, 0.15);
-}
-.sello-intro {
-  position: absolute;
-  bottom: -24px;
-  right: -26px;
-  width: 74px;
-  height: 74px;
-  transform: rotate(8deg);
 }
 
 /* ---------- Home ---------- */
@@ -847,6 +987,8 @@ h1, h2, h3, h4 {
 }
 .seccion-categorias-home {
   background: var(--gris-panel);
+  border-top: 1px solid var(--menta-borde);
+  border-bottom: 1px solid var(--menta-borde);
 }
 
 .pasos-home {
@@ -855,10 +997,15 @@ h1, h2, h3, h4 {
 }
 .paso-home {
   background: #fff;
-  border: 1px solid var(--menta-borde);
+  border: 1px solid rgba(0,0,0,0.05);
   border-radius: 12px;
   padding: 1.5rem;
   height: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.paso-home:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
 .numero-paso {
   display: inline-flex;
@@ -893,7 +1040,7 @@ h1, h2, h3, h4 {
 }
 .tarjeta-tip {
   background: #fff;
-  border: 1px solid var(--menta-borde);
+  border: 1px solid rgba(0,0,0,0.05);
   border-radius: 12px;
   padding: 1.5rem;
   height: 100%;
@@ -927,12 +1074,7 @@ h1, h2, h3, h4 {
   .logo-wisebooks { height: 56px; }
 }
 
-/* ---------- Íconos SVG (Iconos.js) ---------- */
-/* Nunca emojis: todo ícono de la app sale de Iconos.js como <svg> en
-   línea. .icono-svg es el tamaño "suelto" (dentro de botones, celdas
-   de tabla); .icono-circulo es la insignia redonda de color que se usa
-   como firma visual en el encabezado de cada vista y en las tarjetas
-   de métricas. */
+/* ---------- Íconos SVG ---------- */
 
 .icono-svg {
   width: 1em;
@@ -948,7 +1090,8 @@ h1, h2, h3, h4 {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: var(--verde);
+  background: linear-gradient(135deg, var(--verde) 0%, var(--verde-oscuro) 100%);
+  box-shadow: 0 10px 22px -8px rgba(47, 107, 76, 0.55);
   color: #fff;
   margin: 0 auto 1rem;
   flex-shrink: 0;
@@ -968,19 +1111,48 @@ h1, h2, h3, h4 {
 }
 .icono-circulo.icono-circulo-alerta {
   background: var(--alerta-bg);
+  box-shadow: none;
   color: var(--alerta-texto);
 }
 .icono-circulo.icono-circulo-negativo {
   background: var(--error-bg);
+  box-shadow: none;
   color: var(--error-texto);
 }
 .icono-circulo.icono-circulo-menta {
   background: var(--menta);
+  box-shadow: none;
   color: var(--verde-oscuro);
 }
 
-/* Avatar redondo (persona) e imagen de portada, para "mezclar" datos
-   con una imagen dentro de una celda de tabla o fila de lista. */
+/* Variantes con degradado + resplandor a color, para las franjas de
+   título por módulo (van de la mano con .franja-titulo--<color>). */
+.icono-circulo-dorado {
+  background: linear-gradient(135deg, var(--dorado) 0%, var(--dorado-hover) 100%);
+  box-shadow: 0 10px 22px -8px rgba(198, 150, 59, 0.55);
+  color: #fff;
+}
+.icono-circulo-terracota {
+  background: linear-gradient(135deg, var(--terracota) 0%, var(--terracota-hover) 100%);
+  box-shadow: 0 10px 22px -8px rgba(200, 90, 50, 0.55);
+  color: #fff;
+}
+.icono-circulo-pizarra {
+  background: linear-gradient(135deg, var(--pizarra) 0%, #1B222C 100%);
+  box-shadow: 0 10px 22px -8px rgba(46, 58, 74, 0.55);
+  color: #fff;
+}
+.icono-circulo-vino {
+  background: linear-gradient(135deg, var(--vino) 0%, var(--vino-hover) 100%);
+  box-shadow: 0 10px 22px -8px rgba(122, 59, 74, 0.55);
+  color: #fff;
+}
+.icono-circulo-rojo {
+  background: linear-gradient(135deg, var(--error-borde) 0%, var(--error-texto) 100%);
+  box-shadow: 0 10px 22px -8px rgba(178, 80, 60, 0.55);
+  color: #fff;
+}
+
 .celda-con-icono {
   display: flex;
   align-items: center;
@@ -1010,7 +1182,7 @@ h1, h2, h3, h4 {
   flex-shrink: 0;
 }
 
-/* ---------- Métricas (Dashboard, Inventario) ---------- */
+/* ---------- Métricas ---------- */
 
 .fila-metricas {
   margin: 2rem 0;
@@ -1018,7 +1190,7 @@ h1, h2, h3, h4 {
 }
 .tarjeta-metrica {
   background: #fff;
-  border: 1px solid var(--menta-borde);
+  border: 1px solid rgba(0,0,0,0.05);
   border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
@@ -1036,11 +1208,6 @@ h1, h2, h3, h4 {
 }
 
 /* ---------- Pastillas de estado ---------- */
-/* Clase base (forma) + una de cuatro clases modificadoras (color) que
-   asigna cada JS según el significado del estado: positivo (verde),
-   negativo (rojo), alerta (ámbar) o neutro (gris). Mismo patrón en
-   Prestamos/MisPrestamos/Devoluciones/Reservas/Sanciones/Historial/
-   Inventario/Usuarios.js. */
 
 .estado-prestamo,
 .estado-reserva,
@@ -1048,7 +1215,9 @@ h1, h2, h3, h4 {
 .estado-historial,
 .estado-ejemplar,
 .estado-usuario {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
   font-size: 0.82rem;
@@ -1056,13 +1225,25 @@ h1, h2, h3, h4 {
   background: var(--gris-panel);
   color: var(--tinta-suave);
 }
-.estado-positivo { background: rgba(47, 107, 76, 0.12); color: var(--verde-oscuro); }
+.estado-prestamo::before,
+.estado-reserva::before,
+.estado-sancion::before,
+.estado-historial::before,
+.estado-ejemplar::before,
+.estado-usuario::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.estado-positivo { background: #E6F4EA; color: #137333; }
 .estado-negativo { background: var(--error-bg); color: var(--error-texto); }
 .estado-alerta   { background: var(--alerta-bg); color: var(--alerta-texto); }
-.estado-neutro   { background: var(--gris-panel); color: var(--tinta-suave); }
+.estado-neutro   { background: #EDF2F7; color: var(--tinta-suave); }
 
-/* ---------- Tablas (Préstamos, Devoluciones, Reservas, Sanciones,
-   Historial, MisPréstamos, Inventario, Usuarios) ---------- */
+/* ---------- Tablas ---------- */
 
 .table {
   --bs-table-border-color: var(--menta-borde);
@@ -1084,20 +1265,19 @@ h1, h2, h3, h4 {
   --bs-table-accent-bg: var(--menta);
 }
 
-/* Envuelve la tabla en una tarjeta blanca (en vez de flotar sobre el
-   fondo de la página): la saca del molde "tabla de Bootstrap a secas". */
 .tarjeta-tabla {
   background: #fff;
-  border: 1px solid var(--menta-borde);
+  border: 1px solid rgba(0,0,0,0.06);
   border-radius: 12px;
   padding: 0.5rem 1.25rem;
   overflow-x: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 .tarjeta-tabla > .table {
   margin-bottom: 0;
 }
 
-/* ---------- Contenedores de página (espaciado vertical) ---------- */
+/* ---------- Contenedores de página ---------- */
 
 .contenedor-dashboard,
 .contenedor-prestamos,
@@ -1112,7 +1292,7 @@ h1, h2, h3, h4 {
   padding-bottom: 4rem;
 }
 
-/* ---------- Dashboard: bloque de bienvenida (Visitante) ---------- */
+/* ---------- Dashboard ---------- */
 
 .bloque-bienvenida {
   text-align: center;
@@ -1136,8 +1316,6 @@ h1, h2, h3, h4 {
 .bloque-info-general {
   margin-top: 1rem;
 }
-
-/* ---------- Dashboard: Lector / Bibliotecario / Administrador ---------- */
 
 .seccion-recomendados,
 .seccion-graficos {
@@ -1175,7 +1353,7 @@ h1, h2, h3, h4 {
   background-color: var(--error-borde);
 }
 
-/* ---------- Inventario: alta de ejemplar ---------- */
+/* ---------- Inventario ---------- */
 
 .bloque-agregar-ejemplar {
   background: var(--gris-panel);
@@ -1191,15 +1369,7 @@ h1, h2, h3, h4 {
   margin-bottom: 0.3rem;
 }
 
-/* =========================================================
-   Componentes de diseño reutilizables: banners de sección,
-   filas de categorías, insignia flotante, testimonios.
-   Pensados para dar más vida visual a Home y al Catálogo sin
-   perder la identidad verde/menta ya establecida; el dorado se
-   usa como acento puntual (CTAs, insignias), no como base.
-   ========================================================= */
-
-/* ---------- Banner de sección oscuro (CTA de ancho completo) ---------- */
+/* ---------- Componentes de diseño reutilizables ---------- */
 
 .banner-seccion-oscuro {
   background: var(--verde-oscuro);
@@ -1254,8 +1424,6 @@ h1, h2, h3, h4 {
   flex-shrink: 0;
 }
 
-/* ---------- Fila de categorías (browse-by-category) ---------- */
-
 .fila-categorias {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -1268,7 +1436,7 @@ h1, h2, h3, h4 {
   align-items: center;
   gap: 0.65rem;
   padding: 1.5rem 0.75rem;
-  border: 1px solid var(--menta-borde);
+  border: 1px solid rgba(0,0,0,0.06);
   border-radius: 12px;
   background: #fff;
   text-decoration: none;
@@ -1277,17 +1445,17 @@ h1, h2, h3, h4 {
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 .tarjeta-categoria:hover {
-  border-color: var(--verde);
+  border-color: var(--terracota);
   transform: translateY(-3px);
   box-shadow: 0 10px 20px rgba(28, 28, 24, 0.06);
-  color: var(--verde-oscuro);
+  color: var(--terracota);
 }
 .tarjeta-categoria .icono-circulo {
   margin: 0;
   width: 48px;
   height: 48px;
-  background: var(--menta);
-  color: var(--verde-oscuro);
+  background: var(--dorado-suave);
+  color: var(--alerta-texto);
 }
 .tarjeta-categoria .icono-circulo .icono-svg {
   width: 22px;
@@ -1297,8 +1465,6 @@ h1, h2, h3, h4 {
   font-size: 0.85rem;
   font-weight: 500;
 }
-
-/* ---------- Insignia flotante sobre una foto ---------- */
 
 .contenedor-insignia {
   position: relative;
@@ -1338,15 +1504,13 @@ h1, h2, h3, h4 {
   .insignia-flotante span { font-size: 0.58rem; }
 }
 
-/* ---------- Testimonios ---------- */
-
 .fila-testimonios {
   margin-top: 2rem;
   row-gap: 1.5rem;
 }
 .tarjeta-testimonio {
   background: #fff;
-  border: 1px solid var(--menta-borde);
+  border: 1px solid rgba(0,0,0,0.06);
   border-radius: 12px;
   padding: 1.75rem;
   height: 100%;
@@ -1381,8 +1545,6 @@ h1, h2, h3, h4 {
   font-size: 0.8rem;
   color: var(--tinta-suave);
 }
-
-/* ---------- Banner de boletín (newsletter) ---------- */
 
 .banner-boletin {
   background: var(--footer-bg);
@@ -1442,4 +1604,27 @@ h1, h2, h3, h4 {
   .banner-boletin-contenido { flex-direction: column; align-items: flex-start; }
   .banner-boletin form { width: 100%; }
   .campo-boletin { flex: 1; min-width: 0; }
+}
+
+/* ---------- Clase extra para Banner con Imagen de Fondo ---------- */
+.hero-banner-imagen {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+  overflow: hidden;
+  color: #fff;
+  padding: 4rem 2rem;
+  margin-bottom: 2rem;
+}
+.hero-banner-imagen::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, rgba(30, 64, 48, 0.75) 0%, rgba(21, 32, 26, 0.85) 100%);
+  z-index: 1;
+}
+.hero-banner-imagen > * {
+  position: relative;
+  z-index: 2;
 }

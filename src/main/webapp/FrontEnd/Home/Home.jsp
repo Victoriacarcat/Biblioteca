@@ -85,8 +85,6 @@
 
             </div>
         </section>
-
-        <!-- ================= EXPLORÁ POR CATEGORÍA ================= -->
         <section class="seccion-categorias-home">
             <div class="container">
                 <span class="etiqueta-seccion">
@@ -172,31 +170,6 @@
                 </div>
             </div>
         </section>
-
-        <section class="franja-stats-home">
-            <div class="container">
-                <div class="row text-center">
-                    <div class="col-6 col-md-3 stat-home">
-                        <h2 class="valor-stat-home" id="home-total-libros">0</h2>
-                        <p class="etiqueta-stat-home">Títulos en el catálogo</p>
-                    </div>
-                    <div class="col-6 col-md-3 stat-home">
-                        <h2 class="valor-stat-home" id="home-total-usuarios">0</h2>
-                        <p class="etiqueta-stat-home">Lectores en la comunidad</p>
-                    </div>
-                    <div class="col-6 col-md-3 stat-home">
-                        <h2 class="valor-stat-home">24/7</h2>
-                        <p class="etiqueta-stat-home">Catálogo digital disponible</p>
-                    </div>
-                    <div class="col-6 col-md-3 stat-home">
-                        <h2 class="valor-stat-home">3</h2>
-                        <p class="etiqueta-stat-home">Días de gracia para devolver</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-
         <section class="seccion-destacados-home">
             <div class="container">
                 <span class="etiqueta-seccion">
@@ -214,8 +187,6 @@
                 </a>
             </div>
         </section>
-
-        <!-- ================= CLUB DE LECTURA (banner CTA) ================= -->
         <section class="banner-seccion-oscuro">
             <div class="container banner-cta">
                 <div class="banner-cta-texto">
