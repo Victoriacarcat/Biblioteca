@@ -1,18 +1,18 @@
-// Dashboard.js
-// Pinta el panel principal según el rol actual. Cada vista del panel vive
-// en su propia <section data-rol="..."> dentro del JSP y aquí solo se
-// muestra la que corresponde al rol activo (mismo patrón que
-// Header.js/Auth.js: visitante, lector, bibliotecario o administrador).
-//
-// Lector, Bibliotecario y Administrador comparten el mismo lenguaje visual
-// ("panel-metricas": tarjetas KPI, gráfico semanal, categorías más pedidas,
-// franja de estado y tarjeta de alertas). Los números y listas salen de
-// Data.js (mock): no hay backend todavía, así que las métricas no son
-// reales.
-//
-// TODO: cuando exista el backend, estos datos vendrán de consultas reales
+/** Dashboard.js
+  panel principal según el rol actual. Cada vista del panel vive
+ en su propia de los datos de roles con Data dentro del JSP y aquí solo se
+ muestra la que corresponde al rol activo (mismo patrón que
+ Header.js/Auth.js: visitante, lector, bibliotecario o administrador).
+
+ Lector, Bibliotecario y Administrador comparten el mismo lenguaje visual
+ ("panel-metricas": tarjetas KPI, gráfico semanal, categorías más pedidas,
+ franja de estado y tarjeta de alertas). Los números y listas salen de
+ Data.js (mock): no hay backend todavía, así que las métricas no son
+ reales.
+
+// Cuando exista el backend, estos datos vendrán de consultas reales
 // (préstamos/reservas/sanciones del usuario autenticado, conteos y
-// agregados globales para bibliotecario/administrador, etc.).
+agregados globales para bibliotecario/administrador, etc.).*/ 
 
 function mostrarSeccionDelRolActual() {
     const rolActual = obtenerRolActual();
@@ -43,16 +43,13 @@ function pintarFechaHoy(idElemento) {
     elemento.textContent = texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
-// ---- Visitante: info general de la biblioteca ----
+//Visitante: info general de la biblioteca
 function pintarMetricasVisitante() {
     pintarMetrica("metrica-total-libros", estadisticasBiblioteca.totalLibros);
     pintarMetrica("metrica-total-usuarios", estadisticasBiblioteca.totalUsuarios);
 }
 
-// ==========================================================================
-// Componentes compartidos del panel de métricas (Lector/Bibliotecario/Admin)
-// ==========================================================================
-
+//se crean las tarjetas con las metricas compartidas
 function crearTarjetaKpi(kpi) {
     const columna = document.createElement("div");
     columna.className = "tarjeta-kpi";
@@ -127,8 +124,7 @@ function pintarCategoriasMasPedidas(idContenedor) {
     categoriasMasPedidas.forEach((item) => contenedor.appendChild(crearItemCategoriaPedida(item)));
 }
 
-// Franja apilada de estado (se usa tanto para "Estado general del acervo"
-// del Administrador como para "Estado de los ejemplares" del Bibliotecario).
+// Grafica apilada de estado (se usa tanto para "Estado general de la colección" utilizada en admin y bibliotecario
 function pintarFranjaEstado(idFranja, idLeyenda, segmentos) {
     const franja = document.getElementById(idFranja);
     const leyenda = document.getElementById(idLeyenda);
@@ -143,38 +139,16 @@ function pintarFranjaEstado(idFranja, idLeyenda, segmentos) {
         .join("");
 }
 
-function crearItemAlerta(item) {
-    const div = document.createElement("div");
-    div.className = "item-alerta";
-    div.innerHTML = `
-        <span class="item-alerta-texto">
-            <span class="item-alerta-titulo">${item.titulo}</span>
-            <span class="item-alerta-detalle">${item.detalle}</span>
-        </span>
-        <span class="item-alerta-valor">${item.valor}</span>
-    `;
-    return div;
-}
-
-function pintarAlertas(idContenedor, lista) {
-    const contenedor = document.getElementById(idContenedor);
-    if (!contenedor) {
-        return;
-    }
-    contenedor.innerHTML = "";
-    lista.forEach((item) => contenedor.appendChild(crearItemAlerta(item)));
-}
-
 function formatearFechaCorta(fechaIso) {
     const fecha = new Date(fechaIso + "T00:00:00");
     return new Intl.DateTimeFormat("es-AR", { day: "numeric", month: "short" }).format(fecha);
 }
 
-// Lista de vencimientos a partir de "prestamos" (Data.js): la usan tanto
-// el panel del Lector ("mis" préstamos) como el del Bibliotecario (todos
-// los préstamos activos). Como todavía no hay backend/login real, el
-// arreglo "prestamos" se trata como si fuera del usuario actual, mismo
-// criterio que ya usa MisPrestamos.js.
+/** Lista de vencimientos a partir de "prestamos" (Data.js): la usan tanto 
+el panel del Lector ("mis" préstamos) como el del Bibliotecario (todos
+ los préstamos activos). Como todavía no hay backend/login real, el
+ arreglo "prestamos" se trata como si fuera del usuario actual, mismo
+ criterio que ya usa MisPrestamos.js.*/
 function crearItemVencimiento(prestamo, mostrarUsuario) {
     const div = document.createElement("div");
     const vencido = prestamo.estado === "Vencido";
@@ -208,13 +182,8 @@ function pintarVencimientos(idContenedor, mostrarUsuario) {
     activos.forEach((prestamo) => contenedor.appendChild(crearItemVencimiento(prestamo, mostrarUsuario)));
 }
 
-// ---- Lector: mis métricas (personales) + generales de la biblioteca ----
-//
-// Las 3 primeras se calculan de "prestamos"/"reservas" (Data.js). Las que
-// siguen son mock hardcodeado (misMetricasLector/contextoGeneralBiblioteca
-// en Data.js) hasta que haya backend: se dejan con delta vacío para no
-// inventar una tendencia que no existe todavía.
-function construirKpisLector() {
+//Lector Las 3 primeras se calculan de "prestamos"/"reservas" mediante la info de Data.js. 
+function construirKpisLector() { 
     const misPrestamosActivos = prestamos.filter((p) => p.estado === "Activo").length;
     const pctLectura = Math.min(100, Math.round((misMetricasLector.leidosEsteAnio / misMetricasLector.metaAnual) * 100));
 
@@ -263,7 +232,7 @@ function pintarPanelLector() {
     pintarLibrosRecomendados();
 }
 
-// ---- Bibliotecario: operación diaria ----
+//Bibliotecario
 function pintarEstadoEjemplaresBibliotecario() {
     const total = ejemplares.length;
     if (!total) {
@@ -287,16 +256,15 @@ function pintarPanelBibliotecario() {
     pintarVencimientos("lista-vencimientos-biblio", true);
     pintarCategoriasMasPedidas("lista-categorias-biblio");
     pintarEstadoEjemplaresBibliotecario();
-    pintarAlertas("lista-alertas-biblio", alertasBibliotecario);
 }
 
-// ---- Administrador: visión global + rango 7/30 días ----
-function pintarEstadoAcervoAdministrador() {
-    pintarFranjaEstado("franja-acervo-admin", "leyenda-acervo-admin", [
-        { color: "var(--verde-oscuro)", etiqueta: "Disponibles", porcentaje: estadoAcervo.disponiblesPorcentaje },
-        { color: "var(--dorado)", etiqueta: "En préstamo", porcentaje: estadoAcervo.enPrestamoPorcentaje },
-        { color: "#C9B792", etiqueta: "Reservados", porcentaje: estadoAcervo.reservadosPorcentaje },
-        { color: "#E0D9C6", etiqueta: "En reparación", porcentaje: estadoAcervo.enReparacionPorcentaje }
+//Administrador
+function pintarEstadoColeccionAdministrador() {
+    pintarFranjaEstado("franja-coleccion-admin", "leyenda-coleccion-admin", [
+        { color: "var(--verde-oscuro)", etiqueta: "Disponibles", porcentaje: estadoColeccion.disponiblesPorcentaje },
+        { color: "var(--dorado)", etiqueta: "En préstamo", porcentaje: estadoColeccion.enPrestamoPorcentaje },
+        { color: "#C9B792", etiqueta: "Reservados", porcentaje: estadoColeccion.reservadosPorcentaje },
+        { color: "#E0D9C6", etiqueta: "En reparación", porcentaje: estadoColeccion.enReparacionPorcentaje }
     ]);
 
     const indicadores = document.getElementById("indicadores-circulacion-admin");
@@ -319,10 +287,8 @@ function pintarEstadoAcervoAdministrador() {
     `;
 }
 
-// El toggle "7 días / 30 días" solo reescala, a modo ilustrativo, las dos
-// métricas que tienen sentido como "actividad del período" (préstamos
-// activos y reservas pendientes). El resto (títulos en catálogo, usuarios
-// activos) no depende del rango elegido.
+// El toggle "7 días / 30 días" solo reescala, a modo ilustrativo, las dos métricas que tienen sentido como "actividad del período" (préstamos activos y reservas pendientes). El resto (títulos en catálogo, usuario activos) no depende del rango elegido.
+
 function aplicarRangoAdministrador(dias) {
     const factor = dias === 7 ? 0.28 : 1;
     const kpisEscalados = kpisAdministrador.map((kpi) => {
@@ -355,8 +321,7 @@ function pintarPanelAdministrador() {
     inicializarRangoAdministrador();
     pintarGraficoSemanal("grafico-semanal-admin");
     pintarCategoriasMasPedidas("lista-categorias-admin");
-    pintarEstadoAcervoAdministrador();
-    pintarAlertas("lista-alertas-admin", alertasMora);
+    pintarEstadoColeccionAdministrador();
 }
 
 document.addEventListener("DOMContentLoaded", () => {

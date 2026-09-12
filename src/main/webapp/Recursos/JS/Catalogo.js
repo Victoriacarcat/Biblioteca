@@ -4,7 +4,7 @@
 // se muestran u ocultan según el rol actual (ver Auth.js).
 //
 // Por ahora NO implementa búsqueda, filtros ni orden (solo el pintado
-// de las cards): eso se agrega en un paso posterior.
+// de las cards): eso se agrega en un paso posterior. 
 
 function crearCardLibro(libro) {
     const rolActual = obtenerRolActual();

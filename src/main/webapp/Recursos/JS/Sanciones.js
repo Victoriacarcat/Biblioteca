@@ -1,9 +1,9 @@
-// Sanciones.js
-// Igual que Reservas.js: un bloque para el Lector (sus propias
-// sanciones, solo lectura) y otro para Bibliotecario/Administrador
-// (todas las sanciones, con botón para marcarlas como pagadas). Datos
-// de ejemplo en Data.js ("sanciones"): sin backend todavía, "marcar
-// como pagada" solo cambia el estado en memoria.
+/** Sanciones.js
+ Igual que Reservas.js: un bloque para el Lector (sus propias
+/sanciones, solo lectura) y otro para Bibliotecario/Administrador
+(todas las sanciones, con botón para marcarlas como pagadas). Datos
+de ejemplo en Data.js ("sanciones"): sin backend todavía, "marcar
+ como pagada" solo cambia el estado en memoria.*/
 
 function mostrarBloqueDelRolActual() {
     const rolActual = obtenerRolActual();
@@ -23,7 +23,7 @@ function claseEstadoSancion(estado) {
     return estado === "Pagada" ? "estado-positivo" : "estado-alerta";
 }
 
-// ---- Vista Lector ----
+//Vista Lector
 function pintarMisSanciones() {
     const cuerpo = document.getElementById("cuerpo-mis-sanciones");
     if (!cuerpo) {
@@ -42,7 +42,7 @@ function pintarMisSanciones() {
     });
 }
 
-// ---- Vista Bibliotecario/Administrador ----
+// Vista Bibliotecario/Administrador
 function pintarSancionesStaff() {
     const cuerpo = document.getElementById("cuerpo-sanciones");
     if (!cuerpo) {

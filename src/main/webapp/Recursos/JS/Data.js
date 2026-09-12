@@ -1,3 +1,5 @@
+//data generada para simular datos 
+
 const libros = [
   {
     id: 1,
@@ -189,7 +191,7 @@ const estadisticasBiblioteca = {
 };
 
 // Datos del panel de administración (KPIs con variación, circulación
-// semanal, categorías más pedidas, estado del acervo y alertas de mora).
+// semanal, categorías más pedidas, estado de la colección y alertas de mora).
 // Reutilizan los números de "estadisticasBiblioteca" donde corresponde.
 //
 // TODO: cuando exista el backend, esto sale de consultas agregadas
@@ -221,7 +223,7 @@ const categoriasMasPedidas = [
   { nombre: "Poesía", prestamos: 74, porcentaje: 22 }
 ];
 
-const estadoAcervo = {
+const estadoColeccion = {
   disponiblesPorcentaje: 62,
   enPrestamoPorcentaje: 24,
   reservadosPorcentaje: 9,
@@ -234,27 +236,14 @@ const indicadoresCirculacion = {
   librosPorSocio: "3,2"
 };
 
-const alertasMora = [
-  { titulo: "Usuarios con mora", detalle: "Más de 7 días de atraso", valor: estadisticasBiblioteca.usuariosConMora },
-  { titulo: "Préstamos vencidos", detalle: "Requieren contacto", valor: 9 },
-  { titulo: "Reservas por expirar", detalle: "Vencen en 48 h", valor: 4 },
-  { titulo: "Ejemplares dañados", detalle: "Pendientes de revisión", valor: 2 }
-];
-
 // Datos del panel del Bibliotecario: mismos componentes visuales que el
-// panel de Administrador (KPIs, categorías, alertas), pero acotados a la
-// operación diaria en vez de a la biblioteca completa.
+// panel de Administrador (KPIs, categorías), pero acotados a la operación
+// diaria en vez de a la biblioteca completa.
 const kpisBibliotecario = [
   { label: "Préstamos del día", valor: estadisticasBiblioteca.prestamosDelDia, delta: "+2", positivo: true, porcentaje: 60, nota: "Respecto de ayer" },
   { label: "Devoluciones pendientes", valor: estadisticasBiblioteca.devolucionesPendientes, delta: "−1", positivo: true, porcentaje: 35, nota: "Para hoy" },
   { label: "Reservas pendientes", valor: estadisticasBiblioteca.reservasPendientes, delta: "+1", positivo: false, porcentaje: 25, nota: "Listas para retirar" },
   { label: "Usuarios con mora", valor: estadisticasBiblioteca.usuariosConMora, delta: "+1", positivo: false, porcentaje: 45, nota: "Requieren contacto" }
-];
-
-const alertasBibliotecario = [
-  { titulo: "Préstamos vencidos", detalle: "Requieren contacto", valor: 9 },
-  { titulo: "Reservas por expirar", detalle: "Vencen en 48 h", valor: 4 },
-  { titulo: "Ejemplares dañados", detalle: "Pendientes de revisión", valor: 2 }
 ];
 
 // Métricas personales adicionales del panel del Lector. Hardcodeadas por

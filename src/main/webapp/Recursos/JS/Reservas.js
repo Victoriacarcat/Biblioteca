@@ -1,13 +1,12 @@
-// Reservas.js
-// Una sola página con dos bloques: "Mis reservas" (Lector) y "Todas las
-// reservas" (Bibliotecario/Administrador). Se muestra solo el bloque que
-// corresponde al rol actual, con el mismo patrón de data-rol que usan
-// Header.js y Detallelibro.js. Todo viene del arreglo "reservas" de
-// Data.js: como no hay backend todavía, cancelar/aprobar/rechazar solo
-// cambian el estado en memoria (se pierde al recargar la página).
+/* Reservas.js
+Una sola página con dos bloques: "Mis reservas" (Lector) y "Todas las
+reservas" (Bibliotecario/Administrador). Se muestra solo el bloque que
+corresponde al rol actual, con el mismo patrón de data-rol que usan
+Header.js y Detallelibro.js. Todo viene del arreglo "reservas" de
+Data.js: como no hay backend todavía, cancelar/aprobar/rechazar solo
+cambian el estado en memoria (se pierde al recargar la página).*/
 
-// Color de la pastilla de estado: "Aprobada" verde, "Vencida" roja,
-// "Pendiente" ámbar y "Cancelada" gris.
+
 function claseEstadoReserva(estado) {
     if (estado === "Aprobada") {
         return "estado-positivo";

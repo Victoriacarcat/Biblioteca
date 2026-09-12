@@ -1,17 +1,17 @@
-// Usuarios.js
-// Vista exclusiva de Administrador: gestiona los usuarios registrados
-// (arreglo "usuarios" de Data.js). Sin backend todavía: cambiar el rol
-// o el estado solo actualiza el arreglo en memoria (se pierde al
-// recargar la página).
-//
-// Reglas de negocio aplicadas aquí:
-//   1. Un administrador no puede suspenderse ni cambiarse el rol a sí
-//      mismo (evitaría que se quede sin acceso a esta pantalla). Se
-//      identifica comparando el correo de la fila con el de la sesión
-//      simulada (Auth.js).
-//   2. Para reactivar a un usuario "Suspendido" primero debe estar al
-//      día: no puede tener sanciones con estado "Pendiente" (arreglo
-//      "sanciones" de Data.js).
+/** Usuarios.js
+Vista exclusiva de Administrador: gestiona los usuarios registrados
+(arreglo "usuarios" de Data.js). Sin backend todavía: cambiar el rol
+o el estado solo actualiza el arreglo en memoria (se pierde al
+recargar la página).
+
+Reglas de negocio aplicadas aquí:
+   1. Un administrador no puede suspenderse ni cambiarse el rol a sí
+      mismo (evitaría que se quede sin acceso a esta pantalla). Se
+      identifica comparando el correo de la fila con el de la sesión
+      simulada (Auth.js).
+   2. Para reactivar a un usuario "Suspendido" primero debe estar al
+      día: no puede tener sanciones con estado "Pendiente" (arreglo
+     "sanciones" de Data.js).*/ 
 
 function obtenerSancionesPendientes(correo) {
     return sanciones.filter((sancion) => sancion.usuario === correo && sancion.estado === "Pendiente");

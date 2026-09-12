@@ -1,13 +1,13 @@
-// MisPrestamos.js
-// Vista del Lector: pinta la tabla de "mis préstamos" a partir del
-// arreglo "prestamos" (Data.js). El botón "Renovar" es solo visual por
-// ahora: no hay backend que actualice fechas todavía.
-//
-// TODO: cuando exista el backend, esta lista se filtrará por el usuario
-// autenticado en vez de mostrar todos los préstamos de ejemplo.
+/** MisPrestamos.js
+Vista del Lector: tabla de "mis préstamos" a partir del
+arreglo "prestamos" (Data.js). El botón "Renovar" es solo visual por
+ahora: no hay backend que actualice fechas todavía.
 
-// Color de la pastilla de estado: "Vencido" alerta en rojo, "Devuelto"
-// queda neutro (ya cerrado) y cualquier otro ("Activo") en verde.
+TODO: cuando exista el backend, esta lista se filtrará por el usuario
+autenticado en vez de mostrar todos los préstamos de ejemplo.
+
+"Vencido" alerta en rojo, "Devuelto"
+ queda neutro (ya cerrado) y cualquier otro ("Activo") en verde. */
 function claseEstadoPrestamo(estado) {
     if (estado === "Vencido") {
         return "estado-negativo";

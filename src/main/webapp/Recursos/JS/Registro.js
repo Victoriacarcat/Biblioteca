@@ -1,11 +1,11 @@
-// Registro.js
+/**Registro.js
 // Lógica exclusiva de CrearCuenta.jsp
-//
-// Importante: el registro NO inicia sesión automáticamente. Solo valida
-// el formulario y, si todo está correcto, redirige a Login.jsp para que
-// el usuario inicie sesión aparte (igual que en un flujo real).
-// TODO: cuando exista el backend, aquí se hará un INSERT vía DAO
-// (con validación de duplicados de correo/documento).
+
+Importante: el registro NO inicia sesión automáticamente. Solo valida
+el formulario y, si todo está correcto, redirige a Login.jsp para que
+el usuario inicie sesión aparte (igual que en un flujo real).
+TODO: cuando exista el backend, aquí se hará un INSERT vía DAO
+(con validación de duplicados de correo/documento).*/
 
 const formularioRegistro = document.getElementById("registro-form");
 const cajaErrorRegistro = document.getElementById("registro-error");

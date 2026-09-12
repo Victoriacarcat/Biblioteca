@@ -143,6 +143,9 @@ h1, h2, h3, h4 {
 /*  Navbar */
 
 .encabezado-app {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
   background: #fff;
   border-bottom: 1px solid rgba(0,0,0,0.06);
   padding: 0.9rem 2rem;
@@ -366,6 +369,40 @@ h1, h2, h3, h4 {
     rgba(124,58,42,0.9) 100%
   );
 }
+
+/* Franja de título simple (sin foto de fondo): la usan Login, CrearCuenta
+   y la mayoría de las vistas internas (Usuarios, Reservas, Préstamos,
+   Devoluciones, Sanciones, Historial...). A veces es solo <h1>+<p>, a
+   veces lleva un .icono-circulo antes: el icono se flota a la izquierda
+   así el título y el texto quedan alineados a su lado sin necesitar un
+   contenedor extra. */
+.franja-titulo {
+  padding: 2.5rem 2rem;
+  margin-bottom: 2.5rem;
+  background: var(--menta);
+  border-bottom: 1px solid var(--menta-borde);
+  overflow: hidden;
+}
+
+.franja-titulo .icono-circulo {
+  float: left;
+  margin: 0 1.25rem 0 0;
+}
+
+.franja-titulo h1,
+.franja-titulo .titulo-dashboard {
+  font-size: 1.9rem;
+  margin: 0 0 0.4rem;
+  color: var(--verde-oscuro);
+}
+
+.franja-titulo p,
+.franja-titulo .texto-introductorio {
+  color: var(--tinta-suave);
+  margin: 0;
+  max-width: 60ch;
+}
+
 /*  Pantallas con foto */
 
 .pantalla-con-foto {
@@ -2141,7 +2178,7 @@ h1, h2, h3, h4 {
 /* ===================================================================
    Panel de métricas: componentes compartidos por las vistas de panel
    de Lector, Bibliotecario y Administrador (KPIs, gráfico semanal,
-   categorías más pedidas, estado del acervo y alertas). Es el mismo
+   categorías más pedidas, estado de la colección y alertas). Es el mismo
    lenguaje visual del hero de Home (verde oscuro + dorado + serif),
    adaptado a tarjetas de datos.
    =================================================================== */
@@ -2467,15 +2504,15 @@ h1, h2, h3, h4 {
   background: var(--dorado);
 }
 
-/* Estado del acervo / ejemplares (franja apilada) */
+/* Estado de la colección / ejemplares (franja apilada) */
 
-.franja-acervo {
+.franja-coleccion {
   display: flex;
   height: 12px;
   overflow: hidden;
 }
 
-.leyenda-acervo {
+.leyenda-coleccion {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1.1rem;
@@ -2483,7 +2520,7 @@ h1, h2, h3, h4 {
   color: var(--tinta-suave);
 }
 
-.leyenda-acervo span {
+.leyenda-coleccion span {
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -2515,84 +2552,6 @@ h1, h2, h3, h4 {
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--tinta-suave);
-}
-
-/* Tarjeta de alertas (oscura) */
-
-.tarjeta-alertas {
-  background: var(--verde-oscuro);
-  color: #F2EEE2;
-  padding: 1.35rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.tarjeta-alertas-titulo {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.tarjeta-alertas-titulo h2 {
-  color: #FBF8EF;
-  font-size: 1.15rem;
-}
-
-.tarjeta-alertas-titulo .icono-svg {
-  width: 18px;
-  height: 18px;
-  color: var(--dorado);
-}
-
-.lista-alertas {
-  display: flex;
-  flex-direction: column;
-}
-
-.item-alerta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.9rem;
-  padding: 0.8rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.item-alerta:last-child {
-  border-bottom: none;
-}
-
-.item-alerta-texto {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  min-width: 0;
-}
-
-.item-alerta-titulo {
-  font-size: 0.9rem;
-  color: #FBF8EF;
-}
-
-.item-alerta-detalle {
-  font-size: 0.78rem;
-  color: #9AA093;
-  font-weight: 300;
-}
-
-.item-alerta-valor {
-  font-family: var(--fuente-titulos);
-  font-size: 1.5rem;
-  color: var(--dorado);
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.tarjeta-alertas .btn-panel-metricas--dorado {
-  margin-top: auto;
-  justify-content: center;
-  text-align: center;
 }
 
 /* Lista clara (vencimientos del lector, sin el tono de alarma) */

@@ -1,10 +1,6 @@
-// CeldasTabla.js
-// Helpers de presentación compartidos por las vistas con tablas
-// (Prestamos, Devoluciones, Reservas, Sanciones, Historial,
-// MisPrestamos, Inventario, Usuarios): arman una celda "usuario" con
-// avatar o una celda "libro" con la miniatura de portada, en vez de
-// dejar la fila como puro texto plano.
-//
+//genera la logica js para las celdas en la gestion de crud disponibles de usuarios y libroa
+
+
 // Depende de Iconos.js (obtenerIconoSvg) y Data.js (obtenerPortadaPorTitulo):
 // debe cargarse después de ambos.
 

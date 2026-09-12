@@ -1,11 +1,11 @@
-// Prestamos.js
-// Vista de Bibliotecario/Administrador: lista todos los préstamos
-// (arreglo "prestamos" de Data.js) y permite filtrar escribiendo en los
-// buscadores de usuario y de libro. "Registrar préstamo" es solo visual
-// por ahora: no hay backend ni formulario de creación real todavía.
+/* Prestamos.js
+/Vista de Bibliotecario/Administrador: lista todos los préstamos
+(arreglo "prestamos" de Data.js) y permite filtrar escribiendo en los
+buscadores de usuario y de libro. "Registrar préstamo" es solo visual
+por ahora: no hay backend ni formulario de creación real todavía.
 
-// Color de la pastilla de estado: "Vencido" alerta en rojo, "Devuelto"
-// queda neutro (ya cerrado) y cualquier otro ("Activo") en verde.
+"Vencido" alerta en rojo, "Devuelto"
+queda neutro (ya cerrado) y cualquier otro ("Activo") en verde. */
 function claseEstadoPrestamo(estado) {
     if (estado === "Vencido") {
         return "estado-negativo";

@@ -1,6 +1,4 @@
-// Iconos.js
-// Librería mínima de íconos SVG en línea para toda la app: en vez de
-// emojis, cualquier ícono sale de acá. Los trazos (paths) son de
+//Js especial para llamar los iconos svg con path son de
 // Bootstrap Icons 1.11.3 (MIT license, https://icons.getbootstrap.com/),
 // copiados tal cual.
 //

@@ -1,18 +1,15 @@
-// Devoluciones.js
-// Vista de Bibliotecario/Administrador: lista los préstamos que aún no
-// se han devuelto (arreglo "prestamos" de Data.js, filtrando por
-// estado) y permite "registrar" su devolución. Como no hay backend
-// todavía, registrar la devolución solo cambia el estado en memoria
-// (se pierde al recargar la página).
+/** Devoluciones.js
+Vista de Bibliotecario/Administrador: lista los préstamos que aún no
+se han devuelto (arreglo "prestamos" de Data.js, filtrando por
+estado) y permite "registrar" su devolución. Como no hay backend
+todavía, registrar la devolución solo cambia el estado en memoria
+(se pierde al recargar la página).*/
 
 function prestamosPendientesDeDevolucion() {
     return prestamos.filter((prestamo) => prestamo.estado !== "Devuelto");
 }
 
-// Color de la pastilla de estado: "Vencido" en rojo, cualquier otro
-// ("Activo") en verde. Aquí nunca se pinta "Devuelto" (ver
-// prestamosPendientesDeDevolucion), pero se deja el caso por si se
-// reutiliza la función en otra vista.
+
 function claseEstadoPrestamo(estado) {
     if (estado === "Vencido") {
         return "estado-negativo";

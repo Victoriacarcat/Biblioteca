@@ -1,14 +1,14 @@
-// Home.js
-// Lógica de Home.jsp: la página de bienvenida, visible para todos los
-// roles (visitante, lector, bibliotecario, administrador). El bloque del
-// hero alterna con [data-rol], mismo patrón que Header.js/Dashboard.js.
-//
-// Los números y los libros destacados salen de Data.js (mock): no hay
-// backend todavía.
-//
-// TODO: cuando exista el backend, "libros destacados" podría venir de
-// una consulta real (más prestados, mejor valorados, novedades, etc.)
-// en lugar de tomar los primeros del arreglo.
+/** Home.js
+la página de bienvenida, visible para todos los
+roles (visitante, lector, bibliotecario, administrador). El bloque del
+hero alterna con [data-rol], mismo patrón que Header.js/Dashboard.js.
+
+Los números y los libros destacados salen de Data.js (mock): no hay
+backend todavía.
+
+TODO: cuando exista el backend, "libros destacados" podría venir de
+una consulta real (más prestados, mejor valorados, novedades, etc.)
+en lugar de tomar los primeros del arreglo.*/
 
 function mostrarBloquesDelRolActual() {
     const rolActual = obtenerRolActual();

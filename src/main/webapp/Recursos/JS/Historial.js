@@ -1,12 +1,7 @@
-// Historial.js
-// Vista del Lector: pinta el historial de préstamos ya devueltos
-// (arreglo "historial" de Data.js). Es de solo lectura, sin acciones.
-//
-// TODO: cuando exista el backend, se filtrará por el usuario autenticado
-// en vez de mostrar todo el historial de ejemplo.
-
-// Color de la pastilla de estado: a tiempo en verde, con retraso en
-// ámbar (ya está devuelto, así que no amerita el rojo de "Vencido").
+/**Historial.js
+Vista del Lector: pinta el historial de préstamos ya devueltos
+(arreglo "historial" de Data.js). Es de solo lectura, sin acciones.
+*/
 function claseEstadoHistorial(estado) {
     return estado.includes("retraso") ? "estado-alerta" : "estado-positivo";
 }

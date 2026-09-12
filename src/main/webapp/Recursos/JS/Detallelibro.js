@@ -1,13 +1,10 @@
-// DetalleLibro.js
+/** DetalleLibro.js
 // Esta pantalla es un MOCKUP estático (el contenido del libro está
 // escrito directamente en el JSP, no viene de Data.js todavía).
 //
 // Lo único dinámico aquí es mostrar/ocultar los botones de acción
 // según el rol actual, con el mismo patrón que Catalogo.js.
-//
-// TODO: cuando exista el backend, el contenido del libro y la
-// información del ejemplar se reemplazarán por datos reales según
-// el libro seleccionado.
+*/
  
 function aplicarVisibilidadPorRolEnDetalle() {
     const rolActual = obtenerRolActual();

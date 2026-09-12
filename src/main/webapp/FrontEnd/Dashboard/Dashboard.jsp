@@ -135,19 +135,8 @@
             <div class="panel-metricas-fila">
                 <section class="tarjeta-panel">
                     <h2>Estado de los ejemplares</h2>
-                    <div class="franja-acervo" id="franja-ejemplares-biblio"></div>
-                    <div class="leyenda-acervo" id="leyenda-ejemplares-biblio"></div>
-                </section>
-
-                <section class="tarjeta-alertas">
-                    <div class="tarjeta-alertas-titulo">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
-                            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
-                        </svg>
-                        <h2>Requiere atención</h2>
-                    </div>
-                    <div class="lista-alertas" id="lista-alertas-biblio"></div>
+                    <div class="franja-coleccion" id="franja-ejemplares-biblio"></div>
+                    <div class="leyenda-coleccion" id="leyenda-ejemplares-biblio"></div>
                 </section>
             </div>
         </section>
@@ -159,7 +148,7 @@
                 <div class="panel-metricas-titulo">
                     <span class="panel-metricas-fecha" id="panel-admin-fecha"></span>
                     <h1>Panel de administración</h1>
-                    <p>Visión global de la biblioteca: acervo, usuarios y circulación.</p>
+                    <p>Visión global de la biblioteca: colección, usuarios y circulación.</p>
                 </div>
                 <div class="panel-metricas-acciones">
                     <div class="panel-metricas-rango" id="panel-admin-rango" role="group" aria-label="Rango de fechas">
@@ -198,22 +187,10 @@
 
             <div class="panel-metricas-fila">
                 <section class="tarjeta-panel">
-                    <h2>Estado general del acervo</h2>
-                    <div class="franja-acervo" id="franja-acervo-admin"></div>
-                    <div class="leyenda-acervo" id="leyenda-acervo-admin"></div>
+                    <h2>Estado general de la colección</h2>
+                    <div class="franja-coleccion" id="franja-coleccion-admin"></div>
+                    <div class="leyenda-coleccion" id="leyenda-coleccion-admin"></div>
                     <div class="indicadores-circulacion" id="indicadores-circulacion-admin"></div>
-                </section>
-
-                <section class="tarjeta-alertas">
-                    <div class="tarjeta-alertas-titulo">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
-                            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
-                        </svg>
-                        <h2>Requiere atención</h2>
-                    </div>
-                    <div class="lista-alertas" id="lista-alertas-admin"></div>
-                    <a href="${pageContext.request.contextPath}/FrontEnd/Sanciones/Sanciones.jsp" class="btn-panel-metricas btn-panel-metricas--dorado">Gestionar mora</a>
                 </section>
             </div>
         </section>

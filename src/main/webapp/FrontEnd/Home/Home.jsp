@@ -256,7 +256,6 @@
             </div>
         </section>
 
-        <!-- ================= TESTIMONIOS ================= -->
         <section class="seccion-testimonios-home">
             <div class="container">
                 <span class="etiqueta-seccion">

@@ -9,8 +9,8 @@ const CLAVE_CORREO = "wisebooks_correo";
 const ROLES_VALIDOS = ["lector", "bibliotecario", "administrador"];
 
 /**
- * Devuelve el rol actual de la sesión simulada.
- * Si no hay ninguno guardado, se considera "visitante".
+  Devuelve el rol actual de la sesión simulada.
+  Si no hay ninguno guardado, se considera "visitante".
  */
 function obtenerRolActual() {
     const rolGuardado = localStorage.getItem(CLAVE_ROL);
@@ -18,8 +18,8 @@ function obtenerRolActual() {
 }
 
 /**
- * Guarda la sesión simulada (rol + correo) en localStorage.
- * La llamará Login.js cuando el usuario "inicie sesión".
+  Guarda la sesión simulada (rol + correo) en localStorage.
+  La llamará Login.js cuando el usuario "inicie sesión".
  */
 function iniciarSesionSimulada(rol, correo) {
     if (!ROLES_VALIDOS.includes(rol)) {
@@ -31,7 +31,7 @@ function iniciarSesionSimulada(rol, correo) {
 }
 
 /**
- * Cierra la sesión simulada y redirige a Home
+ Cierra la sesión simulada y redirige a Home
  */
 function cerrarSesion() {
     localStorage.removeItem(CLAVE_ROL);
@@ -39,8 +39,8 @@ function cerrarSesion() {
     window.location.href = contextPath + "/FrontEnd/Home/Home.jsp"; // TODO: reemplazar por ruta de servlet, ej. "/home"
 }
 /**
- * Devuelve el correo guardado de la sesión simulada (o "" si no hay sesión).
- * La usa header.js para mostrarlo junto al ícono de usuario.
+  Devuelve el correo guardado de la sesión simulada (o "" si no hay sesión).
+  La usa header.js para mostrarlo junto al ícono de usuario.
  */
 function obtenerCorreoActual() {
     return localStorage.getItem(CLAVE_CORREO) || "";

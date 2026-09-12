@@ -1,12 +1,8 @@
-// Favoritos.js
-// Pinta las cards de los libros marcados como favoritos, reutilizando
-// el arreglo "libros" de Data.js. Como todavía no hay backend, la
-// lista de favoritos es un mock: por ahora solo el libro con
-// id 1 está marcado como favorito, a modo de ejemplo.
-//
-// TODO: cuando exista el backend, la lista de favoritos vendrá de
-// una consulta real (favoritos del usuario logueado), no de un
-// arreglo fijo de ids.
+/** Favoritos.js
+Pinta las cards de los libros marcados como favoritos, reutilizando
+el arreglo "libros" de Data.js. Como todavía no hay backend, la
+lista de favoritos es un mock: por ahora solo el libro con
+id 1 está marcado como favorito, a modo de ejemplo. */
 
 const idsFavoritosEjemplo = [1];
 

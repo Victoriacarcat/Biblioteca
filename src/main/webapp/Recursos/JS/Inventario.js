@@ -1,23 +1,23 @@
-// Inventario.js
-// Vista de Bibliotecario/Administrador: gestiona los ejemplares (copias
-// físicas/digitales) de cada libro (arreglo "ejemplares" de Data.js).
-// Sin backend todavía: agregar/dar de baja/eliminar solo modifican el
-// arreglo en memoria (se pierde al recargar la página).
-//
-// Reglas de negocio aplicadas aquí:
-//   1. Un ejemplar "Prestado" no se puede dar de baja ni eliminar: hay
-//      que esperar a que se registre la devolución (Devoluciones.js).
-//   2. "Dar de baja" lo puede hacer Bibliotecario o Administrador; el
-//      ejemplar queda con estado "De baja" pero no desaparece del
-//      inventario (trazabilidad).
-//   3. Eliminar el registro por completo es exclusivo del Administrador
-//      (botón oculto para Bibliotecario, mismo patrón data-rol de
-//      Catalogo.js/Header.js).
-//   4. El estado "Disponible" no se asigna a mano desde esta pantalla:
-//      lo controla el flujo real de préstamos/reservas/devoluciones.
-//
-// TODO: cuando exista el backend, "libros[].disponible" se calculará a
-// partir de estos ejemplares en vez de ser un booleano fijo.
+/** Inventario.js
+ Vista de Bibliotecario/Administrador: gestiona los ejemplares (copias
+ físicas/digitales) de cada libro (arreglo "ejemplares" de Data.js).
+ Sin backend todavía: agregar/dar de baja/eliminar solo modifican el
+ arreglo en memoria (se pierde al recargar la página).
+
+ Reglas de negocio aplicadas aquí:
+   1. Un ejemplar "Prestado" no se puede dar de baja ni eliminar: hay
+      que esperar a que se registre la devolución (Devoluciones.js).
+   2. "Dar de baja" lo puede hacer Bibliotecario o Administrador; el
+      ejemplar queda con estado "De baja" pero no desaparece del
+      inventario (trazabilidad).
+   3. Eliminar el registro por completo es exclusivo del Administrador
+      (botón oculto para Bibliotecario, mismo patrón data-rol de
+      Catalogo.js/Header.js).
+   4. El estado "Disponible" no se asigna a mano desde esta pantalla:
+      lo controla el flujo real de préstamos/reservas/devoluciones.
+
+ TODO: cuando exista el backend, "libros[].disponible" se calculará a
+partir de estos ejemplares en vez de ser un booleano fijo.*/ 
 
 function obtenerLibroPorId(id) {
     return libros.find((libro) => libro.id === id);
@@ -41,9 +41,7 @@ function celdaLibroDelEjemplar(ejemplar) {
     `;
 }
 
-// Color de la pastilla de estado: "Disponible" verde, "Dañado" rojo,
-// "Reservado" ámbar (en tránsito hacia un préstamo), y "Prestado"/
-// "De baja" en gris (informativos, no requieren atención).
+
 function claseEstadoEjemplar(estado) {
     if (estado === "Disponible") {
         return "estado-positivo";
