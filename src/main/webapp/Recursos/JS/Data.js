@@ -1,14 +1,3 @@
-// Data.js
-// Datos de ejemplo (mock) para probar visualmente el catálogo de libros.
-// Estos NO son datos reales ni definitivos: sirven solo para mostrar
-// cómo se ubicarán las cards de libros mientras no hay backend.
-//
-// TODO: cuando exista el backend (Java/MySQL), estos datos se reemplazarán
-// por una consulta real (por ejemplo, vía fetch a un servlet o JSP).
-//
-// Nota: el campo "fecha" representa el año de publicación del libro
-// (corresponde al filtro "Año de publicación" del catálogo).
-
 const libros = [
   {
     id: 1,
@@ -19,7 +8,7 @@ const libros = [
     formato: "Físico",
     fecha: 1967,
     disponible: true,
-    portada: "https://via.placeholder.com/150x220?text=Portada"
+    portada: contextPath + "/Recursos/Imagenes/portada-cienAñosdeSoledad.jpg"
   },
   {
     id: 2,
@@ -30,7 +19,7 @@ const libros = [
     formato: "Digital",
     fecha: 1949,
     disponible: false,
-    portada: "https://via.placeholder.com/150x220?text=Portada"
+    portada: contextPath + "/Recursos/Imagenes/portada-1984.jpg"
   },
   {
     id: 3,
@@ -41,6 +30,6 @@ const libros = [
     formato: "Físico",
     fecha: 1988,
     disponible: true,
-    portada: "https://via.placeholder.com/150x220?text=Portada"
+    portada: contextPath + "/Recursos/Imagenes/PORTADA-breveHistoriaDelTiempo.jpg"
   }
 ];

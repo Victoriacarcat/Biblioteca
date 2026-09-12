@@ -1,38 +1,27 @@
 // header.js
 // Construye el header de la app UNA sola vez (aquí) y lo inyecta en cada
 // página dentro de <div id="header-placeholder"></div>.
-// Depende de auth.js (debe cargarse antes en el HTML).
+// Depende de auth.js (debe cargarse antes en el HTML) y de la variable
+// global `contextPath` (definida en un <script> dentro de cada .jsp,
+// justo antes de cargar Auth.js).
 
-/**
- * Devuelve el HTML del header. Los enlaces con data-rol se muestran u
- * ocultan según el rol activo (ver aplicarVisibilidadPorRol). Los enlaces
- * sin data-rol son públicos (siempre visibles, ej. "Inicio", "Libros").
- *
- * NOTA sobre los href: todos apuntan a "#" por ahora. Los .jsp viven dentro
- * de WEB-INF/Frontend, que el navegador no puede pedir directamente; hace
- * falta un Servlet mapeado a una URL limpia (ej. @WebServlet("/catalogo"))
- * que haga forward() al .jsp físico. Hasta que existan esos servlets,
- * ningún enlace es funcional -- ni los que ya tienen .jsp construido ni
- * los pendientes. Cuando se definan las rutas, se reemplaza cada "#" por
- * la ruta real (ej. "/catalogo").
- */
 function crearHeaderHTML() {
     return `
         <div class="encabezado-marca">
-            <a href="#" class="logo-auth"><!-- Catalogo.jsp -->
+            <a href="${contextPath}/FrontEnd/Catalogo/Catalogo.jsp" class="logo-auth">
                 <span class="nombre-marca">WiseBooks</span>
             </a>
         </div>
         <nav class="encabezado-nav">
-            <a href="#"><!-- Catalogo.jsp -->Inicio</a>
-            <a href="#"><!-- Catalogo.jsp -->Libros</a>
+            <a href="${contextPath}/index.html">Inicio</a>
+            <a href="${contextPath}/FrontEnd/Catalogo/Catalogo.jsp">Libros</a>
 
-            <a href="#" data-rol="visitante"><!-- Login.jsp -->Iniciar sesión</a>
-            <a href="#" data-rol="visitante"><!-- CrearCuenta.jsp -->Crear cuenta</a>
+            <a href="${contextPath}/FrontEnd/Auth/Login.jsp" class="btn btn-outline-primary btn-sm" data-rol="visitante">Iniciar sesión</a>
+            <a href="${contextPath}/FrontEnd/Auth/CrearCuenta.jsp" class="btn btn-primary btn-sm" data-rol="visitante">Crear cuenta</a>
 
             <a href="#" data-rol="lector"><!-- MisPrestamos.jsp pendiente -->Préstamos</a>
             <a href="#" data-rol="lector"><!-- MisReservas.jsp pendiente -->Reservas</a>
-            <a href="#" data-rol="lector"><!-- Favoritos.jsp -->Favoritos</a>
+            <a href="${contextPath}/FrontEnd/Favoritos/Favoritos.jsp" data-rol="lector">Favoritos</a>
 
             <a href="#" data-rol="bibliotecario,administrador"><!-- Prestamos.jsp pendiente -->Préstamos</a>
             <a href="#" data-rol="bibliotecario,administrador"><!-- Reservas.jsp pendiente -->Reservas</a>
@@ -52,10 +41,6 @@ function crearHeaderHTML() {
     `;
 }
 
-/**
- * Muestra u oculta los elementos [data-rol] del header según el rol activo,
- * y llena el correo del usuario / conecta el botón de cerrar sesión.
- */
 function aplicarVisibilidadPorRol() {
     const rolActual = obtenerRolActual();
 
@@ -75,10 +60,6 @@ function aplicarVisibilidadPorRol() {
     }
 }
 
-/**
- * Busca el <div id="header-placeholder"> en la página actual, le inyecta
- * el HTML del header y aplica la visibilidad por rol.
- */
 function insertarHeader() {
     const contenedor = document.getElementById("header-placeholder");
     if (!contenedor) {
@@ -89,7 +70,4 @@ function insertarHeader() {
     aplicarVisibilidadPorRol();
 }
 
-// Este script debe cargarse después de auth.js y del <div id="header-placeholder">
-// en el <body>, así que el DOM ya está disponible al ejecutarse.
 insertarHeader();
-

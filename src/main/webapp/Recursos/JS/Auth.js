@@ -40,7 +40,7 @@ function iniciarSesionSimulada(rol, correo) {
 function cerrarSesion() {
     localStorage.removeItem(CLAVE_ROL);
     localStorage.removeItem(CLAVE_CORREO);
-    window.location.href = "#"; // TODO: reemplazar por ruta de servlet, ej. "/catalogo"
+    window.location.href = contextPath + "/FrontEnd/Catalogo/Catalogo.jsp"; // TODO: reemplazar por ruta de servlet, ej. "/catalogo"
 }
 
 /**

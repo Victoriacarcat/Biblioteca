@@ -30,9 +30,7 @@ formularioLogin.addEventListener("submit", (e) => {
 
     iniciarSesionSimulada(rol, correo);
 
-    // TODO: ruta temporal ("#"). Catalogo.jsp vive dentro de WEB-INF y no es
-    // alcanzable directo por el navegador. Cuando exista un servlet
-    // controlador, el flujo real será: Servlet valida credenciales -> forward
-    // a Catalogo.jsp mediante una URL limpia (ej. "/catalogo").
-    window.location.href = "#";
+    // Redirección real: FrontEnd ya no vive bajo WEB-INF, así que
+    // Catalogo.jsp es alcanzable directo por el navegador.
+    window.location.href = contextPath + "/FrontEnd/Catalogo/Catalogo.jsp";
 });
