@@ -34,11 +34,10 @@
                               fill="none" stroke="var(--verde)" stroke-width="2" stroke-linejoin="round"/>
                     </svg>
                     <div class="insignia-flotante">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                            <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702z"/>
-                            <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1z"/>
-                        </svg>
                         <span>Cuidado por lectores</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
+                            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/>
+                        </svg>
                     </div>
                 </div>
 
@@ -71,11 +70,11 @@
                         </svg>
                         Qué bueno verte de nuevo
                     </span>
-                    <h1>Hola, <span id="home-nombre-usuario"></span></h1>
+                    <h1>Hola, <span id="home-nombre-usuario"></span>.<br>Retomá tu lectura.</h1>
                     <p>
-                        WiseBooks sigue creciendo: nuevos títulos, más lectores y siempre
-                        algo interesante para descubrir. Retomá donde lo dejaste o date una
-                        vuelta por el catálogo.
+                        Nuevos títulos, más lectores y siempre algo interesante para
+                        descubrir. Volvé a donde lo dejaste o date una vuelta por el
+                        catálogo.
                     </p>
                     <div class="hero-home-acciones">
                         <a href="${pageContext.request.contextPath}/FrontEnd/Catalogo/Catalogo.jsp" class="btn btn-dorado">Explorar catálogo</a>
@@ -220,68 +219,35 @@
                 <div class="row tarjetas-tips">
                     <div class="col-md-4">
                         <div class="tarjeta-tip">
-                            <div class="icono-circulo icono-circulo-sm icono-circulo-menta">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                                    <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
-                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
-                                </svg>
-                            </div>
+                            <span class="numero-tip">01</span>
                             <h3>La regla de los 20 minutos</h3>
                             <p>No hace falta una tarde libre: 20 minutos diarios ya suman un libro por mes.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="tarjeta-tip">
-                            <div class="icono-circulo icono-circulo-sm icono-circulo-menta">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                                    <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/>
-                                </svg>
-                            </div>
+                            <span class="numero-tip">02</span>
                             <h3>La regla de las 50 páginas</h3>
                             <p>Si un libro no te atrapó a las 50 páginas, no pasa nada: dejalo y probá otro.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="tarjeta-tip">
-                            <div class="icono-circulo icono-circulo-sm icono-circulo-menta">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                                    <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
-                                    <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
-                                </svg>
-                            </div>
+                            <span class="numero-tip">03</span>
                             <h3>Alterná géneros</h3>
                             <p>Combiná ficción con no ficción para no perder el ritmo de lectura.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="tarjeta-tip">
-                            <div class="icono-circulo icono-circulo-sm icono-circulo-menta">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
-                                </svg>
-                            </div>
+                            <span class="numero-tip">04</span>
                             <h3>Llevá un diario de lectura</h3>
                             <p>Anotá una frase o idea por libro: te ayuda a recordarlo meses después.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="tarjeta-tip">
-                            <div class="icono-circulo icono-circulo-sm icono-circulo-menta">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                                    <path d="M8 3a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a6 6 0 1 1 12 0v5a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1V8a5 5 0 0 0-5-5"/>
-                                </svg>
-                            </div>
-                            <h3>Sumá el audiolibro</h3>
-                            <p>Los trayectos también cuentan: escuchar es leer cuando estás con las manos ocupadas.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="tarjeta-tip">
-                            <div class="icono-circulo icono-circulo-sm icono-circulo-menta">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
-                                    <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
-                                </svg>
-                            </div>
+                            <span class="numero-tip">05</span>
                             <h3>Sumate a un club de lectura</h3>
                             <p>Comentar un libro con otras personas multiplica lo que te deja.</p>
                         </div>

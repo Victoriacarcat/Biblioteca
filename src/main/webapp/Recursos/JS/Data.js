@@ -187,3 +187,97 @@ const estadisticasBiblioteca = {
   devolucionesPendientes: 4,
   reservasPendientes: 3
 };
+
+// Datos del panel de administración (KPIs con variación, circulación
+// semanal, categorías más pedidas, estado del acervo y alertas de mora).
+// Reutilizan los números de "estadisticasBiblioteca" donde corresponde.
+//
+// TODO: cuando exista el backend, esto sale de consultas agregadas
+// (COUNT/SUM sobre préstamos, devoluciones, reservas y sanciones por
+// rango de fechas).
+const kpisAdministrador = [
+  { label: "Títulos en catálogo", valor: estadisticasBiblioteca.totalLibros, delta: "+18", positivo: true, porcentaje: 86, nota: "3 altas esta semana", escalable: false },
+  { label: "Usuarios activos", valor: estadisticasBiblioteca.totalUsuarios, delta: "+6%", positivo: true, porcentaje: 64, nota: "92 con préstamo vigente", escalable: false },
+  { label: "Préstamos activos", valor: estadisticasBiblioteca.prestamosActivos, delta: "+9", positivo: true, porcentaje: 58, nota: "Promedio de 11 días", escalable: true },
+  { label: "Reservas pendientes", valor: estadisticasBiblioteca.reservasActivas, delta: "−3", positivo: false, porcentaje: 32, nota: "4 listas para retirar", escalable: true }
+];
+
+const circulacionSemanal = [
+  { semana: "S1", prestamos: 46, devoluciones: 38 },
+  { semana: "S2", prestamos: 58, devoluciones: 44 },
+  { semana: "S3", prestamos: 41, devoluciones: 52 },
+  { semana: "S4", prestamos: 70, devoluciones: 48 },
+  { semana: "S5", prestamos: 62, devoluciones: 66 },
+  { semana: "S6", prestamos: 84, devoluciones: 58 },
+  { semana: "S7", prestamos: 76, devoluciones: 72 },
+  { semana: "S8", prestamos: 94, devoluciones: 68 }
+];
+
+const categoriasMasPedidas = [
+  { nombre: "Novela", prestamos: 312, porcentaje: 92 },
+  { nombre: "Ciencia y Tecnología", prestamos: 204, porcentaje: 62 },
+  { nombre: "Historia", prestamos: 166, porcentaje: 50 },
+  { nombre: "Infantil y Juvenil", prestamos: 131, porcentaje: 39 },
+  { nombre: "Poesía", prestamos: 74, porcentaje: 22 }
+];
+
+const estadoAcervo = {
+  disponiblesPorcentaje: 62,
+  enPrestamoPorcentaje: 24,
+  reservadosPorcentaje: 9,
+  enReparacionPorcentaje: 5
+};
+
+const indicadoresCirculacion = {
+  duracionMediaDias: "11 días",
+  devueltosATiempoPorcentaje: "94%",
+  librosPorSocio: "3,2"
+};
+
+const alertasMora = [
+  { titulo: "Usuarios con mora", detalle: "Más de 7 días de atraso", valor: estadisticasBiblioteca.usuariosConMora },
+  { titulo: "Préstamos vencidos", detalle: "Requieren contacto", valor: 9 },
+  { titulo: "Reservas por expirar", detalle: "Vencen en 48 h", valor: 4 },
+  { titulo: "Ejemplares dañados", detalle: "Pendientes de revisión", valor: 2 }
+];
+
+// Datos del panel del Bibliotecario: mismos componentes visuales que el
+// panel de Administrador (KPIs, categorías, alertas), pero acotados a la
+// operación diaria en vez de a la biblioteca completa.
+const kpisBibliotecario = [
+  { label: "Préstamos del día", valor: estadisticasBiblioteca.prestamosDelDia, delta: "+2", positivo: true, porcentaje: 60, nota: "Respecto de ayer" },
+  { label: "Devoluciones pendientes", valor: estadisticasBiblioteca.devolucionesPendientes, delta: "−1", positivo: true, porcentaje: 35, nota: "Para hoy" },
+  { label: "Reservas pendientes", valor: estadisticasBiblioteca.reservasPendientes, delta: "+1", positivo: false, porcentaje: 25, nota: "Listas para retirar" },
+  { label: "Usuarios con mora", valor: estadisticasBiblioteca.usuariosConMora, delta: "+1", positivo: false, porcentaje: 45, nota: "Requieren contacto" }
+];
+
+const alertasBibliotecario = [
+  { titulo: "Préstamos vencidos", detalle: "Requieren contacto", valor: 9 },
+  { titulo: "Reservas por expirar", detalle: "Vencen en 48 h", valor: 4 },
+  { titulo: "Ejemplares dañados", detalle: "Pendientes de revisión", valor: 2 }
+];
+
+// Métricas personales adicionales del panel del Lector. Hardcodeadas por
+// ahora: la app todavía no tiene login real ni un historial de lectura
+// propio para calcular "leídos este año" o una racha de días.
+//
+// TODO: cuando exista el backend, "leidosEsteAnio" y "rachaDias" van a
+// salir de "historial" filtrado por el usuario autenticado, y
+// "sancionesActivas" de "sanciones" filtrado igual (estado "Pendiente").
+const misMetricasLector = {
+  leidosEsteAnio: 14,
+  metaAnual: 30,
+  rachaDias: 12,
+  sancionesActivas: 0
+};
+
+// Contexto general adicional para el panel del Lector (además de los
+// números que ya vienen de "estadisticasBiblioteca"). Hardcodeado.
+//
+// TODO: cuando exista el backend, "categoriasDisponibles" sale de un
+// COUNT DISTINCT sobre libros.categoria y "nuevosTitulosEsteMes" de altas
+// de catálogo filtradas por fecha.
+const contextoGeneralBiblioteca = {
+  categoriasDisponibles: 8,
+  nuevosTitulosEsteMes: 6
+};
