@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
-        <jakartaee>11.0.0-M1</jakartaee>
+        <jakartaee>10.0.0</jakartaee>
     </properties>
     
     <dependencies>
@@ -47,14 +47,21 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>6.5.2.Final</version>
+            <version>6.6.4.Final</version>
+        </dependency>
+
+        
+        <!-- Driver de MariaDB (el que trae XAMPP) -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.4.1</version>
         </dependency>
         
-        <!-- MySQL -->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.3.0</version>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
         </dependency>
     </dependencies>
     
