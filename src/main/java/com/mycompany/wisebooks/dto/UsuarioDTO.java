@@ -8,13 +8,18 @@ import com.mycompany.wisebooks.entity.EstadoUsuario;
 import com.mycompany.wisebooks.entity.Rol;
 import com.mycompany.wisebooks.entity.TipoDocumento;
 import com.mycompany.wisebooks.entity.Usuario;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /*
  * Lo que se puede mostrar o guardar en sesion de un usuario. No incluye la
  * contrasena ni su hash, a proposito.
+ * Serializable: vive en la sesion HTTP y Tomcat guarda las sesiones en disco
+ * al reiniciarse.
  */
-public class UsuarioDTO {
+public class UsuarioDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long id;
     private String nombre;

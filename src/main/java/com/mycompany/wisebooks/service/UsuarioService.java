@@ -1,23 +1,29 @@
 package com.mycompany.wisebooks.service;
 
+import com.mycompany.wisebooks.dao.SancionDAO;
 import com.mycompany.wisebooks.dao.UsuarioDAO;
 import com.mycompany.wisebooks.dto.LoginDTO;
 import com.mycompany.wisebooks.dto.RegistroDTO;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
+import com.mycompany.wisebooks.entity.AccionAuditoria;
 import com.mycompany.wisebooks.entity.EstadoUsuario;
 import com.mycompany.wisebooks.entity.Rol;
 import com.mycompany.wisebooks.entity.TipoDocumento;
 import com.mycompany.wisebooks.entity.Usuario;
+import com.mycompany.wisebooks.util.Autorizacion;
 import com.mycompany.wisebooks.util.ContrasenaUtil;
+import com.mycompany.wisebooks.util.PermisoException;
 import com.mycompany.wisebooks.util.Texto;
 import com.mycompany.wisebooks.util.Transaccion;
 import com.mycompany.wisebooks.util.ValidacionException;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 /*
- * Reglas de negocio de los usuarios: registro e inicio de sesion.
+ * Reglas de negocio de los usuarios: registro, inicio de sesion, cuenta
+ * propia y administracion de usuarios (solo administrador).
  * Valida, decide y delega el acceso a la base en UsuarioDAO.
  * Cada operacion publica corre dentro de UNA transaccion (ver util/Transaccion).
  */
@@ -33,6 +39,8 @@ public class UsuarioService {
             Pattern.compile("^[0-9+\\s-]{7,20}$");
 
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
+    private final SancionDAO sancionDAO = new SancionDAO();
+    private final AuditoriaService auditoriaService = new AuditoriaService();
 
     /** Registro publico: SIEMPRE crea un lector. */
     public UsuarioDTO registrar(RegistroDTO dto) {
@@ -83,6 +91,134 @@ public class UsuarioService {
         });
     }
 
+    // Cuenta propia (cualquier usuario con sesion)
+
+    /* Cambia la contrasena propia. Exige la actual para confirmar que es el dueno de la cuenta. */
+    public void cambiarContrasena(UsuarioDTO actor, String actual, String nueva) {
+        Transaccion.ejecutarAccion(em -> {
+            // Un suspendido tambien puede (sigue pudiendo iniciar sesion); un inactivo no
+            Usuario usuario = (actor == null || actor.getId() == null) ? null : em.find(Usuario.class, actor.getId());
+            if (usuario == null || usuario.getEstado() == EstadoUsuario.INACTIVO) {
+                throw new PermisoException("Debes iniciar sesión.");
+            }
+            if (!ContrasenaUtil.verificar(actual, usuario.getContrasenaHash())) {
+                throw new ValidacionException("La contraseña actual no es correcta.");
+            }
+            exigirContrasenaValida(nueva);
+            usuario.setContrasenaHash(ContrasenaUtil.encriptar(nueva));
+            auditoriaService.registrar(em, usuario, AccionAuditoria.ACTUALIZAR, "Usuario", usuario.getId(),
+                    "Cambió su contraseña.");
+        });
+    }
+
+    // Administracion de usuarios (solo administrador)
+
+    /* Lista de usuarios. Filtros opcionales: texto (nombre, correo, documento) y rol. */
+    public List<UsuarioDTO> listar(UsuarioDTO actor, String texto, Rol rol) {
+        return Transaccion.consultar(em -> {
+            Autorizacion.exigirRol(em, actor, Rol.ADMINISTRADOR);
+            return usuarioDAO.listar(em, texto, rol).stream()
+                    .map(UsuarioDTO::desde)
+                    .toList();
+        });
+    }
+
+    public UsuarioDTO obtener(UsuarioDTO actor, Long idUsuario) {
+        return Transaccion.consultar(em -> {
+            Autorizacion.exigirRol(em, actor, Rol.ADMINISTRADOR);
+            return UsuarioDTO.desde(exigirUsuario(em, idUsuario));
+        });
+    }
+
+    /* El administrador crea una cuenta de personal (bibliotecario o administrador). */
+    public UsuarioDTO crearPersonal(UsuarioDTO actor, RegistroDTO dto, Rol rol) {
+        return Transaccion.ejecutar(em -> {
+            Usuario admin = Autorizacion.exigirRol(em, actor, Rol.ADMINISTRADOR);
+            if (rol != Rol.BIBLIOTECARIO && rol != Rol.ADMINISTRADOR) {
+                throw new ValidacionException("Los lectores se registran desde el formulario público.");
+            }
+            Usuario nuevo = crearUsuario(em, dto, rol);
+            auditoriaService.registrar(em, admin, AccionAuditoria.CREAR, "Usuario", nuevo.getId(),
+                    "Creó la cuenta de " + nuevo.getCorreo() + " con rol " + rol.name().toLowerCase() + ".");
+            return UsuarioDTO.desde(nuevo);
+        });
+    }
+
+    /* Cambia el rol de otro usuario. Nadie puede cambiarse el rol a si mismo. */
+    public UsuarioDTO cambiarRol(UsuarioDTO actor, Long idUsuario, Rol nuevoRol) {
+        return Transaccion.ejecutar(em -> {
+            Usuario admin = Autorizacion.exigirRol(em, actor, Rol.ADMINISTRADOR);
+            Usuario usuario = exigirOtroUsuario(em, admin, idUsuario, "cambiar tu propio rol");
+            if (nuevoRol == null) {
+                throw new ValidacionException("Selecciona un rol válido.");
+            }
+            if (usuario.getRol() != nuevoRol) {
+                Rol anterior = usuario.getRol();
+                usuario.setRol(nuevoRol);
+                auditoriaService.registrar(em, admin, AccionAuditoria.ACTUALIZAR, "Usuario", usuario.getId(),
+                        "Cambió el rol de " + usuario.getCorreo() + ": " + anterior.name().toLowerCase()
+                        + " -> " + nuevoRol.name().toLowerCase() + ".");
+            }
+            return UsuarioDTO.desde(usuario);
+        });
+    }
+
+    /*
+     * Activa, suspende o desactiva a otro usuario. Nadie puede cambiar su
+     * propio estado. Para volver a ACTIVO a un suspendido, primero debe estar
+     * al dia: sin sanciones pendientes.
+     */
+    public UsuarioDTO cambiarEstado(UsuarioDTO actor, Long idUsuario, EstadoUsuario nuevoEstado) {
+        return Transaccion.ejecutar(em -> {
+            Usuario admin = Autorizacion.exigirRol(em, actor, Rol.ADMINISTRADOR);
+            Usuario usuario = exigirOtroUsuario(em, admin, idUsuario, "cambiar el estado de tu propia cuenta");
+            if (nuevoEstado == null) {
+                throw new ValidacionException("Selecciona un estado válido.");
+            }
+            if (usuario.getEstado() == nuevoEstado) {
+                return UsuarioDTO.desde(usuario);
+            }
+            if (usuario.getEstado() == EstadoUsuario.SUSPENDIDO && nuevoEstado == EstadoUsuario.ACTIVO) {
+                long pendientes = sancionDAO.contarPendientesDeUsuario(em, usuario.getId());
+                if (pendientes > 0) {
+                    throw new ValidacionException("No se puede reactivar: tiene " + pendientes
+                            + (pendientes == 1 ? " sanción pendiente." : " sanciones pendientes."));
+                }
+            }
+
+            EstadoUsuario anterior = usuario.getEstado();
+            usuario.setEstado(nuevoEstado);
+            auditoriaService.registrar(em, admin, AccionAuditoria.CAMBIO_ESTADO, "Usuario", usuario.getId(),
+                    "Cambió el estado de " + usuario.getCorreo() + ": " + anterior.name().toLowerCase()
+                    + " -> " + nuevoEstado.name().toLowerCase() + ".");
+            return UsuarioDTO.desde(usuario);
+        });
+    }
+
+    private Usuario exigirUsuario(EntityManager em, Long idUsuario) {
+        if (idUsuario == null) {
+            throw new ValidacionException("El usuario no existe.");
+        }
+        return usuarioDAO.buscarPorId(em, idUsuario)
+                .orElseThrow(() -> new ValidacionException("El usuario no existe."));
+    }
+
+    /* Como exigirUsuario, pero rechaza que el administrador actue sobre su propia cuenta. */
+    private Usuario exigirOtroUsuario(EntityManager em, Usuario admin, Long idUsuario, String accion) {
+        Usuario usuario = exigirUsuario(em, idUsuario);
+        if (usuario.getId().equals(admin.getId())) {
+            throw new ValidacionException("No puedes " + accion + ".");
+        }
+        return usuario;
+    }
+
+    private void exigirContrasenaValida(String contrasena) {
+        if (contrasena == null || contrasena.length() < LONGITUD_MINIMA_CONTRASENA) {
+            throw new ValidacionException("La contraseña debe tener al menos "
+                    + LONGITUD_MINIMA_CONTRASENA + " caracteres.");
+        }
+    }
+
     /* Valida los datos, comprueba duplicados y guarda el usuario con el rol indicado. */
     private Usuario crearUsuario(EntityManager em, RegistroDTO dto, Rol rol) {
         String nombre = Texto.exigir(dto.getNombre(), "El nombre", 100);
@@ -106,10 +242,7 @@ public class UsuarioService {
         }
 
         String contrasena = dto.getContrasena();
-        if (contrasena == null || contrasena.length() < LONGITUD_MINIMA_CONTRASENA) {
-            throw new ValidacionException("La contraseña debe tener al menos "
-                    + LONGITUD_MINIMA_CONTRASENA + " caracteres.");
-        }
+        exigirContrasenaValida(contrasena);
 
         if (usuarioDAO.existeCorreo(em, correo)) {
             throw new ValidacionException("Ya existe una cuenta con ese correo.");

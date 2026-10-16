@@ -4,6 +4,7 @@ import com.mycompany.wisebooks.entity.Rol;
 import com.mycompany.wisebooks.entity.TipoDocumento;
 import com.mycompany.wisebooks.entity.Usuario;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +62,35 @@ public class UsuarioDAO {
                 .setParameter("documento", documento)
                 .getSingleResult();
         return total > 0;
+    }
+
+    /*
+     * Lista para el administrador, en orden alfabetico. Filtros opcionales:
+     * el texto busca en nombre, apellidos, correo y documento; rol null = todos.
+     */
+    public List<Usuario> listar(EntityManager em, String texto, Rol rol) {
+        String filtro = texto == null ? "" : texto.trim().toLowerCase();
+
+        StringBuilder jpql = new StringBuilder("SELECT u FROM Usuario u WHERE 1 = 1");
+        if (!filtro.isEmpty()) {
+            jpql.append(" AND (LOWER(u.nombre) LIKE :texto"
+                    + " OR LOWER(u.apellidos) LIKE :texto"
+                    + " OR LOWER(u.correo) LIKE :texto"
+                    + " OR LOWER(u.documento) LIKE :texto)");
+        }
+        if (rol != null) {
+            jpql.append(" AND u.rol = :rol");
+        }
+        jpql.append(" ORDER BY u.nombre, u.apellidos");
+
+        TypedQuery<Usuario> consulta = em.createQuery(jpql.toString(), Usuario.class);
+        if (!filtro.isEmpty()) {
+            consulta.setParameter("texto", "%" + filtro + "%");
+        }
+        if (rol != null) {
+            consulta.setParameter("rol", rol);
+        }
+        return consulta.getResultList();
     }
 
     /* true si existe al menos un usuario con ese rol. */

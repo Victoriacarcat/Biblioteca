@@ -111,6 +111,20 @@ public class LibroService {
                 .toList());
     }
 
+    /* Editoriales activas, para sugerirlas en el formulario (y no crear duplicados). */
+    public List<OpcionDTO> listarEditoriales() {
+        return Transaccion.consultar(em -> catalogoDAO.listarEditorialesActivas(em).stream()
+                .map(e -> new OpcionDTO(e.getId(), e.getNombre()))
+                .toList());
+    }
+
+    /* Autores activos, para sugerirlos en el formulario (y no crear duplicados). */
+    public List<OpcionDTO> listarAutores() {
+        return Transaccion.consultar(em -> catalogoDAO.listarAutoresActivos(em).stream()
+                .map(a -> new OpcionDTO(a.getId(), a.getNombre()))
+                .toList());
+    }
+
     // ------------------------------------------------------------------
     // Crear y editar (solo administrador)
     // ------------------------------------------------------------------

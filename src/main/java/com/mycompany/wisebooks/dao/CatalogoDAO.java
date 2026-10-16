@@ -4,7 +4,9 @@
  */
 package com.mycompany.wisebooks.dao;
 
+import com.mycompany.wisebooks.entity.Autor;
 import com.mycompany.wisebooks.entity.Categoria;
+import com.mycompany.wisebooks.entity.Editorial;
 import com.mycompany.wisebooks.entity.Genero;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -50,5 +52,19 @@ public class CatalogoDAO {
         return em.createQuery(
                 "SELECT g FROM Genero g WHERE g.activo = true ORDER BY g.nombre",
                 Genero.class).getResultList();
+    }
+
+    /* Editoriales activas, en orden alfabetico. */
+    public List<Editorial> listarEditorialesActivas(EntityManager em) {
+        return em.createQuery(
+                "SELECT e FROM Editorial e WHERE e.activo = true ORDER BY e.nombre",
+                Editorial.class).getResultList();
+    }
+
+    /* Autores activos, en orden alfabetico. */
+    public List<Autor> listarAutoresActivos(EntityManager em) {
+        return em.createQuery(
+                "SELECT a FROM Autor a WHERE a.activo = true ORDER BY a.nombre",
+                Autor.class).getResultList();
     }
 }

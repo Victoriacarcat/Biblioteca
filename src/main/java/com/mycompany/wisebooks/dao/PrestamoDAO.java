@@ -37,6 +37,18 @@ public class PrestamoDAO {
                 .getSingleResult();
     }
 
+    /* Cuantos prestamos ACTIVOS del usuario ya pasaron su fecha limite. */
+    public long contarVencidosDeUsuario(EntityManager em, Long idUsuario, LocalDateTime ahora) {
+        return em.createQuery(
+                "SELECT COUNT(p) FROM Prestamo p "
+                + "WHERE p.usuario.id = :usuario AND p.estado = :estado AND p.fechaLimite < :ahora",
+                Long.class)
+                .setParameter("usuario", idUsuario)
+                .setParameter("estado", EstadoPrestamo.ACTIVO)
+                .setParameter("ahora", ahora)
+                .getSingleResult();
+    }
+
     /* true si el usuario ya tiene prestado (activo) ese libro. */
     public boolean existeActivoDelLibro(EntityManager em, Long idUsuario, Long idLibro) {
         Long total = em.createQuery(
