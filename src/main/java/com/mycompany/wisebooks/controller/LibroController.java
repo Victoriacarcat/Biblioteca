@@ -2,13 +2,12 @@ package com.mycompany.wisebooks.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycompany.wisebooks.dto.FiltroLibroDTO;
 import com.mycompany.wisebooks.dto.LibroDTO;
 import com.mycompany.wisebooks.dto.LibroFormDTO;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
 import com.mycompany.wisebooks.service.LibroService;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.SesionUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,14 +28,7 @@ import java.io.IOException;
 public class LibroController extends HttpServlet {
 
     private final LibroService service = new LibroService();
-    private final ObjectMapper mapper;
-
-    public LibroController() {
-        // Soporte para LocalDate (fechaPublicacion)
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
+    private final ObjectMapper mapper = Json.mapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -55,9 +47,7 @@ public class LibroController extends HttpServlet {
             respuesta = service.buscar(usuario, filtro);
         }
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), respuesta);
+        Json.escribir(resp, respuesta);
     }
 
     @Override
@@ -67,9 +57,7 @@ public class LibroController extends HttpServlet {
         LibroDTO libro = service.crear(SesionUtil.usuario(req), form);
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), libro);
+        Json.escribir(resp, libro);
     }
 
     @Override
@@ -91,9 +79,7 @@ public class LibroController extends HttpServlet {
             }
         }
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), libro);
+        Json.escribir(resp, libro);
     }
 
     private Long leerLong(String valor) {

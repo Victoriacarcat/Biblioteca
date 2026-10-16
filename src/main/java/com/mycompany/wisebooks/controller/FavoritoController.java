@@ -3,6 +3,7 @@ package com.mycompany.wisebooks.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.wisebooks.service.FavoritoService;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.SesionUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,7 +23,7 @@ import java.util.Map;
 public class FavoritoController extends HttpServlet {
 
     private final FavoritoService service = new FavoritoService();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = Json.mapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -32,9 +33,7 @@ public class FavoritoController extends HttpServlet {
                 ? Map.of("favorito", service.esFavorito(SesionUtil.usuario(req), Long.parseLong(idLibro)))
                 : service.misFavoritos(SesionUtil.usuario(req));
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), respuesta);
+        Json.escribir(resp, respuesta);
     }
 
     @Override

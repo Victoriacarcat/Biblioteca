@@ -2,12 +2,11 @@ package com.mycompany.wisebooks.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycompany.wisebooks.dto.ProveedorDTO;
 import com.mycompany.wisebooks.dto.ProveedorFormDTO;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
 import com.mycompany.wisebooks.service.ProveedorService;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.SesionUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,13 +25,7 @@ import java.io.IOException;
 public class ProveedorController extends HttpServlet {
 
     private final ProveedorService service = new ProveedorService();
-    private final ObjectMapper mapper;
-
-    public ProveedorController() {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
+    private final ObjectMapper mapper = Json.mapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -43,9 +36,7 @@ public class ProveedorController extends HttpServlet {
                 ? service.obtener(usuario, Long.parseLong(id))
                 : service.listar(usuario, req.getParameter("texto"), "true".equals(req.getParameter("inactivos")));
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), respuesta);
+        Json.escribir(resp, respuesta);
     }
 
     @Override
@@ -55,9 +46,7 @@ public class ProveedorController extends HttpServlet {
         ProveedorDTO proveedor = service.crear(SesionUtil.usuario(req), form);
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), proveedor);
+        Json.escribir(resp, proveedor);
     }
 
     @Override
@@ -73,8 +62,6 @@ public class ProveedorController extends HttpServlet {
             proveedor = service.editar(usuario, id, mapper.readValue(req.getInputStream(), ProveedorFormDTO.class));
         }
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), proveedor);
+        Json.escribir(resp, proveedor);
     }
 }

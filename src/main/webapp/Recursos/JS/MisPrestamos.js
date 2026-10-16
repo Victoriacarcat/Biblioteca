@@ -1,60 +1,93 @@
 /** MisPrestamos.js
-Vista del Lector: tabla de "mis préstamos" a partir del
-arreglo "prestamos" (Data.js). El botón "Renovar" es solo visual por
-ahora: no hay backend que actualice fechas todavía.
+Vista del Lector: sus préstamos activos.
 
-TODO: cuando exista el backend, esta lista se filtrará por el usuario
-autenticado en vez de mostrar todos los préstamos de ejemplo.
+    GET /api/prestamos                    -> todos sus préstamos (activos e históricos)
+    PUT /api/prestamos?id=5&accion=renovar -> renueva uno
 
-"Vencido" alerta en rojo, "Devuelto"
- queda neutro (ya cerrado) y cualquier otro ("Activo") en verde. */
-function claseEstadoPrestamo(estado) {
-    if (estado === "Vencido") {
-        return "estado-negativo";
-    }
-    if (estado === "Devuelto") {
-        return "estado-neutro";
-    }
-    return "estado-positivo";
-}
+Aquí se muestran solo los ACTIVOS; los devueltos o perdidos van en
+Historial. "Vencido" no es un estado del backend: es un préstamo ACTIVO
+con la fecha límite ya pasada (estadoVisiblePrestamo, en Utilidades.js).
+*/
+
+// Debe coincidir con ReglasBiblioteca.MAX_RENOVACIONES del backend.
+// Solo se usa para mostrar "1 de 2" y deshabilitar el botón: quien decide es el servidor.
+const MAX_RENOVACIONES = 2;
 
 function crearFilaMisPrestamos(prestamo) {
     const fila = document.createElement("tr");
-    // Regla de negocio: un préstamo vencido no se puede renovar, primero
-    // hay que devolverlo (y pagar la sanción si corresponde).
-    const noSePuedeRenovar = prestamo.estado === "Vencido";
+    const vencido = estaVencido(prestamo);
+    const sinRenovaciones = prestamo.renovaciones >= MAX_RENOVACIONES;
+    // Regla de negocio: un préstamo vencido no se puede renovar, primero hay que devolverlo
+    const noSePuedeRenovar = vencido || sinRenovaciones;
 
     fila.innerHTML = `
-        <td>${celdaLibroConPortada(prestamo.libro)}</td>
-        <td>${prestamo.fechaPrestamo}</td>
-        <td>${prestamo.fechaLimite}</td>
-        <td><span class="estado-prestamo ${claseEstadoPrestamo(prestamo.estado)}">${prestamo.estado}</span></td>
+        <td>${celdaLibroConPortada(prestamo.tituloLibro, prestamo.portadaLibro)}</td>
+        <td>${formatearFecha(prestamo.fechaPrestamo)}</td>
+        <td>${formatearFecha(prestamo.fechaLimite)}</td>
+        <td>${pastillaEstado("prestamo", estadoVisiblePrestamo(prestamo))}</td>
         <td>
             <button type="button" class="btn btn-outline-primary btn-sm boton-renovar" ${noSePuedeRenovar ? "disabled" : ""}>
                 Renovar
             </button>
+            <small class="d-block">${prestamo.renovaciones} de ${MAX_RENOVACIONES} renovaciones</small>
         </td>
     `;
 
-    if (noSePuedeRenovar) {
+    if (vencido) {
         fila.title = "Este préstamo está vencido: no se puede renovar hasta devolverlo.";
+    } else if (sinRenovaciones) {
+        fila.title = "Ya usaste todas las renovaciones de este préstamo.";
     }
 
-    fila.querySelector(".boton-renovar").addEventListener("click", () => {
-        alert("Renovación simulada: esta acción no está conectada a un backend todavía.");
+    fila.querySelector(".boton-renovar").addEventListener("click", (evento) => {
+        renovarPrestamo(prestamo, evento.currentTarget);
     });
 
     return fila;
 }
 
-function pintarMisPrestamos() {
+async function renovarPrestamo(prestamo, boton) {
+    ocultarError("mis-prestamos-exito");
+    ocultarError("mis-prestamos-error");
+    boton.disabled = true;
+    try {
+        const renovado = await api.put("/prestamos?id=" + prestamo.id + "&accion=renovar");
+        mostrarExito("mis-prestamos-exito",
+            `Renovaste "${renovado.tituloLibro}". Nueva fecha límite: ${formatearFecha(renovado.fechaLimite)}.`);
+        // Se vuelven a pedir los datos al servidor en vez de cambiarlos a mano
+        await cargarMisPrestamos();
+    } catch (error) {
+        mostrarError("mis-prestamos-error", error.message);
+        boton.disabled = false;
+    }
+}
+
+function pintarMisPrestamos(prestamosActivos) {
     const cuerpo = document.getElementById("cuerpo-mis-prestamos");
     cuerpo.innerHTML = "";
-    prestamos.forEach((prestamo) => {
+
+    if (prestamosActivos.length === 0) {
+        cuerpo.innerHTML = '<tr><td colspan="5">No tienes préstamos activos.</td></tr>';
+        return;
+    }
+    prestamosActivos.forEach((prestamo) => {
         cuerpo.appendChild(crearFilaMisPrestamos(prestamo));
     });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    pintarMisPrestamos();
+async function cargarMisPrestamos() {
+    try {
+        const prestamos = await api.get("/prestamos");
+        pintarMisPrestamos(prestamos.filter((prestamo) => prestamo.estado === "ACTIVO"));
+    } catch (error) {
+        mostrarError("mis-prestamos-error", error.message);
+    }
+}
+
+// Espera a saber quién inició sesión (Auth.js) antes de pintar
+sesionLista.then(() => {
+    // Para el personal, GET /api/prestamos trae los de todos: esta página es solo del lector
+    if (paginaPermitida(["lector"], "mis-prestamos-error")) {
+        cargarMisPrestamos();
+    }
 });

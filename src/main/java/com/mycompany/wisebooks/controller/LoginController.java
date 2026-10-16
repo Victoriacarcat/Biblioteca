@@ -1,11 +1,10 @@
 package com.mycompany.wisebooks.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycompany.wisebooks.dto.LoginDTO;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
 import com.mycompany.wisebooks.service.UsuarioService;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.SesionUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,13 +23,7 @@ import java.util.Map;
 public class LoginController extends HttpServlet {
 
     private final UsuarioService service = new UsuarioService();
-    private final ObjectMapper mapper;
-
-    public LoginController() {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
+    private final ObjectMapper mapper = Json.mapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -38,9 +31,7 @@ public class LoginController extends HttpServlet {
         Map<String, Object> sesion = new HashMap<>();
         sesion.put("usuario", SesionUtil.usuario(req));
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), sesion);
+        Json.escribir(resp, sesion);
     }
 
     @Override
@@ -54,8 +45,6 @@ public class LoginController extends HttpServlet {
         req.changeSessionId(); // id nuevo al iniciar sesion (evita fijacion de sesion)
         session.setAttribute(SesionUtil.ATRIBUTO_USUARIO, usuario); // DTO, no Entity
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), usuario);
+        Json.escribir(resp, usuario);
     }
 }

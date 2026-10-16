@@ -1,6 +1,7 @@
 package com.mycompany.wisebooks.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.PermisoException;
 import com.mycompany.wisebooks.util.SesionUtil;
 import com.mycompany.wisebooks.util.ValidacionException;
@@ -13,6 +14,7 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,10 +88,7 @@ public class ApiFilter implements Filter {
         }
         resp.resetBuffer();
         resp.setStatus(codigo);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        // Se escapan las comillas para que el JSON siga siendo valido
-        String texto = (mensaje == null ? "Error" : mensaje).replace("\\", "\\\\").replace("\"", "\\\"");
-        resp.getWriter().write("{\"error\":\"" + texto + "\"}");
+        // Jackson escapa comillas, saltos de linea, etc. (el error de mysqldump puede traer varias lineas)
+        Json.escribir(resp, Map.of("error", mensaje == null ? "Error" : mensaje));
     }
 }

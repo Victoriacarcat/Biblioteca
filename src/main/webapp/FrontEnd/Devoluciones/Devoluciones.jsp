@@ -29,6 +29,10 @@
             <p class="texto-introductorio">Busca un préstamo activo o vencido para registrar su devolución.</p>
         </section>
 
+        <!-- Avisos de Devoluciones.js -->
+        <div class="exito-form" id="devoluciones-exito" hidden></div>
+        <div class="error-form" id="devoluciones-error" hidden></div>
+
         <div class="bloque-buscador">
             <input type="text" id="buscar-prestamo" class="form-control campo-buscar-prestamo" placeholder="Buscar por usuario o libro...">
         </div>
@@ -53,10 +57,11 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/CeldasTabla.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Devoluciones.js"></script>
 </body>

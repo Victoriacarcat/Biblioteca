@@ -22,28 +22,97 @@
             <p class="texto-introductorio">Gestiona el rol y el estado de las cuentas registradas.</p>
         </section>
 
+        <!-- Avisos de Usuarios.js -->
+        <div class="exito-form" id="usuarios-exito" hidden></div>
         <div class="error-form" id="usuarios-error" hidden></div>
 
-        <div class="bloque-buscador row">
-            <div class="col-md-6">
-                <input type="text" id="buscar-usuario-admin" class="form-control" placeholder="Buscar por nombre o correo...">
+        <div class="bloque-buscador row g-2">
+            <div class="col-md-4">
+                <input type="text" id="buscar-usuario-admin" class="form-control" placeholder="Buscar por nombre, correo o documento...">
             </div>
             <div class="col-md-3">
+                <!-- Los value son los roles del backend (Rol) -->
                 <select id="filtro-rol-usuario" class="form-select campo-filtro">
                     <option value="">Todos los roles</option>
-                    <option value="lector">Lector</option>
-                    <option value="bibliotecario">Bibliotecario</option>
-                    <option value="administrador">Administrador</option>
+                    <option value="LECTOR">Lector</option>
+                    <option value="BIBLIOTECARIO">Bibliotecario</option>
+                    <option value="ADMINISTRADOR">Administrador</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <!-- Los value son los estados del backend (EstadoUsuario) -->
+                <select id="filtro-estado-usuario" class="form-select campo-filtro">
+                    <option value="">Todos los estados</option>
+                    <option value="ACTIVO">Activo</option>
+                    <option value="SUSPENDIDO">Suspendido</option>
+                    <option value="INACTIVO">Inactivo</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <select id="filtro-estado-usuario" class="form-select campo-filtro">
-                    <option value="">Todos los estados</option>
-                    <option value="Activo">Activo</option>
-                    <option value="Suspendido">Suspendido</option>
-                </select>
+                <button type="button" id="boton-crear-usuario" class="btn btn-primary w-100">Crear usuario</button>
             </div>
         </div>
+
+        <!-- Cuenta nueva de cualquier rol (lector, bibliotecario o administrador) -->
+        <section id="panel-crear-usuario" class="tarjeta-tabla p-3 mb-3" hidden>
+            <h2 class="h5">Crear cuenta</h2>
+            <p class="small mb-3">
+                Entrega la contraseña temporal a la persona y pídele que la cambie al entrar.
+                El rol de un administrador no se podrá cambiar después desde la aplicación.
+            </p>
+            <form id="form-crear-usuario" novalidate>
+                <div class="mb-2">
+                    <label for="nuevo-rol" class="form-label">Rol</label>
+                    <!-- Los value son los roles del backend (Rol) -->
+                    <select id="nuevo-rol" class="form-select">
+                        <option value="LECTOR">Lector</option>
+                        <option value="BIBLIOTECARIO" selected>Bibliotecario</option>
+                        <option value="ADMINISTRADOR">Administrador</option>
+                    </select>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <label for="nuevo-nombre" class="form-label">Nombre</label>
+                        <input type="text" id="nuevo-nombre" class="form-control" maxlength="100">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nuevo-apellidos" class="form-label">Apellidos</label>
+                        <input type="text" id="nuevo-apellidos" class="form-control" maxlength="100">
+                    </div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-4">
+                        <label for="nuevo-tipo-documento" class="form-label">Tipo de documento</label>
+                        <select id="nuevo-tipo-documento" class="form-select">
+                            <option value="CC">Cédula de ciudadanía</option>
+                            <option value="TI">Tarjeta de identidad</option>
+                            <option value="CE">Cédula de extranjería</option>
+                            <option value="PA">Pasaporte</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="nuevo-documento" class="form-label">Número de documento</label>
+                        <input type="text" id="nuevo-documento" class="form-control" maxlength="20">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="nuevo-telefono" class="form-label">Teléfono</label>
+                        <input type="tel" id="nuevo-telefono" class="form-control" maxlength="20">
+                    </div>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label for="nuevo-correo" class="form-label">Correo</label>
+                        <input type="email" id="nuevo-correo" class="form-control" maxlength="150" autocomplete="off">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nuevo-contrasena" class="form-label">Contraseña temporal (mínimo 8 caracteres)</label>
+                        <input type="text" id="nuevo-contrasena" class="form-control" autocomplete="off">
+                    </div>
+                </div>
+                <button type="submit" id="boton-confirmar-usuario" class="btn btn-primary">Crear cuenta</button>
+                <button type="button" id="boton-cancelar-usuario" class="btn btn-outline-secondary">Cancelar</button>
+            </form>
+        </section>
 
         <div class="tarjeta-tabla">
             <table class="table table-hover tabla-usuarios">
@@ -65,10 +134,11 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Usuarios.js"></script>
 </body>
 </html>

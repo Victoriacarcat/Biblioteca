@@ -1,222 +1,327 @@
 /** Inventario.js
- Vista de Bibliotecario/Administrador: gestiona los ejemplares (copias
- físicas/digitales) de cada libro (arreglo "ejemplares" de Data.js).
- Sin backend todavía: agregar/dar de baja/eliminar solo modifican el
- arreglo en memoria (se pierde al recargar la página).
+Vista de Bibliotecario/Administrador: los libros y su stock.
 
- Reglas de negocio aplicadas aquí:
-   1. Un ejemplar "Prestado" no se puede dar de baja ni eliminar: hay
-      que esperar a que se registre la devolución (Devoluciones.js).
-   2. "Dar de baja" lo puede hacer Bibliotecario o Administrador; el
-      ejemplar queda con estado "De baja" pero no desaparece del
-      inventario (trazabilidad).
-   3. Eliminar el registro por completo es exclusivo del Administrador
-      (botón oculto para Bibliotecario, mismo patrón data-rol de
-      Catalogo.js/Header.js).
-   4. El estado "Disponible" no se asigna a mano desde esta pantalla:
-      lo controla el flujo real de préstamos/reservas/devoluciones.
+El inventario se maneja por STOCK de cada libro, no por ejemplares
+individuales: stockTotal (copias que tiene la biblioteca) y stockDisponible
+(las que se pueden prestar ahora). La diferencia son las prestadas o las
+apartadas por una reserva aprobada.
 
- TODO: cuando exista el backend, "libros[].disponible" se calculará a
-partir de estos ejemplares en vez de ser un booleano fijo.*/ 
+    GET  /api/libros?texto=                       -> libros (el personal recibe también los desactivados)
+    GET  /api/catalogos?tipo=...                  -> sugerencias para el formulario
+    PUT  /api/libros?id=5&accion=copias  {cantidad} -> agrega copias (personal)
+    PUT  /api/libros?id=5&accion=retiro  {cantidad} -> retira copias disponibles (personal)
+    POST /api/libros            LibroFormDTO      -> crea un libro (administrador)
+    PUT  /api/libros?id=5       LibroFormDTO      -> edita sus datos (administrador)
+    PUT  /api/libros?id=5&accion=activo {activo}  -> activa o desactiva (administrador)
 
-function obtenerLibroPorId(id) {
-    return libros.find((libro) => libro.id === id);
-}
+Se puede abrir con Inventario.jsp?id=5 (resalta ese libro) o con
+Inventario.jsp?id=5&editar=1 (abre su formulario): así llegan los botones
+"Gestionar ejemplares" y "Editar" del catálogo y del detalle.
+*/
 
-function tituloDelEjemplar(ejemplar) {
-    const libro = obtenerLibroPorId(ejemplar.libroId);
-    return libro ? libro.titulo : "Libro eliminado";
-}
+// Libros que mandó el servidor con la búsqueda actual
+let librosInventario = [];
 
-function celdaLibroDelEjemplar(ejemplar) {
-    const libro = obtenerLibroPorId(ejemplar.libroId);
-    if (!libro) {
-        return "Libro eliminado";
-    }
-    return `
-        <span class="celda-con-icono">
-            <img class="miniatura-libro" src="${libro.portada}" alt="">
-            ${libro.titulo}
-        </span>
-    `;
-}
-
-
-function claseEstadoEjemplar(estado) {
-    if (estado === "Disponible") {
-        return "estado-positivo";
-    }
-    if (estado === "Dañado") {
-        return "estado-negativo";
-    }
-    if (estado === "Reservado") {
-        return "estado-alerta";
-    }
-    return "estado-neutro";
-}
-
-function mostrarErrorInventario(mensaje) {
-    const caja = document.getElementById("inventario-error");
-    caja.textContent = mensaje;
-    caja.hidden = false;
-}
-
-function ocultarErrorInventario() {
-    document.getElementById("inventario-error").hidden = true;
-}
-
-function pintarMetricaInventario(idElemento, valor) {
-    const elemento = document.getElementById(idElemento);
-    if (elemento) {
-        elemento.textContent = valor;
+function avisarInventario(tipo, mensaje) {
+    ocultarError("inventario-exito");
+    ocultarError("inventario-error");
+    if (tipo === "exito") {
+        mostrarExito("inventario-exito", mensaje);
+    } else {
+        mostrarError("inventario-error", mensaje);
     }
 }
 
-function pintarMetricasInventario() {
-    pintarMetricaInventario("metrica-total-ejemplares", ejemplares.length);
-    pintarMetricaInventario(
-        "metrica-ejemplares-disponibles",
-        ejemplares.filter((ejemplar) => ejemplar.estado === "Disponible").length
-    );
-    pintarMetricaInventario(
-        "metrica-ejemplares-prestados",
-        ejemplares.filter((ejemplar) => ejemplar.estado === "Prestado").length
-    );
-    pintarMetricaInventario(
-        "metrica-ejemplares-fuera-servicio",
-        ejemplares.filter((ejemplar) => ejemplar.estado === "Dañado" || ejemplar.estado === "De baja").length
-    );
+// ---- Métricas y tabla ----
+
+/* Libros que se muestran: los desactivados solo si se marca la casilla. */
+function librosVisibles() {
+    const mostrarDesactivados = document.getElementById("mostrar-desactivados").checked;
+    return librosInventario.filter((libro) => libro.activo || mostrarDesactivados);
 }
 
-function crearFilaEjemplar(ejemplar) {
+function pintarMetricas(lista) {
+    const total = lista.reduce((suma, libro) => suma + libro.stockTotal, 0);
+    const disponibles = lista.reduce((suma, libro) => suma + libro.stockDisponible, 0);
+    document.getElementById("metrica-titulos").textContent = lista.length;
+    document.getElementById("metrica-copias-totales").textContent = total;
+    document.getElementById("metrica-copias-disponibles").textContent = disponibles;
+    document.getElementById("metrica-copias-prestadas").textContent = total - disponibles;
+}
+
+function crearFilaLibro(libro) {
     const fila = document.createElement("tr");
-    const estaPrestado = ejemplar.estado === "Prestado";
-    const yaDeBaja = ejemplar.estado === "De baja";
+    fila.dataset.idLibro = libro.id;
 
     fila.innerHTML = `
-        <td>${ejemplar.codigo}</td>
-        <td>${celdaLibroDelEjemplar(ejemplar)}</td>
-        <td><span class="estado-ejemplar ${claseEstadoEjemplar(ejemplar.estado)}">${ejemplar.estado}</span></td>
         <td>
-            <button type="button" class="btn btn-outline-secondary btn-sm boton-dar-de-baja" ${(estaPrestado || yaDeBaja) ? "disabled" : ""}>
-                Dar de baja
-            </button>
-            <button type="button" class="btn btn-outline-danger btn-sm boton-eliminar-ejemplar" data-rol="administrador" hidden ${estaPrestado ? "disabled" : ""}>
-                Eliminar
-            </button>
+            <span class="celda-con-icono">
+                <img class="miniatura-libro" src="${escaparHtml(urlPortada(libro.portadaUrl))}" alt=""
+                     onerror="portadaRota(this)">
+                <span>
+                    ${escaparHtml(libro.titulo)}
+                    <small class="d-block">${escaparHtml(libro.autores.join(", "))}</small>
+                </span>
+            </span>
+        </td>
+        <td>${escaparHtml(libro.categoria)}</td>
+        <td>${libro.stockTotal}</td>
+        <td>${libro.stockDisponible}</td>
+        <td>${libro.stockTotal - libro.stockDisponible}</td>
+        <td>${libro.activo
+            ? '<span class="estado-usuario estado-positivo">Activo</span>'
+            : '<span class="estado-usuario estado-neutro">Desactivado</span>'}</td>
+        <td>
+            <button type="button" class="btn btn-outline-primary btn-sm boton-agregar-copias">+ Copias</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm boton-retirar-copias"
+                    ${libro.stockDisponible === 0 ? "disabled" : ""}>− Copias</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm boton-editar-libro" data-rol="administrador" hidden>Editar</button>
+            <button type="button" class="btn btn-sm boton-activo-libro ${libro.activo ? "btn-outline-danger" : "btn-outline-success"}"
+                    data-rol="administrador" hidden>${libro.activo ? "Desactivar" : "Activar"}</button>
         </td>
     `;
+    mostrarSegunRol(fila);
 
-    if (estaPrestado) {
-        fila.title = "Este ejemplar está prestado: espera a que se registre la devolución.";
+    if (libro.stockDisponible === 0) {
+        fila.querySelector(".boton-retirar-copias").title = "Solo se pueden retirar copias disponibles (no prestadas ni apartadas).";
     }
-
-    fila.querySelector(".boton-dar-de-baja").addEventListener("click", () => {
-        if (ejemplar.estado === "Prestado") {
-            mostrarErrorInventario(`No se puede dar de baja "${ejemplar.codigo}": está prestado.`);
-            return;
-        }
-        ocultarErrorInventario();
-        ejemplar.estado = "De baja";
-        filtrarEjemplares();
-        pintarMetricasInventario();
-    });
-
-    fila.querySelector(".boton-eliminar-ejemplar").addEventListener("click", () => {
-        if (ejemplar.estado === "Prestado") {
-            mostrarErrorInventario(`No se puede eliminar "${ejemplar.codigo}": está prestado.`);
-            return;
-        }
-        ocultarErrorInventario();
-        const indice = ejemplares.indexOf(ejemplar);
-        if (indice !== -1) {
-            ejemplares.splice(indice, 1);
-        }
-        filtrarEjemplares();
-        pintarMetricasInventario();
-    });
-
-    // Muestra el botón "Eliminar" solo para Administrador (mismo patrón
-    // data-rol que usan Header.js y Catalogo.js).
-    const rolActual = obtenerRolActual();
-    fila.querySelectorAll("[data-rol]").forEach((elemento) => {
-        const rolesPermitidos = elemento.getAttribute("data-rol").split(",");
-        if (rolesPermitidos.includes(rolActual)) {
-            elemento.hidden = false;
-        }
-    });
-
+    fila.querySelector(".boton-agregar-copias").addEventListener("click", (e) => cambiarCopias(libro, "copias", e.currentTarget));
+    fila.querySelector(".boton-retirar-copias").addEventListener("click", (e) => cambiarCopias(libro, "retiro", e.currentTarget));
+    fila.querySelector(".boton-editar-libro").addEventListener("click", () => abrirFormulario(libro));
+    fila.querySelector(".boton-activo-libro").addEventListener("click", (e) => cambiarActivo(libro, e.currentTarget));
     return fila;
 }
 
-function pintarEjemplares(listaEjemplares) {
+function pintarInventario() {
+    const lista = librosVisibles();
+    pintarMetricas(lista);
+
     const cuerpo = document.getElementById("cuerpo-inventario");
     cuerpo.innerHTML = "";
-    listaEjemplares.forEach((ejemplar) => {
-        cuerpo.appendChild(crearFilaEjemplar(ejemplar));
+    if (lista.length === 0) {
+        cuerpo.innerHTML = '<tr><td colspan="7">No hay libros con esa búsqueda.</td></tr>';
+        return;
+    }
+    lista.forEach((libro) => {
+        cuerpo.appendChild(crearFilaLibro(libro));
     });
 }
 
-function filtrarEjemplares() {
-    const texto = document.getElementById("buscar-ejemplar").value.trim().toLowerCase();
-    const estadoElegido = document.getElementById("filtro-estado-ejemplar").value;
-
-    const filtrados = ejemplares.filter((ejemplar) => {
-        const coincideTexto =
-            ejemplar.codigo.toLowerCase().includes(texto) ||
-            tituloDelEjemplar(ejemplar).toLowerCase().includes(texto);
-        const coincideEstado = !estadoElegido || ejemplar.estado === estadoElegido;
-        return coincideTexto && coincideEstado;
-    });
-
-    pintarEjemplares(filtrados);
+async function cargarInventario() {
+    const texto = document.getElementById("buscar-libro-inventario").value.trim();
+    try {
+        librosInventario = await api.get("/libros" + (texto ? "?texto=" + encodeURIComponent(texto) : ""));
+        pintarInventario();
+    } catch (error) {
+        avisarInventario("error", error.message);
+    }
 }
 
-function llenarSelectDeLibros() {
-    const select = document.getElementById("ejemplar-libro");
-    libros.forEach((libro) => {
-        const opcion = document.createElement("option");
-        opcion.value = libro.id;
-        opcion.textContent = libro.titulo;
-        select.appendChild(opcion);
-    });
+// Igual que en Usuarios: se espera 300 ms desde la última tecla antes de pedir
+let temporizadorBusqueda = null;
+function buscarAlEscribir() {
+    clearTimeout(temporizadorBusqueda);
+    temporizadorBusqueda = setTimeout(cargarInventario, 300);
 }
 
-function manejarAltaDeEjemplar(evento) {
+// ---- Copias (personal) ----
+
+/* accion: "copias" (agregar) o "retiro" (retirar). */
+async function cambiarCopias(libro, accion, boton) {
+    const pregunta = accion === "copias"
+        ? `¿Cuántas copias nuevas de "${libro.titulo}" llegaron?`
+        : `¿Cuántas copias de "${libro.titulo}" se retiran? (hay ${libro.stockDisponible} disponibles)`;
+    const respuesta = prompt(pregunta, "1");
+    if (respuesta === null) {
+        return; // canceló el cuadro
+    }
+    const cantidad = Number(respuesta.trim());
+    if (!Number.isInteger(cantidad) || cantidad < 1) {
+        avisarInventario("error", "La cantidad debe ser un número entero mayor que cero.");
+        return;
+    }
+
+    boton.disabled = true;
+    try {
+        const actualizado = await api.put("/libros?id=" + libro.id + "&accion=" + accion, { cantidad: cantidad });
+        avisarInventario("exito", `"${actualizado.titulo}": ahora tiene ${actualizado.stockTotal} copias `
+            + `(${actualizado.stockDisponible} disponibles).`);
+        await cargarInventario();
+    } catch (error) {
+        // Por ejemplo: "Solo hay 1 copias disponibles; no se pueden retirar 3."
+        avisarInventario("error", error.message);
+        boton.disabled = false;
+    }
+}
+
+// ---- Activar / desactivar (administrador) ----
+
+async function cambiarActivo(libro, boton) {
+    const aviso = libro.activo
+        ? `¿Desactivar "${libro.titulo}"? Dejará de aparecer en el catálogo público y no se podrá reservar.`
+        : `¿Activar "${libro.titulo}"? Volverá a aparecer en el catálogo.`;
+    if (!confirm(aviso)) {
+        return;
+    }
+    boton.disabled = true;
+    try {
+        // El mensaje se arma con lo que responde el servidor (el estado ya cambiado)
+        const actualizado = await api.put("/libros?id=" + libro.id + "&accion=activo", { activo: !libro.activo });
+        avisarInventario("exito", `"${actualizado.titulo}" quedó ${actualizado.activo ? "activado" : "desactivado"}.`);
+        await cargarInventario();
+    } catch (error) {
+        avisarInventario("error", error.message);
+        boton.disabled = false;
+    }
+}
+
+// ---- Formulario de libro (administrador) ----
+
+/* Llena un <datalist> con los nombres que manda /api/catalogos. */
+async function llenarSugerencias(tipo, idLista) {
+    try {
+        const opciones = await api.get("/catalogos?tipo=" + tipo);
+        const lista = document.getElementById(idLista);
+        lista.innerHTML = "";
+        opciones.forEach((opcion) => {
+            const elemento = document.createElement("option");
+            elemento.value = opcion.nombre;
+            lista.appendChild(elemento);
+        });
+    } catch (error) {
+        // Sin sugerencias el formulario funciona igual
+        console.error("No se pudieron cargar las sugerencias de " + tipo + ":", error.message);
+    }
+}
+
+function cargarSugerencias() {
+    llenarSugerencias("categorias", "lista-categorias");
+    llenarSugerencias("generos", "lista-generos");
+    llenarSugerencias("editoriales", "lista-editoriales");
+    llenarSugerencias("autores", "lista-autores");
+}
+
+/* Abre el formulario: vacío para un libro nuevo, o con los datos de "libro" para editarlo. */
+function abrirFormulario(libro) {
+    const editando = libro !== null;
+    const valor = (id, dato) => { document.getElementById(id).value = dato ?? ""; };
+
+    document.getElementById("titulo-panel-libro").textContent = editando ? `Editar "${libro.titulo}"` : "Nuevo libro";
+    valor("libro-id", editando ? libro.id : "");
+    valor("libro-titulo", editando ? libro.titulo : "");
+    valor("libro-isbn", editando ? libro.isbn : "");
+    valor("libro-autores", editando ? libro.autores.join(", ") : "");
+    valor("libro-categoria", editando ? libro.categoria : "");
+    valor("libro-genero", editando ? libro.genero : "");
+    valor("libro-editorial", editando ? libro.editorial : "");
+    valor("libro-fecha", editando ? libro.fechaPublicacion : "");
+    valor("libro-ubicacion", editando ? libro.ubicacion : "");
+    valor("libro-portada", editando ? libro.portadaUrl : "");
+    valor("libro-descripcion", editando ? libro.descripcion : "");
+    valor("libro-stock", "1");
+    // El stock solo se fija al crear; después se usa + Copias / − Copias
+    document.getElementById("grupo-stock-inicial").hidden = editando;
+
+    const panel = document.getElementById("panel-libro");
+    panel.hidden = false;
+    document.getElementById("libro-titulo").focus();
+    if (panel.scrollIntoView) {
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+}
+
+function cerrarFormulario() {
+    document.getElementById("panel-libro").hidden = true;
+    document.getElementById("form-libro").reset();
+}
+
+async function guardarLibro(evento) {
     evento.preventDefault();
+    const valor = (id) => document.getElementById(id).value.trim();
+    const idLibro = valor("libro-id");
 
-    const libroId = Number(document.getElementById("ejemplar-libro").value);
-    const codigo = document.getElementById("ejemplar-codigo").value.trim();
+    // Los nombres deben coincidir con LibroFormDTO del backend
+    const libro = {
+        titulo: valor("libro-titulo"),
+        isbn: valor("libro-isbn"),
+        // "Gabriel García Márquez, Otro" -> ["Gabriel García Márquez", "Otro"]
+        autores: valor("libro-autores").split(",").map((autor) => autor.trim()).filter((autor) => autor !== ""),
+        categoria: valor("libro-categoria"),
+        genero: valor("libro-genero"),
+        editorial: valor("libro-editorial"),
+        // Sin fecha se manda null (una cadena vacía no es una fecha válida)
+        fechaPublicacion: valor("libro-fecha") || null,
+        ubicacion: valor("libro-ubicacion"),
+        portadaUrl: valor("libro-portada"),
+        descripcion: valor("libro-descripcion"),
+        stockInicial: Number(valor("libro-stock") || 0)
+    };
 
-    if (!libroId || !codigo) {
-        mostrarErrorInventario("Selecciona un libro e ingresa un código de inventario.");
-        return;
+    const boton = document.getElementById("boton-guardar-libro");
+    boton.disabled = true;
+    try {
+        const guardado = idLibro
+            ? await api.put("/libros?id=" + idLibro, libro)
+            : await api.post("/libros", libro);
+        avisarInventario("exito", idLibro
+            ? `Se guardaron los cambios de "${guardado.titulo}".`
+            : `Se creó "${guardado.titulo}" con ${guardado.stockTotal} copias.`);
+        cerrarFormulario();
+        cargarSugerencias(); // por si se creó una categoría, editorial o autor nuevo
+        await cargarInventario();
+    } catch (error) {
+        // Por ejemplo: "Ya existe un libro con ese ISBN." o "El libro necesita al menos un autor."
+        avisarInventario("error", error.message);
     }
-
-    const codigoRepetido = ejemplares.some(
-        (ejemplar) => ejemplar.codigo.toLowerCase() === codigo.toLowerCase()
-    );
-    if (codigoRepetido) {
-        mostrarErrorInventario(`Ya existe un ejemplar con el código "${codigo}".`);
-        return;
-    }
-
-    ocultarErrorInventario();
-
-    const nuevoId = Math.max(0, ...ejemplares.map((ejemplar) => ejemplar.id)) + 1;
-    ejemplares.push({ id: nuevoId, libroId: libroId, codigo: codigo, estado: "Disponible" });
-
-    document.getElementById("form-agregar-ejemplar").reset();
-    filtrarEjemplares();
-    pintarMetricasInventario();
+    boton.disabled = false;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    llenarSelectDeLibros();
-    pintarMetricasInventario();
-    pintarEjemplares(ejemplares);
+// ---- Llegada desde el catálogo (?id=5 o ?id=5&editar=1) ----
 
-    document.getElementById("buscar-ejemplar").addEventListener("input", filtrarEjemplares);
-    document.getElementById("filtro-estado-ejemplar").addEventListener("change", filtrarEjemplares);
-    document.getElementById("form-agregar-ejemplar").addEventListener("submit", manejarAltaDeEjemplar);
+function atenderParametrosDeLaUrl() {
+    const parametros = new URLSearchParams(window.location.search);
+    const id = Number(parametros.get("id"));
+    if (!id) {
+        return;
+    }
+    const libro = librosInventario.find((l) => l.id === id);
+    if (!libro) {
+        avisarInventario("error", "No se encontró el libro indicado.");
+        return;
+    }
+    if (!libro.activo) {
+        // Para que su fila se vea aunque esté desactivado
+        document.getElementById("mostrar-desactivados").checked = true;
+        pintarInventario();
+    }
+    if (parametros.get("editar") === "1" && obtenerRolActual() === "administrador") {
+        abrirFormulario(libro);
+        return;
+    }
+    const fila = document.querySelector(`#cuerpo-inventario tr[data-id-libro="${id}"]`);
+    fila.classList.add("table-warning");
+    if (fila.scrollIntoView) {
+        fila.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+}
+
+// Espera a saber quién inició sesión (Auth.js) antes de pintar
+sesionLista.then(async () => {
+    if (!paginaPermitida(["bibliotecario", "administrador"], "inventario-error")) {
+        return;
+    }
+    mostrarSegunRol();
+
+    document.getElementById("buscar-libro-inventario").addEventListener("input", buscarAlEscribir);
+    document.getElementById("mostrar-desactivados").addEventListener("change", pintarInventario);
+
+    if (obtenerRolActual() === "administrador") {
+        cargarSugerencias();
+        document.getElementById("boton-nuevo-libro").addEventListener("click", () => abrirFormulario(null));
+        document.getElementById("boton-cancelar-libro").addEventListener("click", cerrarFormulario);
+        document.getElementById("form-libro").addEventListener("submit", guardarLibro);
+    }
+
+    await cargarInventario();
+    atenderParametrosDeLaUrl();
 });

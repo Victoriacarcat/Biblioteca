@@ -27,6 +27,10 @@
             <p class="texto-introductorio">Consulta el estado de tus préstamos activos y su fecha límite.</p>
         </section>
 
+        <!-- Avisos de MisPrestamos.js (renovación, errores del servidor) -->
+        <div class="exito-form" id="mis-prestamos-exito" hidden></div>
+        <div class="error-form" id="mis-prestamos-error" hidden></div>
+
         <div class="tarjeta-tabla">
             <table class="table table-hover tabla-mis-prestamos">
                 <thead>
@@ -47,10 +51,11 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/CeldasTabla.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/MisPrestamos.js"></script>
 </body>

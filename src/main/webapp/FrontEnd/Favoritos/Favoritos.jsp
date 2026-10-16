@@ -17,6 +17,9 @@
 
             <h1 class="titulo-favoritos">Mis favoritos</h1>
 
+            <!-- Favoritos.js escribe aquí los errores del servidor -->
+            <div class="error-form" id="favoritos-error" hidden></div>
+
             <div class="bloque-buscador-favoritos">
                 <input
                     type="text"
@@ -36,16 +39,10 @@
         <script>
             const contextPath = "${pageContext.request.contextPath}";
         </script>
+        <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
-        <script>
-            (function verificarAccesoFavoritos() {
-                if (obtenerRolActual() !== "lector") {
-                    window.location.href = contextPath + "/FrontEnd/Catalogo/Catalogo.jsp";
-                }
-            })();
-        </script>
+        <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
-        <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Favoritos.js"></script>
     </body>
 </html>

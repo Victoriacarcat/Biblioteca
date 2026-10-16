@@ -1,11 +1,9 @@
 package com.mycompany.wisebooks.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
 import com.mycompany.wisebooks.entity.AccionAuditoria;
 import com.mycompany.wisebooks.service.AuditoriaService;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.SesionUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,13 +21,6 @@ import java.time.LocalDate;
 public class AuditoriaController extends HttpServlet {
 
     private final AuditoriaService service = new AuditoriaService();
-    private final ObjectMapper mapper;
-
-    public AuditoriaController() {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -51,8 +42,6 @@ public class AuditoriaController extends HttpServlet {
                     hasta == null ? null : LocalDate.parse(hasta));
         }
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), registros);
+        Json.escribir(resp, registros);
     }
 }

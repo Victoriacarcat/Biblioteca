@@ -631,31 +631,6 @@ h1, h2, h3, h4 {
   accent-color: var(--verde);
 }
 
-.bloque-simulacion {
-  background: #fff;
-  border: 1px solid var(--menta-borde);
-  border-left: 3px solid var(--verde);
-  border-radius: 8px;
-  padding: 1rem 1.1rem 1.1rem;
-  margin: 1.2rem 0;
-}
-
-.bloque-simulacion-titulo {
-  display: block;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--verde);
-  margin-bottom: 0.6rem;
-}
-
-.texto-ayuda {
-  font-size: 0.8rem;
-  color: var(--tinta-suave);
-  margin: 0.5rem 0 0;
-}
-
 .texto-enlace-auth {
   margin-top: 1.25rem;
   font-size: 0.92rem;
@@ -683,6 +658,17 @@ h1, h2, h3, h4 {
   background: var(--error-bg);
   border: 1px solid var(--error-borde);
   color: var(--error-texto);
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  margin-bottom: 1.1rem;
+}
+
+/* Igual que .error-form pero en verde: avisos de que algo salió bien */
+.exito-form {
+  background: var(--menta);
+  border: 1px solid var(--menta-borde);
+  color: var(--verde-oscuro);
   padding: 0.75rem 0.9rem;
   border-radius: 8px;
   font-size: 0.88rem;
@@ -1663,7 +1649,6 @@ h1, h2, h3, h4 {
 .estado-reserva,
 .estado-sancion,
 .estado-historial,
-.estado-ejemplar,
 .estado-usuario {
   display: inline-flex;
   align-items: center;
@@ -1680,7 +1665,6 @@ h1, h2, h3, h4 {
 .estado-reserva::before,
 .estado-sancion::before,
 .estado-historial::before,
-.estado-ejemplar::before,
 .estado-usuario::before {
   content: "";
   width: 6px;
@@ -1836,21 +1820,6 @@ h1, h2, h3, h4 {
 }
 
 /*  Inventario */
-
-.bloque-agregar-ejemplar {
-  background: var(--gris-panel);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.bloque-agregar-ejemplar label {
-  display: inline-block;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--tinta-suave);
-  margin-bottom: 0.3rem;
-}
 
 /*  Componentes reutilizables */
 
@@ -2230,32 +2199,6 @@ h1, h2, h3, h4 {
   flex-wrap: wrap;
 }
 
-.panel-metricas-rango {
-  display: flex;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: #fff;
-}
-
-.panel-metricas-rango button {
-  border: none;
-  background: transparent;
-  color: var(--tinta-suave);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.6rem 0.85rem;
-  cursor: pointer;
-}
-
-.panel-metricas-rango button + button {
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.panel-metricas-rango button.is-activo {
-  background: var(--verde-oscuro);
-  color: #fff;
-}
-
 .btn-panel-metricas {
   display: inline-flex;
   align-items: center;
@@ -2318,20 +2261,6 @@ h1, h2, h3, h4 {
   letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--tinta-suave);
-}
-
-.tarjeta-kpi-delta {
-  font-size: 0.7rem;
-  letter-spacing: normal;
-  text-transform: none;
-}
-
-.tarjeta-kpi-delta.positivo {
-  color: var(--verde);
-}
-
-.tarjeta-kpi-delta.negativo {
-  color: var(--dorado-hover);
 }
 
 .tarjeta-kpi-valor {

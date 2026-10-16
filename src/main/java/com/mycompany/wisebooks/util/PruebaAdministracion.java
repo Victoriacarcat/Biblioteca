@@ -90,19 +90,21 @@ public class PruebaAdministracion {
         final SancionService sancionService = new SancionService();
         final String sufijo = String.valueOf(System.currentTimeMillis());
 
-        System.out.println(">> 1. Crear personal");
+        System.out.println(">> 1. Crear cuentas");
         UsuarioDTO biblio = buscarUsuario(BIBLIO_CORREO);
         if (biblio == null) {
-            biblio = usuarioService.crearPersonal(admin,
+            biblio = usuarioService.crearCuenta(admin,
                     registro("Bibliotecario", BIBLIO_CORREO, "2000000099"), Rol.BIBLIOTECARIO);
         }
         final UsuarioDTO bibliotecario = biblio;
         comprobar("existe un bibliotecario de prueba", bibliotecario.getRol() == Rol.BIBLIOTECARIO);
-        esperarRechazo("crear un lector desde la administración", ValidacionException.class,
-                () -> usuarioService.crearPersonal(admin, registro("X", "x" + sufijo + "@wisebooks.com",
-                        "9" + sufijo.substring(4)), Rol.LECTOR));
-        esperarRechazo("un bibliotecario intenta crear personal", PermisoException.class,
-                () -> usuarioService.crearPersonal(bibliotecario, registro("X", "y" + sufijo + "@wisebooks.com",
+        // Crea un lector nuevo en cada ejecucion (correo con sufijo). No se prueba crear un
+        // administrador para no dejar administradores de prueba en la base.
+        comprobar("el admin crea un lector desde la administración",
+                usuarioService.crearCuenta(admin, registro("X", "x" + sufijo + "@wisebooks.com",
+                        "9" + sufijo.substring(4)), Rol.LECTOR).getRol() == Rol.LECTOR);
+        esperarRechazo("un bibliotecario intenta crear una cuenta", PermisoException.class,
+                () -> usuarioService.crearCuenta(bibliotecario, registro("X", "y" + sufijo + "@wisebooks.com",
                         "8" + sufijo.substring(4)), Rol.BIBLIOTECARIO));
 
         System.out.println(">> 2. Listar y cambiar rol");
@@ -116,6 +118,8 @@ public class PruebaAdministracion {
         comprobar("el admin cambia el rol de otro (lector -> bibliotecario)",
                 usuarioService.cambiarRol(admin, lector2.getId(), Rol.BIBLIOTECARIO).getRol() == Rol.BIBLIOTECARIO);
         usuarioService.cambiarRol(admin, lector2.getId(), Rol.LECTOR);
+        esperarRechazo("el admin intenta dar el rol administrador", ValidacionException.class,
+                () -> usuarioService.cambiarRol(admin, lector2.getId(), Rol.ADMINISTRADOR));
 
         System.out.println(">> 3. Suspender y reactivar");
         esperarRechazo("el admin intenta cambiar su propio estado", ValidacionException.class,

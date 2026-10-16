@@ -2,14 +2,13 @@ package com.mycompany.wisebooks.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycompany.wisebooks.dto.SancionDTO;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
 import com.mycompany.wisebooks.entity.EstadoSancion;
 import com.mycompany.wisebooks.entity.Rol;
 import com.mycompany.wisebooks.entity.TipoSancion;
 import com.mycompany.wisebooks.service.SancionService;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.SesionUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,13 +28,7 @@ import java.math.BigDecimal;
 public class SancionController extends HttpServlet {
 
     private final SancionService service = new SancionService();
-    private final ObjectMapper mapper;
-
-    public SancionController() {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
+    private final ObjectMapper mapper = Json.mapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -46,9 +39,7 @@ public class SancionController extends HttpServlet {
                 ? service.misSanciones(usuario)
                 : service.listar(usuario, estado == null ? null : EstadoSancion.valueOf(estado.toUpperCase()));
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), sanciones);
+        Json.escribir(resp, sanciones);
     }
 
     @Override
@@ -63,9 +54,7 @@ public class SancionController extends HttpServlet {
                 json.path("detalle").asText(null));
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), sancion);
+        Json.escribir(resp, sancion);
     }
 
     @Override
@@ -81,8 +70,6 @@ public class SancionController extends HttpServlet {
             default -> throw new IllegalArgumentException("Acción desconocida: " + accion);
         };
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), sancion);
+        Json.escribir(resp, sancion);
     }
 }

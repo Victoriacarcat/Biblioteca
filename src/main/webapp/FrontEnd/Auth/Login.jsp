@@ -37,12 +37,13 @@
 
                         <span class="etiqueta-seccion">Acceso</span>
                         <h2>Accede a tu cuenta</h2>
-                        <p>Selecciona tu rol para entrar a tu entorno. Este selector es solo para simular el acceso del frontend.</p>
+                        <p>Ingresa con tu correo y tu contraseña. Verás las opciones que corresponden a tu cuenta.</p>
                     </div>
                     <div class="auth-panel-form">
-                        <div class="error-form" id="login-error" hidden>
-                            Correo o contraseña incorrectos. Verifica tus datos e intenta de nuevo.
-                        </div>
+                        <!-- Login.js muestra aquí el aviso de "cuenta creada" que llega desde CrearCuenta -->
+                        <div class="exito-form" id="login-exito" hidden></div>
+                        <!-- Login.js escribe aquí el mensaje de error (el del servidor o el de validación) -->
+                        <div class="error-form" id="login-error" hidden></div>
 
                         <form id="login-form" novalidate>
                             <div class="campo">
@@ -61,24 +62,7 @@
                                 <input type="checkbox" id="mostrar-contrasena">
                                 <label for="mostrar-contrasena">Mostrar contraseña</label>
                             </div>
-                            <div class="bloque-simulacion">
-                                <span class="bloque-simulacion-titulo">Modo de acceso (simulación)</span>
-                                <div class="campo">
-                                    <label for="rol">Seleccionar rol</label>
-                                    <select id="rol" class="form-select" required>
-                                        <option value="" disabled selected>Seleccionar rol</option>
-                                        <option value="lector">Lector</option>
-                                        <option value="bibliotecario">Bibliotecario</option>
-                                        <option value="administrador">Administrador</option>
-                                    </select>
-                                </div>
-                                <p class="texto-ayuda">
-                                    Esto es únicamente para probar las interfaces. No representa un inicio de
-                                    sesión real: cuando exista el backend, el rol vendrá de la cuenta del usuario.
-                                </p>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary btn-block w-100">Iniciar sesión</button>
+                            <button type="submit" id="boton-iniciar-sesion" class="btn btn-primary btn-block w-100">Iniciar sesión</button>
                         </form>
 
                         <p class="texto-enlace-auth">
@@ -123,7 +107,9 @@
         <script>
         const contextPath = "${pageContext.request.contextPath}";
         </script>
+        <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+        <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Login.js"></script>
     </body>

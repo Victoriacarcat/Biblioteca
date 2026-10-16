@@ -1,27 +1,23 @@
 /** Dashboard.js
-  panel principal según el rol actual. Cada vista del panel vive
- en su propia de los datos de roles con Data dentro del JSP y aquí solo se
- muestra la que corresponde al rol activo (mismo patrón que
- Header.js/Auth.js: visitante, lector, bibliotecario o administrador).
+Panel principal según el rol actual. Cada panel vive en su propia sección
+del JSP (data-rol) y aquí solo se llena el que corresponde.
 
- Lector, Bibliotecario y Administrador comparten el mismo lenguaje visual
- ("panel-metricas": tarjetas KPI, gráfico semanal, categorías más pedidas,
- franja de estado y tarjeta de alertas). Los números y listas salen de
- Data.js (mock): no hay backend todavía, así que las métricas no son
- reales.
+    GET /api/estadisticas             -> números generales; el personal recibe
+                                         también circulación, copias y sanciones
+    GET /api/estadisticas?tipo=lector -> resumen personal del lector
+    GET /api/prestamos?estado=ACTIVO  -> próximas devoluciones (personal)
+    GET /api/libros?soloDisponibles=true -> libros recomendados (lector)
 
-// Cuando exista el backend, estos datos vendrán de consultas reales
-// (préstamos/reservas/sanciones del usuario autenticado, conteos y
-agregados globales para bibliotecario/administrador, etc.).*/ 
+Lector, Bibliotecario y Administrador comparten el mismo lenguaje visual
+("panel-metricas"): tarjetas KPI, gráfico semanal, categorías más pedidas
+y franja de estado de las copias.
+*/
 
-function mostrarSeccionDelRolActual() {
-    const rolActual = obtenerRolActual();
+// Cuántos elementos se muestran en las listas del panel
+const MAX_VENCIMIENTOS = 5;
+const MAX_RECOMENDADOS = 3;
 
-    document.querySelectorAll("[data-rol]").forEach((elemento) => {
-        const rolesPermitidos = elemento.getAttribute("data-rol").split(",");
-        elemento.hidden = !rolesPermitidos.includes(rolActual);
-    });
-}
+// ---- Piezas comunes ----
 
 function pintarMetrica(idElemento, valor) {
     const elemento = document.getElementById(idElemento);
@@ -35,7 +31,7 @@ function pintarFechaHoy(idElemento) {
     if (!elemento) {
         return;
     }
-    const texto = new Intl.DateTimeFormat("es-AR", {
+    const texto = new Intl.DateTimeFormat("es-CO", {
         weekday: "long",
         day: "numeric",
         month: "long"
@@ -43,291 +39,308 @@ function pintarFechaHoy(idElemento) {
     elemento.textContent = texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
-//Visitante: info general de la biblioteca
-function pintarMetricasVisitante() {
-    pintarMetrica("metrica-total-libros", estadisticasBiblioteca.totalLibros);
-    pintarMetrica("metrica-total-usuarios", estadisticasBiblioteca.totalUsuarios);
-}
-
-//se crean las tarjetas con las metricas compartidas
+/*
+ Tarjeta KPI: {label, valor, nota, porcentaje}. "porcentaje" (0 a 100) dibuja
+ la barrita; si es null, la tarjeta va sin barra.
+*/
 function crearTarjetaKpi(kpi) {
     const columna = document.createElement("div");
     columna.className = "tarjeta-kpi";
-    const deltaHtml = kpi.delta
-        ? `<span class="tarjeta-kpi-delta ${kpi.positivo ? "positivo" : "negativo"}">${kpi.delta}</span>`
-        : "";
+    const barra = kpi.porcentaje === null || kpi.porcentaje === undefined
+        ? ""
+        : `<div class="tarjeta-kpi-barra"><span style="width:${Math.min(100, Math.max(0, kpi.porcentaje))}%"></span></div>`;
     columna.innerHTML = `
         <div class="tarjeta-kpi-encabezado">
-            <span>${kpi.label}</span>
-            ${deltaHtml}
+            <span>${escaparHtml(kpi.label)}</span>
         </div>
-        <span class="tarjeta-kpi-valor">${kpi.valor}</span>
-        <div class="tarjeta-kpi-barra"><span style="width:${kpi.porcentaje}%"></span></div>
-        <span class="tarjeta-kpi-nota">${kpi.nota}</span>
+        <span class="tarjeta-kpi-valor">${escaparHtml(kpi.valor)}</span>
+        ${barra}
+        <span class="tarjeta-kpi-nota">${escaparHtml(kpi.nota)}</span>
     `;
     return columna;
 }
 
 function pintarKpis(idContenedor, listaKpis) {
     const contenedor = document.getElementById(idContenedor);
-    if (!contenedor) {
-        return;
-    }
     contenedor.innerHTML = "";
     listaKpis.forEach((kpi) => contenedor.appendChild(crearTarjetaKpi(kpi)));
 }
 
-function crearBarraSemana(item, maximo) {
+/* "3 vencidos" / "1 vencido": texto con singular y plural. */
+function cantidadConTexto(cantidad, singular, plural) {
+    return `${cantidad} ${cantidad === 1 ? singular : plural}`;
+}
+
+// ---- Gráfico de circulación por semana ----
+
+function crearBarraSemana(semana, maximo) {
     const columna = document.createElement("div");
     columna.className = "barra-semana";
-    const altoPrestamos = Math.max(4, Math.round((item.prestamos / maximo) * 100));
-    const altoDevoluciones = Math.max(4, Math.round((item.devoluciones / maximo) * 100));
+    const altoPrestamos = Math.max(4, Math.round((semana.prestamos / maximo) * 100));
+    const altoDevoluciones = Math.max(4, Math.round((semana.devoluciones / maximo) * 100));
+    // Etiqueta: el lunes de la semana como "13/10"
+    const etiqueta = formatearFecha(semana.inicio).substring(0, 5);
+    columna.title = `Semana del ${formatearFecha(semana.inicio)}: `
+        + `${semana.prestamos} préstamos, ${semana.devoluciones} devoluciones`;
     columna.innerHTML = `
         <div class="barra-semana-grupo">
             <span class="barra-prestamos" style="height:${altoPrestamos}%"></span>
             <span class="barra-devoluciones" style="height:${altoDevoluciones}%"></span>
         </div>
-        <span class="barra-semana-etiqueta">${item.semana}</span>
+        <span class="barra-semana-etiqueta">${etiqueta}</span>
     `;
     return columna;
 }
 
-function pintarGraficoSemanal(idContenedor) {
+function pintarGraficoSemanal(idContenedor, semanas) {
     const contenedor = document.getElementById(idContenedor);
-    if (!contenedor) {
+    // Math.max(1, ...) evita dividir entre cero si todas las semanas están en 0
+    const maximo = Math.max(1, ...semanas.flatMap((s) => [s.prestamos, s.devoluciones]));
+    contenedor.innerHTML = "";
+    semanas.forEach((semana) => contenedor.appendChild(crearBarraSemana(semana, maximo)));
+}
+
+// ---- Categorías más pedidas ----
+
+function pintarCategoriasMasPedidas(idContenedor, categorias) {
+    const contenedor = document.getElementById(idContenedor);
+    contenedor.innerHTML = "";
+    if (!categorias || categorias.length === 0) {
+        contenedor.innerHTML = '<p class="panel-metricas-vacio">Todavía no hay préstamos registrados.</p>';
         return;
     }
-    const maximo = Math.max(...circulacionSemanal.flatMap((s) => [s.prestamos, s.devoluciones]));
-    contenedor.innerHTML = "";
-    circulacionSemanal.forEach((item) => contenedor.appendChild(crearBarraSemana(item, maximo)));
+    // La barra de cada categoría es relativa a la más pedida (la primera)
+    const maximo = categorias[0].prestamos;
+    categorias.forEach((categoria) => {
+        const div = document.createElement("div");
+        div.className = "item-categoria-pedida";
+        div.innerHTML = `
+            <div class="item-categoria-pedida-encabezado">
+                <span>${escaparHtml(categoria.nombre)}</span>
+                <span>${cantidadConTexto(categoria.prestamos, "préstamo", "préstamos")}</span>
+            </div>
+            <div class="item-categoria-pedida-barra">
+                <span style="width:${Math.round((categoria.prestamos / maximo) * 100)}%"></span>
+            </div>
+        `;
+        contenedor.appendChild(div);
+    });
 }
 
-function crearItemCategoriaPedida(item) {
-    const div = document.createElement("div");
-    div.className = "item-categoria-pedida";
-    div.innerHTML = `
-        <div class="item-categoria-pedida-encabezado">
-            <span>${item.nombre}</span>
-            <span>${item.prestamos} préstamos</span>
-        </div>
-        <div class="item-categoria-pedida-barra"><span style="width:${item.porcentaje}%"></span></div>
-    `;
-    return div;
-}
+// ---- Franja de estado de las copias ----
 
-function pintarCategoriasMasPedidas(idContenedor) {
-    const contenedor = document.getElementById(idContenedor);
-    if (!contenedor) {
-        return;
-    }
-    contenedor.innerHTML = "";
-    categoriasMasPedidas.forEach((item) => contenedor.appendChild(crearItemCategoriaPedida(item)));
-}
-
-// Grafica apilada de estado (se usa tanto para "Estado general de la colección" utilizada en admin y bibliotecario
-function pintarFranjaEstado(idFranja, idLeyenda, segmentos) {
+/*
+ Reparte las copias en disponibles, apartadas por una reserva aprobada y en
+ préstamo (el resto). Los porcentajes se redondean, así que pueden sumar 99 o 101.
+*/
+function pintarEstadoCopias(idFranja, idLeyenda, estadisticas) {
     const franja = document.getElementById(idFranja);
     const leyenda = document.getElementById(idLeyenda);
-    if (!franja || !leyenda) {
+    const total = estadisticas.copiasTotales;
+    if (!total) {
+        franja.innerHTML = "";
+        leyenda.innerHTML = '<span class="panel-metricas-vacio">Todavía no hay copias registradas.</span>';
         return;
     }
+    const disponibles = estadisticas.copiasDisponibles;
+    const apartadas = estadisticas.copiasApartadas;
+    const enPrestamo = Math.max(0, total - disponibles - apartadas);
+    const segmentos = [
+        { color: "var(--verde-oscuro)", etiqueta: "Disponibles", cantidad: disponibles },
+        { color: "var(--dorado)", etiqueta: "En préstamo", cantidad: enPrestamo },
+        { color: "#C9B792", etiqueta: "Apartadas por reserva", cantidad: apartadas }
+    ];
+    segmentos.forEach((s) => { s.porcentaje = Math.round((s.cantidad / total) * 100); });
+
     franja.innerHTML = segmentos
         .map((s) => `<div style="background:${s.color};width:${s.porcentaje}%"></div>`)
         .join("");
     leyenda.innerHTML = segmentos
-        .map((s) => `<span><span class="punto-leyenda" style="background:${s.color}"></span>${s.etiqueta} ${s.porcentaje}%</span>`)
+        .map((s) => `<span><span class="punto-leyenda" style="background:${s.color}"></span>${s.etiqueta} ${s.cantidad} (${s.porcentaje}%)</span>`)
         .join("");
 }
 
-function formatearFechaCorta(fechaIso) {
-    const fecha = new Date(fechaIso + "T00:00:00");
-    return new Intl.DateTimeFormat("es-AR", { day: "numeric", month: "short" }).format(fecha);
-}
+// ---- Próximas devoluciones ----
 
-/** Lista de vencimientos a partir de "prestamos" (Data.js): la usan tanto 
-el panel del Lector ("mis" préstamos) como el del Bibliotecario (todos
- los préstamos activos). Como todavía no hay backend/login real, el
- arreglo "prestamos" se trata como si fuera del usuario actual, mismo
- criterio que ya usa MisPrestamos.js.*/
-function crearItemVencimiento(prestamo, mostrarUsuario) {
+/* mostrarLector: en el panel del personal se ve quién tiene el libro. */
+function crearItemVencimiento(prestamo, mostrarLector) {
     const div = document.createElement("div");
-    const vencido = prestamo.estado === "Vencido";
+    const vencido = estaVencido(prestamo);
     div.className = "item-vencimiento" + (vencido ? " vencido" : "");
-    const detalle = mostrarUsuario ? prestamo.usuario : (vencido ? "Vencido" : "Vence pronto");
+    const detalle = mostrarLector ? prestamo.nombreUsuario : (vencido ? "Vencido" : "Vence pronto");
     div.innerHTML = `
         <span class="item-vencimiento-texto">
-            <span class="item-vencimiento-titulo">${prestamo.libro}</span>
-            <span class="item-vencimiento-detalle">${detalle}</span>
+            <span class="item-vencimiento-titulo">${escaparHtml(prestamo.tituloLibro)}</span>
+            <span class="item-vencimiento-detalle">${escaparHtml(detalle)}</span>
         </span>
-        <span class="item-vencimiento-fecha">${formatearFechaCorta(prestamo.fechaLimite)}</span>
+        <span class="item-vencimiento-fecha">${formatearFecha(prestamo.fechaLimite)}</span>
     `;
     return div;
 }
 
-function pintarVencimientos(idContenedor, mostrarUsuario) {
+function pintarVencimientos(idContenedor, prestamosActivos, mostrarLector) {
     const contenedor = document.getElementById(idContenedor);
-    if (!contenedor) {
-        return;
-    }
-    const activos = prestamos
-        .filter((p) => p.estado === "Activo" || p.estado === "Vencido")
+    const lista = prestamosActivos
         .slice()
-        .sort((a, b) => a.fechaLimite.localeCompare(b.fechaLimite));
+        .sort((a, b) => a.fechaLimite.localeCompare(b.fechaLimite))
+        .slice(0, MAX_VENCIMIENTOS);
 
     contenedor.innerHTML = "";
-    if (!activos.length) {
+    if (lista.length === 0) {
         contenedor.innerHTML = '<p class="panel-metricas-vacio">No hay préstamos activos por ahora.</p>';
         return;
     }
-    activos.forEach((prestamo) => contenedor.appendChild(crearItemVencimiento(prestamo, mostrarUsuario)));
+    lista.forEach((prestamo) => contenedor.appendChild(crearItemVencimiento(prestamo, mostrarLector)));
 }
 
-//Lector Las 3 primeras se calculan de "prestamos"/"reservas" mediante la info de Data.js. 
-function construirKpisLector() { 
-    const misPrestamosActivos = prestamos.filter((p) => p.estado === "Activo").length;
-    const pctLectura = Math.min(100, Math.round((misMetricasLector.leidosEsteAnio / misMetricasLector.metaAnual) * 100));
+// ---- Visitante ----
 
+function pintarPanelVisitante(estadisticas) {
+    pintarMetrica("metrica-total-libros", estadisticas.totalLibros);
+    pintarMetrica("metrica-total-usuarios", estadisticas.lectoresActivos);
+}
+
+// ---- Lector ----
+
+function construirKpisLector(resumen, estadisticas) {
     return [
         // -- Personales --
-        { label: "Mis préstamos", valor: prestamos.length, delta: "", positivo: true, porcentaje: Math.min(100, prestamos.length * 20), nota: "Activos e históricos" },
-        { label: "Mis reservas", valor: reservas.length, delta: "", positivo: true, porcentaje: Math.min(100, reservas.length * 20), nota: "Pendientes y aprobadas" },
-        { label: "Próximas devoluciones", valor: misPrestamosActivos, delta: "", positivo: true, porcentaje: Math.min(100, misPrestamosActivos * 25), nota: "Con préstamo activo" },
-        { label: "Libros leídos este año", valor: misMetricasLector.leidosEsteAnio, delta: "", positivo: true, porcentaje: pctLectura, nota: `Meta anual: ${misMetricasLector.metaAnual}` },
-        { label: "Racha de lectura", valor: `${misMetricasLector.rachaDias} días`, delta: "", positivo: true, porcentaje: Math.min(100, misMetricasLector.rachaDias * 5), nota: "Sin cortar la racha" },
-        { label: "Sanciones activas", valor: misMetricasLector.sancionesActivas, delta: "", positivo: misMetricasLector.sancionesActivas === 0, porcentaje: misMetricasLector.sancionesActivas === 0 ? 0 : 60, nota: misMetricasLector.sancionesActivas === 0 ? "Todo al día" : "Requieren tu atención" },
+        { label: "Préstamos activos", valor: resumen.prestamosActivos, porcentaje: null,
+            nota: resumen.prestamosVencidos > 0
+                ? cantidadConTexto(resumen.prestamosVencidos, "vencido: devuélvelo pronto", "vencidos: devuélvelos pronto")
+                : "Ninguno vencido" },
+        { label: "Reservas activas", valor: resumen.reservasActivas, porcentaje: null, nota: "Pendientes y aprobadas" },
+        { label: "Libros leídos este año", valor: resumen.leidosEsteAnio, porcentaje: null, nota: "Préstamos devueltos" },
+        { label: "Sanciones pendientes", valor: resumen.sancionesPendientes, porcentaje: null,
+            nota: resumen.sancionesPendientes > 0 ? "Debes " + formatearDinero(resumen.deudaPendiente) : "Todo al día" },
 
         // -- Generales de la biblioteca --
-        { label: "Libros en catálogo", valor: kpisAdministrador[0].valor, delta: kpisAdministrador[0].delta, positivo: true, porcentaje: kpisAdministrador[0].porcentaje, nota: "En toda la biblioteca" },
-        { label: "Usuarios de la comunidad", valor: kpisAdministrador[1].valor, delta: kpisAdministrador[1].delta, positivo: true, porcentaje: kpisAdministrador[1].porcentaje, nota: "Lectores activos" },
-        { label: "Categorías disponibles", valor: contextoGeneralBiblioteca.categoriasDisponibles, delta: "", positivo: true, porcentaje: 100, nota: "En todo el catálogo" },
-        { label: "Nuevos títulos este mes", valor: contextoGeneralBiblioteca.nuevosTitulosEsteMes, delta: "+" + contextoGeneralBiblioteca.nuevosTitulosEsteMes, positivo: true, porcentaje: Math.min(100, contextoGeneralBiblioteca.nuevosTitulosEsteMes * 10), nota: "Recién agregados" }
+        { label: "Libros en catálogo", valor: estadisticas.totalLibros, porcentaje: null, nota: "En toda la biblioteca" },
+        { label: "Lectores activos", valor: estadisticas.lectoresActivos, porcentaje: null, nota: "En la comunidad" },
+        { label: "Categorías", valor: estadisticas.categoriasActivas, porcentaje: null, nota: "En todo el catálogo" },
+        { label: "Nuevos títulos este mes", valor: estadisticas.nuevosTitulosEsteMes, porcentaje: null, nota: "Recién agregados" }
     ];
 }
 
-function pintarLibrosRecomendados() {
-    const listaRecomendados = document.getElementById("lista-recomendados");
-    if (!listaRecomendados) {
-        return;
+/* Recomendados: los libros más recientes con copias disponibles. */
+async function pintarLibrosRecomendados() {
+    const contenedor = document.getElementById("lista-recomendados");
+    try {
+        const libros = await api.get("/libros?soloDisponibles=true");
+        const recomendados = libros.sort((a, b) => b.id - a.id).slice(0, MAX_RECOMENDADOS);
+        contenedor.innerHTML = "";
+        if (recomendados.length === 0) {
+            contenedor.innerHTML = '<p class="panel-metricas-vacio">No hay libros disponibles por ahora.</p>';
+            return;
+        }
+        recomendados.forEach((libro) => {
+            const columna = document.createElement("div");
+            columna.className = "col-md-4 tarjeta-libro-contenedor";
+            columna.innerHTML = `
+                <a class="tarjeta-libro d-block text-decoration-none text-reset"
+                   href="${contextPath}/FrontEnd/Catalogo/Detallelibro.jsp?id=${libro.id}">
+                    <img class="portada-libro" src="${escaparHtml(urlPortada(libro.portadaUrl))}"
+                         alt="Portada de ${escaparHtml(libro.titulo)}" onerror="portadaRota(this)">
+                    <h3 class="titulo-libro">${escaparHtml(libro.titulo)}</h3>
+                    <p class="autor-libro">${escaparHtml(libro.autores.join(", "))}</p>
+                </a>
+            `;
+            contenedor.appendChild(columna);
+        });
+    } catch (error) {
+        contenedor.innerHTML = '<p class="panel-metricas-vacio">No se pudieron cargar los recomendados.</p>';
     }
-    listaRecomendados.innerHTML = "";
-    libros.forEach((libro) => {
-        const columna = document.createElement("div");
-        columna.className = "col-md-4 tarjeta-libro-contenedor";
-        columna.innerHTML = `
-            <div class="tarjeta-libro">
-                <img class="portada-libro" src="${libro.portada}" alt="Portada de ${libro.titulo}">
-                <h3 class="titulo-libro">${libro.titulo}</h3>
-                <p class="autor-libro">${libro.autor}</p>
-            </div>
-        `;
-        listaRecomendados.appendChild(columna);
-    });
 }
 
-function pintarPanelLector() {
+async function pintarPanelLector(estadisticas) {
+    const resumen = await api.get("/estadisticas?tipo=lector");
     pintarFechaHoy("panel-lector-fecha");
-    pintarKpis("panel-lector-kpis", construirKpisLector());
-    pintarVencimientos("lista-vencimientos-lector", false);
-    pintarCategoriasMasPedidas("lista-categorias-lector");
+    pintarKpis("panel-lector-kpis", construirKpisLector(resumen, estadisticas));
+    pintarVencimientos("lista-vencimientos-lector", resumen.proximasDevoluciones, false);
+    pintarCategoriasMasPedidas("lista-categorias-lector", estadisticas.categoriasMasPedidas);
     pintarLibrosRecomendados();
 }
 
-//Bibliotecario
-function pintarEstadoEjemplaresBibliotecario() {
-    const total = ejemplares.length;
-    if (!total) {
-        return;
-    }
-    const contar = (estado) => ejemplares.filter((e) => e.estado === estado).length;
-    const disponibles = Math.round((contar("Disponible") / total) * 100);
-    const prestados = Math.round((contar("Prestado") / total) * 100);
-    const danados = Math.max(0, 100 - disponibles - prestados);
+// ---- Personal (bibliotecario y administrador) ----
 
-    pintarFranjaEstado("franja-ejemplares-biblio", "leyenda-ejemplares-biblio", [
-        { color: "var(--verde-oscuro)", etiqueta: "Disponibles", porcentaje: disponibles },
-        { color: "var(--dorado)", etiqueta: "Prestados", porcentaje: prestados },
-        { color: "var(--error-borde)", etiqueta: "Dañados", porcentaje: danados }
-    ]);
+function kpiPrestamosActivos(e) {
+    return { label: "Préstamos activos", valor: e.prestamosActivos, porcentaje: e.porcentajeOcupacion,
+        nota: (e.prestamosVencidos > 0 ? cantidadConTexto(e.prestamosVencidos, "vencido", "vencidos") : "Ninguno vencido")
+            + ` · ${e.porcentajeOcupacion}% de las copias en uso` };
 }
 
-function pintarPanelBibliotecario() {
+function kpiReservasPendientes(e) {
+    return { label: "Reservas pendientes", valor: e.reservasPendientes, porcentaje: null,
+        nota: cantidadConTexto(e.copiasApartadas, "copia apartada", "copias apartadas") + " para retirar" };
+}
+
+function kpiSancionesPendientes(e) {
+    return { label: "Sanciones pendientes", valor: e.sancionesPendientes, porcentaje: null,
+        nota: e.sancionesPendientes > 0 ? formatearDinero(e.montoSancionesPendientes) + " por cobrar" : "Nada por cobrar" };
+}
+
+function kpiPrestamosHoy(e) {
+    return { label: "Préstamos de hoy", valor: e.prestamosHoy, porcentaje: null, nota: "Entregados hoy" };
+}
+
+async function pintarPanelBibliotecario(e) {
     pintarFechaHoy("panel-biblio-fecha");
-    pintarKpis("panel-biblio-kpis", kpisBibliotecario);
-    pintarVencimientos("lista-vencimientos-biblio", true);
-    pintarCategoriasMasPedidas("lista-categorias-biblio");
-    pintarEstadoEjemplaresBibliotecario();
+    pintarKpis("panel-biblio-kpis", [kpiPrestamosHoy(e), kpiPrestamosActivos(e), kpiReservasPendientes(e), kpiSancionesPendientes(e)]);
+    pintarCategoriasMasPedidas("lista-categorias-biblio", e.categoriasMasPedidas);
+    pintarEstadoCopias("franja-ejemplares-biblio", "leyenda-ejemplares-biblio", e);
+    pintarVencimientos("lista-vencimientos-biblio", await api.get("/prestamos?estado=ACTIVO"), true);
 }
 
-//Administrador
-function pintarEstadoColeccionAdministrador() {
-    pintarFranjaEstado("franja-coleccion-admin", "leyenda-coleccion-admin", [
-        { color: "var(--verde-oscuro)", etiqueta: "Disponibles", porcentaje: estadoColeccion.disponiblesPorcentaje },
-        { color: "var(--dorado)", etiqueta: "En préstamo", porcentaje: estadoColeccion.enPrestamoPorcentaje },
-        { color: "#C9B792", etiqueta: "Reservados", porcentaje: estadoColeccion.reservadosPorcentaje },
-        { color: "#E0D9C6", etiqueta: "En reparación", porcentaje: estadoColeccion.enReparacionPorcentaje }
-    ]);
-
-    const indicadores = document.getElementById("indicadores-circulacion-admin");
-    if (!indicadores) {
-        return;
-    }
-    indicadores.innerHTML = `
+/* Los tres indicadores de circulación del panel del administrador. */
+function pintarIndicadoresCirculacion(e) {
+    const indicador = (valor, etiqueta) => `
         <div class="indicador-circulacion">
-            <span class="indicador-circulacion-valor">${indicadoresCirculacion.duracionMediaDias}</span>
-            <span class="indicador-circulacion-etiqueta">Duración media</span>
-        </div>
-        <div class="indicador-circulacion">
-            <span class="indicador-circulacion-valor">${indicadoresCirculacion.devueltosATiempoPorcentaje}</span>
-            <span class="indicador-circulacion-etiqueta">Devueltos a tiempo</span>
-        </div>
-        <div class="indicador-circulacion">
-            <span class="indicador-circulacion-valor">${indicadoresCirculacion.librosPorSocio}</span>
-            <span class="indicador-circulacion-etiqueta">Libros por socio</span>
-        </div>
-    `;
+            <span class="indicador-circulacion-valor">${valor}</span>
+            <span class="indicador-circulacion-etiqueta">${etiqueta}</span>
+        </div>`;
+    // Decimal con coma, como se escribe en Colombia: 9.4 -> "9,4"
+    const decimal = (numero) => Number(numero).toLocaleString("es-CO");
+    // Mientras no haya devoluciones o lectores, se muestra "—"
+    document.getElementById("indicadores-circulacion-admin").innerHTML =
+        indicador(e.duracionMediaDias === null ? "—" : `${decimal(e.duracionMediaDias)} días`, "Duración media de un préstamo")
+        + indicador(e.porcentajeATiempo === null ? "—" : `${e.porcentajeATiempo}%`, "Devueltos a tiempo")
+        + indicador(e.prestamosPorLector === null ? "—" : decimal(e.prestamosPorLector), "Préstamos por lector activo");
 }
 
-// El toggle "7 días / 30 días" solo reescala, a modo ilustrativo, las dos métricas que tienen sentido como "actividad del período" (préstamos activos y reservas pendientes). El resto (títulos en catálogo, usuario activos) no depende del rango elegido.
-
-function aplicarRangoAdministrador(dias) {
-    const factor = dias === 7 ? 0.28 : 1;
-    const kpisEscalados = kpisAdministrador.map((kpi) => {
-        if (!kpi.escalable) {
-            return kpi;
-        }
-        return Object.assign({}, kpi, { valor: Math.max(1, Math.round(kpi.valor * factor)) });
-    });
-    pintarKpis("panel-admin-kpis", kpisEscalados);
-}
-
-function inicializarRangoAdministrador() {
-    const contenedor = document.getElementById("panel-admin-rango");
-    if (!contenedor) {
-        return;
-    }
-    const botones = contenedor.querySelectorAll("button");
-    botones.forEach((boton) => {
-        boton.addEventListener("click", () => {
-            botones.forEach((b) => b.classList.remove("is-activo"));
-            boton.classList.add("is-activo");
-            aplicarRangoAdministrador(Number(boton.dataset.rango));
-        });
-    });
-}
-
-function pintarPanelAdministrador() {
+function pintarPanelAdministrador(e) {
     pintarFechaHoy("panel-admin-fecha");
-    aplicarRangoAdministrador(30);
-    inicializarRangoAdministrador();
-    pintarGraficoSemanal("grafico-semanal-admin");
-    pintarCategoriasMasPedidas("lista-categorias-admin");
-    pintarEstadoColeccionAdministrador();
+    pintarKpis("panel-admin-kpis", [
+        { label: "Títulos en catálogo", valor: e.totalLibros, porcentaje: null,
+            nota: cantidadConTexto(e.nuevosTitulosEsteMes, "nuevo este mes", "nuevos este mes") },
+        { label: "Lectores activos", valor: e.lectoresActivos, porcentaje: null, nota: "Con cuenta activa" },
+        kpiPrestamosActivos(e),
+        kpiPrestamosHoy(e),
+        kpiReservasPendientes(e),
+        kpiSancionesPendientes(e)
+    ]);
+    pintarGraficoSemanal("grafico-semanal-admin", e.circulacionSemanal);
+    pintarCategoriasMasPedidas("lista-categorias-admin", e.categoriasMasPedidas);
+    pintarEstadoCopias("franja-coleccion-admin", "leyenda-coleccion-admin", e);
+    pintarIndicadoresCirculacion(e);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    mostrarSeccionDelRolActual();
-    pintarMetricasVisitante();
-    pintarPanelLector();
-    pintarPanelBibliotecario();
-    pintarPanelAdministrador();
+// Espera a saber quién inició sesión (Auth.js) antes de pintar
+sesionLista.then(async () => {
+    // Muestra solo el panel del rol actual (Utilidades.js)
+    mostrarSegunRol();
+    const rol = obtenerRolActual();
+    try {
+        const estadisticas = await api.get("/estadisticas");
+        if (rol === "visitante") {
+            pintarPanelVisitante(estadisticas);
+        } else if (rol === "lector") {
+            await pintarPanelLector(estadisticas);
+        } else if (rol === "bibliotecario") {
+            await pintarPanelBibliotecario(estadisticas);
+        } else {
+            pintarPanelAdministrador(estadisticas);
+        }
+    } catch (error) {
+        mostrarError("dashboard-error", "No se pudieron cargar los datos del panel: " + error.message);
+    }
 });

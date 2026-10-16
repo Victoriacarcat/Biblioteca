@@ -62,13 +62,6 @@
                     </div>
 
                     <div class="grupo-filtro">
-                        <label for="filtro-autor">Autor</label>
-                        <select id="filtro-autor" class="campo-filtro">
-                            <option value="">Todos</option>
-                        </select>
-                    </div>
-
-                    <div class="grupo-filtro">
                         <label for="filtro-genero">Género</label>
                         <select id="filtro-genero" class="campo-filtro">
                             <option value="">Todos</option>
@@ -81,13 +74,6 @@
                             <option value="">Todas</option>
                             <option value="disponible">Disponible</option>
                             <option value="no-disponible">No disponible</option>
-                        </select>
-                    </div>
-
-                    <div class="grupo-filtro">
-                        <label for="filtro-formato">Formato</label>
-                        <select id="filtro-formato" class="campo-filtro">
-                            <option value="">Todos</option>
                         </select>
                     </div>
 
@@ -117,6 +103,10 @@
                         </select>
                     </div>
 
+                    <!-- Avisos de Catalogo.js (por ejemplo, al reservar o si falla la carga) -->
+                    <div class="exito-form" id="catalogo-exito" hidden></div>
+                    <div class="error-form" id="catalogo-error" hidden></div>
+
                     <!--Catalogo.js inserta las cards de libros -->
                     <div id="contenedor-libros" class="contenedor-libros row"></div>
 
@@ -127,10 +117,11 @@
         <script>
         const contextPath = "${pageContext.request.contextPath}";
         </script>
+        <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+        <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-        <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Catalogo.js"></script>
     </body>
 </html>

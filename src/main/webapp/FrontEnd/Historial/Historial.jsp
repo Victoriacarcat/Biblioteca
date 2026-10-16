@@ -31,6 +31,9 @@
             <p class="texto-introductorio">Libros que ya devolviste, con sus fechas de préstamo y devolución.</p>
         </section>
 
+        <!-- Historial.js escribe aquí si falla la carga -->
+        <div class="error-form" id="historial-error" hidden></div>
+
         <div class="tarjeta-tabla">
             <table class="table table-hover tabla-historial">
                 <thead>
@@ -50,10 +53,11 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/CeldasTabla.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Historial.js"></script>
 </body>

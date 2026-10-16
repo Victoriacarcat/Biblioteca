@@ -26,6 +26,10 @@
             <p class="texto-introductorio">Multas por devoluciones tardías o libros dañados.</p>
         </section>
 
+        <!-- Avisos de Sanciones.js (para cualquier rol) -->
+        <div class="exito-form" id="sanciones-exito" hidden></div>
+        <div class="error-form" id="sanciones-error" hidden></div>
+
         <!-- Vista Lector: mis sanciones -->
         <section class="bloque-sanciones-lector" data-rol="lector" hidden>
             <div class="tarjeta-tabla">
@@ -44,6 +48,62 @@
 
         <!-- Vista Bibliotecario/Administrador: usuarios sancionados -->
         <section class="bloque-sanciones-staff" data-rol="bibliotecario,administrador" hidden>
+            <div class="row g-2 mb-3">
+                <div class="col-md-4">
+                    <label for="filtro-estado-sancion" class="form-label">Filtrar por estado</label>
+                    <!-- Los value son los estados del backend (EstadoSancion) -->
+                    <select id="filtro-estado-sancion" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="PENDIENTE" selected>Pendientes</option>
+                        <option value="PAGADA">Pagadas</option>
+                        <option value="ANULADA">Anuladas</option>
+                    </select>
+                </div>
+                <div class="col-md-4 offset-md-4 d-flex align-items-end">
+                    <button type="button" id="boton-registrar-sancion" class="btn btn-primary w-100">Registrar sanción</button>
+                </div>
+            </div>
+
+            <!-- Sanción a mano (libro dañado u otro motivo). La mora y la pérdida las genera el sistema. -->
+            <section id="panel-registrar-sancion" class="tarjeta-tabla p-3 mb-3" hidden>
+                <h2 class="h5">Registrar sanción</h2>
+                <p class="small mb-3">
+                    La mora por retraso y la pérdida de un libro se generan solas al registrar la devolución.
+                </p>
+                <form id="form-registrar-sancion" novalidate>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-8">
+                            <label for="buscar-lector-sancion" class="form-label">Lector</label>
+                            <input type="text" id="buscar-lector-sancion" class="form-control"
+                                   placeholder="Nombre, correo o documento (mínimo 3 letras)">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" id="boton-buscar-lector-sancion" class="btn btn-outline-primary w-100">Buscar</button>
+                        </div>
+                    </div>
+                    <select id="select-lector-sancion" class="form-select mb-3" aria-label="Lector elegido"></select>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label for="tipo-sancion" class="form-label">Motivo</label>
+                            <select id="tipo-sancion" class="form-select">
+                                <option value="LIBRO_DANADO">Libro dañado</option>
+                                <option value="OTRO">Otro motivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="importe-sancion" class="form-label">Valor (COP)</label>
+                            <input type="number" id="importe-sancion" class="form-control" min="1" step="any" placeholder="5000">
+                        </div>
+                    </div>
+                    <label for="detalle-sancion" class="form-label">Detalle (obligatorio si el motivo es "Otro")</label>
+                    <input type="text" id="detalle-sancion" class="form-control mb-3" maxlength="255">
+
+                    <button type="submit" id="boton-confirmar-sancion" class="btn btn-primary">Registrar sanción</button>
+                    <button type="button" id="boton-cancelar-sancion" class="btn btn-outline-secondary">Cancelar</button>
+                </form>
+            </section>
+
             <div class="tarjeta-tabla">
                 <table class="table table-hover tabla-sanciones">
                     <thead>
@@ -67,10 +127,12 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/BuscadorLectores.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/CeldasTabla.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Sanciones.js"></script>
 </body>

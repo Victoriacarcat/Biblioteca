@@ -2,13 +2,12 @@ package com.mycompany.wisebooks.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycompany.wisebooks.dto.PrestamoDTO;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
 import com.mycompany.wisebooks.entity.EstadoPrestamo;
 import com.mycompany.wisebooks.entity.Rol;
 import com.mycompany.wisebooks.service.PrestamoService;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.SesionUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -31,13 +30,7 @@ import java.math.BigDecimal;
 public class PrestamoController extends HttpServlet {
 
     private final PrestamoService service = new PrestamoService();
-    private final ObjectMapper mapper;
-
-    public PrestamoController() {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
+    private final ObjectMapper mapper = Json.mapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -53,9 +46,7 @@ public class PrestamoController extends HttpServlet {
             prestamos = service.listar(usuario, estado == null ? null : EstadoPrestamo.valueOf(estado.toUpperCase()));
         }
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), prestamos);
+        Json.escribir(resp, prestamos);
     }
 
     @Override
@@ -68,9 +59,7 @@ public class PrestamoController extends HttpServlet {
                 : service.entregarDirecto(usuario, json.path("idUsuario").asLong(), json.path("idLibro").asLong());
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), prestamo);
+        Json.escribir(resp, prestamo);
     }
 
     @Override
@@ -90,8 +79,6 @@ public class PrestamoController extends HttpServlet {
             default -> throw new IllegalArgumentException("Acción desconocida: " + accion);
         };
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), prestamo);
+        Json.escribir(resp, prestamo);
     }
 }

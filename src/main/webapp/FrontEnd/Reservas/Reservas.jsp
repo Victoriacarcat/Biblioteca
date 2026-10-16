@@ -26,6 +26,10 @@
             <p class="texto-introductorio">Gestiona la disponibilidad de libros a través de reservas.</p>
         </section>
 
+        <!-- Avisos de Reservas.js (para cualquier rol) -->
+        <div class="exito-form" id="reservas-exito" hidden></div>
+        <div class="error-form" id="reservas-error" hidden></div>
+
         <!-- Vista Lector: mis reservas -->
         <section class="bloque-reservas-lector" data-rol="lector" hidden>
             <div class="tarjeta-tabla">
@@ -48,11 +52,14 @@
             <div class="grupo-filtro">
                 <label for="filtro-estado-reserva">Filtrar por estado</label>
                 <select id="filtro-estado-reserva" class="form-select campo-filtro">
+                    <!-- Los value son los estados del backend (EstadoReserva) -->
                     <option value="">Todas</option>
-                    <option value="Pendiente">Pendientes</option>
-                    <option value="Aprobada">Aprobadas</option>
-                    <option value="Vencida">Vencidas</option>
-                    <option value="Cancelada">Canceladas</option>
+                    <option value="PENDIENTE" selected>Pendientes</option>
+                    <option value="APROBADA">Aprobadas (por entregar)</option>
+                    <option value="RETIRADA">Retiradas</option>
+                    <option value="RECHAZADA">Rechazadas</option>
+                    <option value="CANCELADA">Canceladas</option>
+                    <option value="VENCIDA">Vencidas</option>
                 </select>
             </div>
 
@@ -76,10 +83,11 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/CeldasTabla.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Reservas.js"></script>
 </body>

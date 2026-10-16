@@ -1,48 +1,71 @@
-/**Registro.js
-// Lógica exclusiva de CrearCuenta.jsp
+/** Registro.js
+Lógica exclusiva de CrearCuenta.jsp: registro real de un Lector.
 
-Importante: el registro NO inicia sesión automáticamente. Solo valida
-el formulario y, si todo está correcto, redirige a Login.jsp para que
-el usuario inicie sesión aparte (igual que en un flujo real).
-TODO: cuando exista el backend, aquí se hará un INSERT vía DAO
-(con validación de duplicados de correo/documento).*/
+POST /api/registro {nombre, apellidos, tipoDocumento, documento, telefono,
+                    correo, contrasena, aceptaTerminos}
+    - El servidor siempre crea la cuenta con rol LECTOR.
+    - El registro NO inicia sesión: si sale bien, se lleva al usuario a
+      Login.jsp para que entre con su correo y su contraseña.
+    - Si algo falla (correo o documento ya registrado, contraseña corta,
+      teléfono inválido...), el mensaje del servidor se muestra tal cual.
+*/
 
 const formularioRegistro = document.getElementById("registro-form");
-const cajaErrorRegistro = document.getElementById("registro-error");
+const botonRegistrarse = document.getElementById("boton-registrarse");
 
-formularioRegistro.addEventListener("submit", (e) => {
+/* Lee el valor de un campo del formulario, sin espacios al inicio ni al final. */
+function valorCampo(id) {
+    return document.getElementById(id).value.trim();
+}
+
+formularioRegistro.addEventListener("submit", async (e) => {
     e.preventDefault();
+    ocultarError("registro-error");
 
     const camposTexto = [
         "nombre", "apellido", "documento", "telefono",
         "correo-reg", "contrasena-reg", "confirmar-contrasena"
     ];
-    const hayVacios = camposTexto.some((id) => document.getElementById(id).value.trim() === "");
+    const hayVacios = camposTexto.some((id) => valorCampo(id) === "");
     const tipoDocVacio = document.getElementById("tipo-documento").value === "";
+    // Las contraseñas no se recortan: los espacios pueden ser parte de ella
     const contrasena = document.getElementById("contrasena-reg").value;
     const confirmacion = document.getElementById("confirmar-contrasena").value;
     const aceptaTerminos = document.getElementById("terminos").checked;
 
+    // Validaciones rápidas en el navegador; las reglas completas las revisa el servidor
     if (hayVacios || tipoDocVacio) {
-        cajaErrorRegistro.textContent = "Completa todos los campos obligatorios.";
-        cajaErrorRegistro.hidden = false;
+        mostrarError("registro-error", "Completa todos los campos obligatorios.");
         return;
     }
     if (contrasena !== confirmacion) {
-        cajaErrorRegistro.textContent = "Las contraseñas no coinciden.";
-        cajaErrorRegistro.hidden = false;
+        mostrarError("registro-error", "Las contraseñas no coinciden.");
         return;
     }
     if (!aceptaTerminos) {
-        cajaErrorRegistro.textContent = "Debes aceptar los términos y condiciones para continuar.";
-        cajaErrorRegistro.hidden = false;
+        mostrarError("registro-error", "Debes aceptar los términos y condiciones para continuar.");
         return;
     }
 
-    cajaErrorRegistro.hidden = true;
+    // Los nombres de las propiedades deben coincidir con RegistroDTO del backend
+    const registro = {
+        nombre: valorCampo("nombre"),
+        apellidos: valorCampo("apellido"),
+        tipoDocumento: document.getElementById("tipo-documento").value,
+        documento: valorCampo("documento"),
+        telefono: valorCampo("telefono"),
+        correo: valorCampo("correo-reg"),
+        contrasena: contrasena,
+        aceptaTerminos: aceptaTerminos
+    };
 
-    // TODO: ruta temporal ("#"). Login.jsp vive dentro de WEB-INF y no es
-    // alcanzable directo por el navegador. Cuando exista el servlet
-    // controlador, reemplazar por la URL limpia real (ej. "/login").
-    window.location.href = "#";
+    // Se deshabilita el botón para que un doble clic no cree la cuenta dos veces
+    botonRegistrarse.disabled = true;
+    try {
+        await api.post("/registro", registro);
+        window.location.href = contextPath + "/FrontEnd/Auth/Login.jsp?registro=ok";
+    } catch (error) {
+        mostrarError("registro-error", error.message);
+        botonRegistrarse.disabled = false;
+    }
 });

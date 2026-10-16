@@ -1,47 +1,66 @@
-// auth.js
-// Módulo compartido de sesión simulada (sin backend todavía).
-// El rol y el correo se guardan en localStorage mientras no exista base de datos.
+/** Auth.js
+Sesión del usuario, compartida por todas las páginas.
 
-const CLAVE_ROL = "wisebooks_rol";
-const CLAVE_CORREO = "wisebooks_correo";
+La sesión vive en el servidor (cookie JSESSIONID). Al cargar la página se
+pregunta a GET /api/login quién inició sesión y se guarda aquí, en memoria.
+Ya no se usa localStorage: el rol lo decide el servidor, no el navegador.
 
-// Roles válidos del sistema (deben coincidir con los que usa el <select> de Login.jsp)
-const ROLES_VALIDOS = ["lector", "bibliotecario", "administrador"];
+Como la respuesta tarda un momento, cada página debe esperar a "sesionLista"
+antes de pintar algo que dependa del rol:
+    sesionLista.then(() => {
+        ... aquí ya se puede usar obtenerRolActual() ...
+    });
 
-/**
-  Devuelve el rol actual de la sesión simulada.
-  Si no hay ninguno guardado, se considera "visitante".
- */
-function obtenerRolActual() {
-    const rolGuardado = localStorage.getItem(CLAVE_ROL);
-    return ROLES_VALIDOS.includes(rolGuardado) ? rolGuardado : "visitante";
-}
+Requiere Api.js (cargado antes) y la constante global "contextPath".
+*/
 
-/**
-  Guarda la sesión simulada (rol + correo) en localStorage.
-  La llamará Login.js cuando el usuario "inicie sesión".
- */
-function iniciarSesionSimulada(rol, correo) {
-    if (!ROLES_VALIDOS.includes(rol)) {
-        console.error("Rol no válido:", rol);
-        return;
+// Usuario que inició sesión (UsuarioDTO del backend), o null si es un visitante
+let usuarioActual = null;
+
+/*
+ Pregunta al servidor quién inició sesión. Si la petición falla (servidor
+ caído, por ejemplo) se sigue como visitante para que la página cargue igual.
+*/
+async function cargarSesion() {
+    try {
+        const respuesta = await api.get("/login");
+        usuarioActual = respuesta.usuario;
+    } catch (error) {
+        console.error("No se pudo consultar la sesión:", error.message);
+        usuarioActual = null;
     }
-    localStorage.setItem(CLAVE_ROL, rol);
-    localStorage.setItem(CLAVE_CORREO, correo);
+    return usuarioActual;
 }
 
-/**
- Cierra la sesión simulada y redirige a Home
- */
-function cerrarSesion() {
-    localStorage.removeItem(CLAVE_ROL);
-    localStorage.removeItem(CLAVE_CORREO);
-    window.location.href = contextPath + "/FrontEnd/Home/Home.jsp"; // TODO: reemplazar por ruta de servlet, ej. "/home"
+// Se pide una sola vez, apenas se carga este archivo
+const sesionLista = cargarSesion();
+
+/* El usuario que inició sesión ({id, nombre, apellidos, nombreCompleto, correo, rol, estado...}) o null. */
+function obtenerUsuarioActual() {
+    return usuarioActual;
 }
-/**
-  Devuelve el correo guardado de la sesión simulada (o "" si no hay sesión).
-  La usa header.js para mostrarlo junto al ícono de usuario.
- */
+
+/*
+ Rol en minúscula ("lector", "bibliotecario", "administrador") o "visitante"
+ si no hay sesión. Se pasa a minúscula porque así están escritos los
+ atributos data-rol de las JSP (el backend lo manda como "LECTOR").
+*/
+function obtenerRolActual() {
+    return usuarioActual ? usuarioActual.rol.toLowerCase() : "visitante";
+}
+
+/* Correo del usuario que inició sesión, o "" si es un visitante. */
 function obtenerCorreoActual() {
-    return localStorage.getItem(CLAVE_CORREO) || "";
+    return usuarioActual ? usuarioActual.correo : "";
+}
+
+/* Cierra la sesión en el servidor y vuelve al inicio. */
+async function cerrarSesion() {
+    try {
+        await api.post("/logout");
+    } catch (error) {
+        // Aunque falle, se vuelve al inicio: allí se consulta de nuevo la sesión
+        console.error("No se pudo cerrar la sesión:", error.message);
+    }
+    window.location.href = contextPath + "/FrontEnd/Home/Home.jsp";
 }

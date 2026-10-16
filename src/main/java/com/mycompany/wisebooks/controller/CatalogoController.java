@@ -1,7 +1,7 @@
 package com.mycompany.wisebooks.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.wisebooks.service.LibroService;
+import com.mycompany.wisebooks.util.Json;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,6 @@ import java.io.IOException;
 public class CatalogoController extends HttpServlet {
 
     private final LibroService service = new LibroService();
-    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -34,8 +33,6 @@ public class CatalogoController extends HttpServlet {
             default -> throw new IllegalArgumentException("Tipo de catálogo desconocido: " + tipo);
         };
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), lista);
+        Json.escribir(resp, lista);
     }
 }

@@ -1,9 +1,11 @@
 // header.js
 // Construye el header de la app UNA sola vez (aquí) y lo inyecta en cada
 // página dentro de <div id="header-placeholder"></div>.
-// Depende de auth.js (debe cargarse antes en el HTML) y de la variable
-// global `contextPath` (definida en un <script> dentro de cada .jsp,
-// justo antes de cargar Auth.js).
+// Depende de Auth.js y Utilidades.js (deben cargarse antes en el HTML) y
+// de la variable global `contextPath` (definida en un <script> dentro de
+// cada .jsp, justo antes de cargar Api.js).
+// El header se inserta cuando ya se sabe quién inició sesión (sesionLista),
+// para no mostrar por un instante el menú de otro rol.
 
 function crearHeaderHTML() {
     return `
@@ -80,16 +82,14 @@ function crearHeaderHTML() {
 }
 
 function aplicarVisibilidadPorRol() {
-    const rolActual = obtenerRolActual();
+    // mostrarSegunRol está en Utilidades.js
+    mostrarSegunRol();
 
-    document.querySelectorAll("[data-rol]").forEach(function (elemento) {
-        const rolesPermitidos = elemento.getAttribute("data-rol").split(",");
-        elemento.hidden = !rolesPermitidos.includes(rolActual);
-    });
-
+    // Nombre real del usuario (viene del servidor). textContent: se muestra como texto.
+    const usuario = obtenerUsuarioActual();
     const nombreUsuarioEl = document.getElementById("encabezado-nombre-usuario");
     if (nombreUsuarioEl) {
-        nombreUsuarioEl.textContent = rolActual !== "visitante" ? obtenerCorreoActual() : "";
+        nombreUsuarioEl.textContent = usuario ? usuario.nombreCompleto : "";
     }
 
     const botonCerrarSesion = document.getElementById("btn-cerrar-sesion");
@@ -152,4 +152,4 @@ function insertarHeader() {
     limpiarFondoDeLogos();
 }
 
-insertarHeader();
+sesionLista.then(insertarHeader);

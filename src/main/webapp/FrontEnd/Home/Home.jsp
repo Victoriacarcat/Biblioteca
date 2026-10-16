@@ -177,7 +177,7 @@
                     </svg>
                     Recomendados
                 </span>
-                <h2>Libros destacados esta semana</h2>
+                <h2>Novedades del catálogo</h2>
 
                 <div class="row" id="home-libros-destacados"></div>
 
@@ -392,9 +392,10 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Home.js"></script>
 </body>
 </html>

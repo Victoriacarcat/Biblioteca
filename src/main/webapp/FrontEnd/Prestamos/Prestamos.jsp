@@ -26,14 +26,29 @@
             <p class="texto-introductorio">Consulta y registra los préstamos de la biblioteca.</p>
         </section>
 
-        <div class="bloque-buscador row">
-            <div class="col-md-4">
-                <input type="text" id="buscar-usuario" class="form-control campo-buscar-usuario" placeholder="Buscar por usuario...">
+        <!-- Avisos de Prestamos.js -->
+        <div class="exito-form" id="prestamos-exito" hidden></div>
+        <div class="error-form" id="prestamos-error" hidden></div>
+
+        <div class="bloque-buscador row g-2">
+            <div class="col-md-3">
+                <input type="text" id="buscar-usuario" class="form-control campo-buscar-usuario" placeholder="Buscar por lector...">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <input type="text" id="buscar-libro" class="form-control campo-buscar-libro" placeholder="Buscar por libro...">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <!-- "VENCIDO" no es un estado del backend: son los ACTIVOS con la fecha límite pasada -->
+                <select id="filtro-estado-prestamo" class="form-select">
+                    <option value="">Todos los estados</option>
+                    <option value="ACTIVO" selected>Activos</option>
+                    <option value="VENCIDO">Vencidos</option>
+                    <option value="DEVUELTO">Devueltos</option>
+                    <option value="PERDIDO">Perdidos</option>
+                    <option value="ANULADO">Anulados</option>
+                </select>
+            </div>
+            <div class="col-md-3">
                 <button type="button" id="boton-registrar-prestamo" class="btn btn-primary boton-registrar-prestamo w-100">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
                         <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -44,15 +59,43 @@
             </div>
         </div>
 
+        <!-- Formulario de préstamo en el mostrador (sin reserva). Se muestra con "Registrar préstamo". -->
+        <section id="panel-registrar-prestamo" class="tarjeta-tabla p-3 mb-3" hidden>
+            <h2 class="h5">Registrar préstamo en el mostrador</h2>
+            <p class="small mb-3">
+                Para libros sin reserva previa. Si el lector reservó el libro, entrégalo desde Reservas.
+            </p>
+            <form id="form-registrar-prestamo" novalidate>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-8">
+                        <label for="buscar-lector-prestamo" class="form-label">Lector</label>
+                        <input type="text" id="buscar-lector-prestamo" class="form-control"
+                               placeholder="Nombre, correo o documento (mínimo 3 letras)">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="button" id="boton-buscar-lector-prestamo" class="btn btn-outline-primary w-100">Buscar</button>
+                    </div>
+                </div>
+                <select id="select-lector-prestamo" class="form-select mb-3" aria-label="Lector elegido"></select>
+
+                <label for="select-libro-prestamo" class="form-label">Libro (solo los que tienen copias disponibles)</label>
+                <select id="select-libro-prestamo" class="form-select mb-3"></select>
+
+                <button type="submit" id="boton-confirmar-prestamo" class="btn btn-primary">Registrar préstamo</button>
+                <button type="button" id="boton-cancelar-prestamo" class="btn btn-outline-secondary">Cancelar</button>
+            </form>
+        </section>
+
         <div class="tarjeta-tabla">
             <table class="table table-hover tabla-prestamos">
                 <thead>
                     <tr>
-                        <th>Usuario</th>
+                        <th>Lector</th>
                         <th>Libro</th>
                         <th>Fecha de préstamo</th>
                         <th>Fecha límite</th>
                         <th>Estado</th>
+                        <th data-rol="administrador" hidden>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpo-prestamos"></tbody>
@@ -64,10 +107,12 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/BuscadorLectores.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/CeldasTabla.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Prestamos.js"></script>
 </body>

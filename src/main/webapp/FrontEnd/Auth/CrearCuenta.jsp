@@ -107,7 +107,7 @@
                                 <label for="terminos">Acepto los <a href="#">términos y condiciones</a></label>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-block w-100">Registrarse</button>
+                            <button type="submit" id="boton-registrarse" class="btn btn-primary btn-block w-100">Registrarse</button>
                         </form>
 
                         <p class="texto-enlace-auth">
@@ -152,7 +152,9 @@
         <script>
         const contextPath = "${pageContext.request.contextPath}";
         </script>
+        <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+        <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
         <script src="${pageContext.request.contextPath}/Recursos/JS/Registro.js"></script>
     </body>

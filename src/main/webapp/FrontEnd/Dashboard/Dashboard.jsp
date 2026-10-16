@@ -19,6 +19,9 @@
 
     <main class="contenedor-dashboard container">
 
+        <!-- Dashboard.js escribe aquí si falla la carga de los datos -->
+        <div class="error-form mt-3" id="dashboard-error" hidden></div>
+
         <!-- Visitante-->
         <section class="bloque-dashboard-visitante" data-rol="visitante" hidden>
             <div class="bloque-bienvenida">
@@ -51,7 +54,7 @@
                         </svg>
                     </div>
                     <h2 class="valor-metrica" id="metrica-total-usuarios">0</h2>
-                    <p class="etiqueta-metrica">Usuarios registrados</p>
+                    <p class="etiqueta-metrica">Lectores activos</p>
                 </div>
             </div>
         </section>
@@ -134,7 +137,7 @@
 
             <div class="panel-metricas-fila">
                 <section class="tarjeta-panel">
-                    <h2>Estado de los ejemplares</h2>
+                    <h2>Estado de las copias</h2>
                     <div class="franja-coleccion" id="franja-ejemplares-biblio"></div>
                     <div class="leyenda-coleccion" id="leyenda-ejemplares-biblio"></div>
                 </section>
@@ -151,10 +154,6 @@
                     <p>Visión global de la biblioteca: colección, usuarios y circulación.</p>
                 </div>
                 <div class="panel-metricas-acciones">
-                    <div class="panel-metricas-rango" id="panel-admin-rango" role="group" aria-label="Rango de fechas">
-                        <button type="button" data-rango="7">7 días</button>
-                        <button type="button" data-rango="30" class="is-activo">30 días</button>
-                    </div>
                     <a href="${pageContext.request.contextPath}/FrontEnd/Inventario/Inventario.jsp" class="btn-panel-metricas">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -200,10 +199,10 @@
     <script>
     const contextPath = "${pageContext.request.contextPath}";
     </script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Api.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Auth.js"></script>
+    <script src="${pageContext.request.contextPath}/Recursos/JS/Utilidades.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Header.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Iconos.js"></script>
-    <script src="${pageContext.request.contextPath}/Recursos/JS/Data.js"></script>
     <script src="${pageContext.request.contextPath}/Recursos/JS/Dashboard.js"></script>
 </body>
 </html>

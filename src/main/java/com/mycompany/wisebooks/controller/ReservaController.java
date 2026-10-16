@@ -2,13 +2,12 @@ package com.mycompany.wisebooks.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mycompany.wisebooks.dto.ReservaDTO;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
 import com.mycompany.wisebooks.entity.EstadoReserva;
 import com.mycompany.wisebooks.entity.Rol;
 import com.mycompany.wisebooks.service.ReservaService;
+import com.mycompany.wisebooks.util.Json;
 import com.mycompany.wisebooks.util.SesionUtil;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -27,13 +26,7 @@ import java.io.IOException;
 public class ReservaController extends HttpServlet {
 
     private final ReservaService service = new ReservaService();
-    private final ObjectMapper mapper;
-
-    public ReservaController() {
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
+    private final ObjectMapper mapper = Json.mapper();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -44,9 +37,7 @@ public class ReservaController extends HttpServlet {
                 ? service.misReservas(usuario)
                 : service.listar(usuario, estado == null ? null : EstadoReserva.valueOf(estado.toUpperCase()));
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), reservas);
+        Json.escribir(resp, reservas);
     }
 
     @Override
@@ -56,9 +47,7 @@ public class ReservaController extends HttpServlet {
         ReservaDTO reserva = service.crear(SesionUtil.usuario(req), json.path("idLibro").asLong());
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), reserva);
+        Json.escribir(resp, reserva);
     }
 
     @Override
@@ -75,8 +64,6 @@ public class ReservaController extends HttpServlet {
             default -> throw new IllegalArgumentException("Acción desconocida: " + accion);
         };
 
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        mapper.writeValue(resp.getWriter(), reserva);
+        Json.escribir(resp, reserva);
     }
 }
