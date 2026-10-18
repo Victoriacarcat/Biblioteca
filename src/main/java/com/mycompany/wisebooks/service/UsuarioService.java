@@ -108,7 +108,8 @@ public class UsuarioService {
             if (usuario.getEstado() == EstadoUsuario.INACTIVO) {
                 throw new ValidacionException("Tu cuenta está desactivada. Contacta a la biblioteca.");
             }
-            // Un usuario SUSPENDIDO si puede entrar (solo no podra reservar ni pedir prestamos)
+            // Un usuario SUSPENDIDO si puede entrar: puede tener hasta MAX_RESERVAS_SUSPENDIDO
+            // reservas, pero no recibir prestamos ni renovarlos
             return UsuarioDTO.desde(usuario);
         });
     }
