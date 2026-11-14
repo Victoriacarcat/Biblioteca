@@ -2534,6 +2534,74 @@ h1, h2, h3, h4 {
   color: var(--error-borde);
 }
 
+/* Avisos del lector (dashboard): urgente = rojo, atencion = ámbar, ok = verde */
+
+.avisos-lector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.aviso-lector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  padding: 0.75rem 0.95rem;
+  border: 1px solid;
+  border-left-width: 4px;
+  font-size: 0.88rem;
+}
+
+.aviso-lector a {
+  font-weight: 600;
+  color: inherit;
+  white-space: nowrap;
+}
+
+.aviso-lector--urgente {
+  background: var(--error-bg);
+  border-color: var(--error-borde);
+  color: var(--error-texto);
+}
+
+.aviso-lector--atencion {
+  background: var(--alerta-bg);
+  border-color: var(--dorado);
+  color: var(--alerta-texto);
+}
+
+.aviso-lector--ok {
+  background: var(--menta);
+  border-color: var(--menta-borde);
+  border-left-color: var(--verde);
+  color: var(--verde-oscuro);
+}
+
+/* Tarjeta KPI resaltada (por ejemplo, libros vencidos o sanciones pendientes) */
+.tarjeta-kpi--alerta {
+  border-color: var(--error-borde);
+  border-top-width: 3px;
+}
+
+.tarjeta-kpi--alerta .tarjeta-kpi-valor {
+  color: var(--error-borde);
+}
+
+/* Enlace pequeño junto al título de una tarjeta del panel ("Ver mis préstamos") */
+.enlace-panel {
+  font-size: 0.8rem;
+  color: var(--verde);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.enlace-panel:hover {
+  text-decoration: underline;
+}
+
 .panel-metricas-vacio {
   color: var(--tinta-suave);
   font-size: 0.9rem;

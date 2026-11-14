@@ -66,31 +66,41 @@
                 <div class="panel-metricas-titulo">
                     <span class="panel-metricas-fecha" id="panel-lector-fecha"></span>
                     <h1>Mi panel</h1>
-                    <p>Tus préstamos, reservas y próximas devoluciones, todo en un vistazo.</p>
+                    <p>Lo que tienes pendiente con la biblioteca: devoluciones, reservas y sanciones.</p>
                 </div>
                 <div class="panel-metricas-acciones">
                     <a href="${pageContext.request.contextPath}/FrontEnd/Catalogo/Catalogo.jsp" class="btn-panel-metricas btn-panel-metricas--dorado">Explorar catálogo</a>
                 </div>
             </div>
 
-            <!-- Mis métricas (personales) + generales de la biblioteca, para
-                 que el lector también tenga contexto de la comunidad. -->
+            <!-- Avisos que piden hacer algo (vencidos, reservas para recoger,
+                 sanciones, cuenta suspendida). Si no hay, dice "Estás al día". -->
+            <div class="avisos-lector" id="avisos-lector"></div>
+
+            <!-- Solo números personales del lector -->
             <div class="panel-metricas-kpis" id="panel-lector-kpis"></div>
 
             <div class="panel-metricas-fila">
                 <section class="tarjeta-panel">
-                    <h2>Mis próximos vencimientos</h2>
+                    <div class="tarjeta-panel-encabezado">
+                        <h2>Mis próximos vencimientos</h2>
+                        <a class="enlace-panel" href="${pageContext.request.contextPath}/FrontEnd/Prestamos/MisPrestamos.jsp">Ver mis préstamos</a>
+                    </div>
                     <div class="lista-vencimientos" id="lista-vencimientos-lector"></div>
                 </section>
 
                 <section class="tarjeta-panel">
-                    <h2>Categorías más pedidas</h2>
-                    <div class="lista-categorias-pedidas" id="lista-categorias-lector"></div>
+                    <div class="tarjeta-panel-encabezado">
+                        <h2>Mis reservas</h2>
+                        <a class="enlace-panel" href="${pageContext.request.contextPath}/FrontEnd/Reservas/Reservas.jsp">Ver mis reservas</a>
+                    </div>
+                    <div class="lista-vencimientos" id="lista-reservas-lector"></div>
                 </section>
             </div>
 
+            <!-- Los libros más recientes que tienen copias disponibles -->
             <section class="seccion-recomendados">
-                <h2>Libros recomendados</h2>
+                <h2>Novedades disponibles</h2>
                 <div id="lista-recomendados" class="row"></div>
             </section>
         </section>

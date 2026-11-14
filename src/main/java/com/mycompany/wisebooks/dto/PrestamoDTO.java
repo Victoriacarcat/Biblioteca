@@ -4,6 +4,7 @@ import com.mycompany.wisebooks.entity.EstadoPrestamo;
 import com.mycompany.wisebooks.entity.Prestamo;
 import com.mycompany.wisebooks.entity.Usuario;
 import com.mycompany.wisebooks.util.ReglasBiblioteca;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /*
@@ -62,6 +63,26 @@ public class PrestamoDTO {
     /* true si se devolvio despues de la fecha limite (sirve para el historial). */
     public boolean isDevueltoConRetraso() {
         return fechaDevolucion != null && fechaDevolucion.isAfter(fechaLimite);
+    }
+
+    /*
+     * Dias de retraso de un prestamo ACTIVO, contados como la MORA (dias de
+     * calendario). 0 si no esta vencido o si ya se cerro.
+     */
+    public long getDiasRetraso() {
+        if (estado != EstadoPrestamo.ACTIVO) {
+            return 0;
+        }
+        return Math.max(0, ReglasBiblioteca.diasDeRetraso(fechaLimite, LocalDateTime.now()));
+    }
+
+    /*
+     * Mora que se generaria si el libro se devolviera hoy (solo un estimado:
+     * la sancion real se crea al devolverlo). null si no tiene retraso.
+     */
+    public BigDecimal getMoraEstimada() {
+        long dias = getDiasRetraso();
+        return dias == 0 ? null : ReglasBiblioteca.moraPorDias(dias);
     }
 
     /* true si todavia se puede renovar (sirve para mostrar el boton en la JSP). */

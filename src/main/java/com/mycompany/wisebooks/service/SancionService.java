@@ -18,7 +18,6 @@ import com.mycompany.wisebooks.util.ValidacionException;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /*
@@ -172,12 +171,11 @@ public class SancionService {
      * (sin registradoPor). Devuelve la sancion, o null si no hubo retraso.
      */
     Sancion generarMoraSiCorresponde(EntityManager em, Prestamo prestamo, LocalDateTime devolucion) {
-        long dias = ChronoUnit.DAYS.between(
-                prestamo.getFechaLimite().toLocalDate(), devolucion.toLocalDate());
+        long dias = ReglasBiblioteca.diasDeRetraso(prestamo.getFechaLimite(), devolucion);
         if (dias <= 0 || sancionDAO.existeDelPrestamo(em, prestamo.getId(), TipoSancion.MORA)) {
             return null;
         }
-        BigDecimal importe = ReglasBiblioteca.TARIFA_MORA_DIARIA.multiply(BigDecimal.valueOf(dias));
+        BigDecimal importe = ReglasBiblioteca.moraPorDias(dias);
 
         Sancion mora = crear(prestamo.getUsuario(), prestamo, TipoSancion.MORA, importe, null,
                 "Devolución con " + dias + (dias == 1 ? " día" : " días") + " de retraso.");

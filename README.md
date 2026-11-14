@@ -23,6 +23,13 @@ libro (copias totales y disponibles), no por ejemplares individuales.
 2. Crear el primer administrador: abrir util/CrearAdministrador, cambiar los
    datos (sobre todo la contraseña) y ejecutarlo con Run File.
 
+3. (Opcional) Cargar datos de demostración: ejecutar util/CargarDatosDemo con
+   Run File. Agrega unos 50 libros, 2 bibliotecarios y 20 lectores ficticios
+   (correo @demo.wisebooks.com, contraseña Demo2026!), con préstamos, reservas,
+   sanciones, favoritos y proveedores. No borra ni cambia datos existentes y,
+   si ya se cargó, no duplica nada (solo completa las portadas de sus libros).
+   Las portadas están en Recursos/Imagenes/Portadas (tomadas de Open Library).
+
 Después, ese administrador crea desde la pantalla Usuarios las demás cuentas
 (lectores, bibliotecarios u otros administradores). CrearAdministrador solo
 vuelve a hacer falta si ningún administrador puede entrar. No se insertan

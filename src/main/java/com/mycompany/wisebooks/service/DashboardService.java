@@ -7,16 +7,20 @@ import com.mycompany.wisebooks.dao.SancionDAO;
 import com.mycompany.wisebooks.dto.CategoriaPedidaDTO;
 import com.mycompany.wisebooks.dto.EstadisticasDTO;
 import com.mycompany.wisebooks.dto.PrestamoDTO;
+import com.mycompany.wisebooks.dto.ReservaDTO;
 import com.mycompany.wisebooks.dto.ResumenLectorDTO;
 import com.mycompany.wisebooks.dto.SemanaCirculacionDTO;
 import com.mycompany.wisebooks.dto.UsuarioDTO;
 import com.mycompany.wisebooks.entity.EstadoPrestamo;
+import com.mycompany.wisebooks.entity.EstadoReserva;
 import com.mycompany.wisebooks.entity.Prestamo;
+import com.mycompany.wisebooks.entity.Reserva;
 import com.mycompany.wisebooks.entity.Rol;
 import com.mycompany.wisebooks.entity.Usuario;
 import com.mycompany.wisebooks.util.Autorizacion;
 import com.mycompany.wisebooks.util.Transaccion;
 import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -153,21 +157,69 @@ public class DashboardService {
 
     /* Resumen personal del lector que inicio sesion. */
     public ResumenLectorDTO resumenLector(UsuarioDTO actor) {
+        // Antes de mostrar "puedes recoger tu reserva", se vencen las que ya pasaron el plazo
+        reservaService.vencerVencidas();
         return Transaccion.consultar(em -> {
             Usuario lector = Autorizacion.exigirLector(em, actor);
             Long id = lector.getId();
             LocalDateTime ahora = LocalDateTime.now();
             LocalDateTime inicioAnio = LocalDate.now().withDayOfYear(1).atStartOfDay();
 
+            List<PrestamoDTO> proximas = proximasDevoluciones(em, id);
+            List<ReservaDTO> reservas = reservasVivas(em, id);
+
+            // Suma de la mora estimada de los vencidos (cada PrestamoDTO la calcula)
+            BigDecimal moraEstimada = BigDecimal.ZERO;
+            for (PrestamoDTO prestamo : proximas) {
+                if (prestamo.getMoraEstimada() != null) {
+                    moraEstimada = moraEstimada.add(prestamo.getMoraEstimada());
+                }
+            }
+            long paraRetirar = reservas.stream()
+                    .filter(r -> r.getEstado() == EstadoReserva.APROBADA)
+                    .count();
+
             return new ResumenLectorDTO(
+                    lector.getEstado(),
                     prestamoDAO.contarActivosDeUsuario(em, id),
                     prestamoDAO.contarVencidosDeUsuario(em, id, ahora),
-                    reservaDAO.contarVivasDeUsuario(em, id),
+                    moraEstimada,
+                    reservas.size(),
+                    paraRetirar,
                     sancionDAO.contarPendientesDeUsuario(em, id),
                     sancionDAO.sumarPendientesDeUsuario(em, id),
                     dashboardDAO.contarDevueltosDeUsuarioDesde(em, id, inicioAnio),
-                    proximasDevoluciones(em, id));
+                    proximas,
+                    reservas);
         });
+    }
+
+    /*
+     * Reservas pendientes y aprobadas del lector. Primero las aprobadas (la
+     * que se debe recoger antes, arriba) y despues las pendientes (la mas
+     * antigua arriba).
+     */
+    private List<ReservaDTO> reservasVivas(EntityManager em, Long idUsuario) {
+        List<Reserva> aprobadas = new ArrayList<>();
+        List<Reserva> pendientes = new ArrayList<>();
+        for (Reserva reserva : reservaDAO.listarPorUsuario(em, idUsuario)) {
+            if (reserva.getEstado() == EstadoReserva.APROBADA) {
+                aprobadas.add(reserva);
+            } else if (reserva.getEstado() == EstadoReserva.PENDIENTE) {
+                pendientes.add(reserva);
+            }
+        }
+        aprobadas.sort(Comparator.comparing(Reserva::getFechaLimiteRetiro));
+        pendientes.sort(Comparator.comparing(Reserva::getFechaReserva));
+
+        List<ReservaDTO> resultado = new ArrayList<>();
+        for (Reserva reserva : aprobadas) {
+            resultado.add(ReservaDTO.desde(reserva));
+        }
+        for (Reserva reserva : pendientes) {
+            resultado.add(ReservaDTO.desde(reserva));
+        }
+        return resultado;
     }
 
     private List<PrestamoDTO> proximasDevoluciones(EntityManager em, Long idUsuario) {
