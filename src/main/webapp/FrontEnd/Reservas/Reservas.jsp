@@ -69,7 +69,8 @@
                         <tr>
                             <th>Usuario</th>
                             <th>Libro</th>
-                            <th>Fecha</th>
+                            <th>Solicitada el</th>
+                            <th>Recoger antes de</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>

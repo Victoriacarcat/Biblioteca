@@ -9,6 +9,7 @@ Funciones pequeñas que usan varias vistas, para no repetirlas en cada archivo:
     - mostrarError / mostrarExito / ocultarError: las cajas de aviso de cada página.
     - mostrarSegunRol: muestra u oculta los elementos con data-rol.
     - paginaPermitida: avisa si la página no corresponde al rol actual.
+    - animarAlAparecer: hace aparecer suavemente secciones al hacer scroll.
 
 Debe cargarse después de Auth.js (mostrarSegunRol usa obtenerRolActual)
 y antes del JS de cada vista.
@@ -251,8 +252,10 @@ function mostrarSegunRol(raiz = document) {
 
 /*
  Para el inicio de cada vista: devuelve true si el rol actual está entre
- los permitidos (por ejemplo ["lector"]). Si no, muestra un mensaje en la
- caja de error y devuelve false, para que la vista no pida datos.
+ los permitidos (por ejemplo ["lector"]). Si no, devuelve false para que la
+ vista no pida datos, y además:
+   - visitante (sin sesión): lo lleva a la página de inicio de sesión;
+   - con sesión pero otro rol: muestra un mensaje en la caja de error.
  Es solo para la interfaz: el backend igual rechaza a quien no tenga permiso.
 */
 function paginaPermitida(rolesPermitidos, idCajaError) {
@@ -260,8 +263,51 @@ function paginaPermitida(rolesPermitidos, idCajaError) {
     if (rolesPermitidos.includes(rolActual)) {
         return true;
     }
-    mostrarError(idCajaError, rolActual === "visitante"
-        ? "Debes iniciar sesión para ver esta página."
-        : "Esta página no está disponible para tu rol.");
+    if (rolActual === "visitante") {
+        // replace (no href): esta página no queda en el historial, así "Atrás"
+        // desde el login no vuelve aquí para mandarlo otra vez al login
+        window.location.replace(contextPath + "/FrontEnd/Auth/Login.jsp");
+        return false;
+    }
+    mostrarError(idCajaError, "Esta página no está disponible para tu rol.");
     return false;
+}
+
+// ---- Animaciones ----
+
+/*
+ Hace aparecer suavemente (Styles.css: .animar-al-aparecer y .visible) los
+ elementos del selector la primera vez que entran en pantalla al hacer scroll.
+ Solo la usan el inicio y el Dashboard.
+
+ IntersectionObserver avisa cuando un elemento se vuelve visible, sin tener
+ que revisar la posición en cada movimiento del scroll.
+
+ No hace nada (todo se ve normal) si el navegador no tiene IntersectionObserver
+ o si la persona activó "reducir movimiento" en su sistema.
+ Llamarla después de mostrarSegunRol(): los elementos ocultos por rol nunca
+ entran en pantalla, así que no importa que también se observen.
+*/
+function animarAlAparecer(selector) {
+    const reducirMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducirMovimiento || !("IntersectionObserver" in window)) {
+        return;
+    }
+
+    const observador = new IntersectionObserver((entradas) => {
+        entradas.forEach((entrada) => {
+            if (entrada.isIntersecting) {
+                entrada.target.classList.add("visible");
+                observador.unobserve(entrada.target); // solo la primera vez
+            }
+        });
+    }, {
+        // Se activa cuando el elemento ya asomó un poco por abajo (no en el borde exacto)
+        rootMargin: "0px 0px -10% 0px"
+    });
+
+    document.querySelectorAll(selector).forEach((elemento) => {
+        elemento.classList.add("animar-al-aparecer");
+        observador.observe(elemento);
+    });
 }

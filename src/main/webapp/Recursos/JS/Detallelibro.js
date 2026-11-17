@@ -47,7 +47,7 @@ function pintarLibro(libro) {
 
     ponerTexto("libro-stock-total", libro.stockTotal);
     ponerTexto("libro-stock-disponible", libro.stockDisponible);
-    // Las copias que no están disponibles están prestadas o apartadas por una reserva aprobada
+    // Las copias que no están disponibles están prestadas o apartadas por una reserva
     ponerTexto("libro-stock-prestados", libro.stockTotal - libro.stockDisponible);
     ponerTexto("libro-ubicacion", libro.ubicacion);
     ponerTexto("libro-genero", libro.genero);
@@ -90,8 +90,13 @@ async function reservar() {
     const boton = document.getElementById("boton-reservar");
     boton.disabled = true;
     try {
-        await api.post("/reservas", { idLibro: libroActual.id });
-        avisarDetalle("exito", "Reserva creada. Puedes ver su estado en Mis reservas.");
+        // El servidor devuelve la reserva creada, con la fecha límite para recogerla
+        const reserva = await api.post("/reservas", { idLibro: libroActual.id });
+        avisarDetalle("exito", "Reserva creada: te apartamos una copia. Tienes 3 días para recogerla "
+            + "(hasta el " + formatearFechaHora(reserva.fechaLimiteRetiro) + ").");
+        // El servidor ya descontó la copia: se refleja en pantalla sin recargar
+        libroActual.stockDisponible -= 1;
+        pintarLibro(libroActual);
     } catch (error) {
         avisarDetalle("error", error.message);
     }

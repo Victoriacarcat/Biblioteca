@@ -35,6 +35,19 @@ async function cargarSesion() {
 // Se pide una sola vez, apenas se carga este archivo
 const sesionLista = cargarSesion();
 
+/*
+ Al pulsar "Atrás" (o "Adelante") el navegador puede mostrar la página tal
+ como quedó en su memoria, sin volver a ejecutar este archivo: seguiría
+ viéndose el usuario y los datos aunque ya se haya cerrado la sesión.
+ event.persisted es true justo en ese caso: se recarga la página para que
+ vuelva a preguntar al servidor quién inició sesión.
+*/
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+
 /* El usuario que inició sesión ({id, nombre, apellidos, nombreCompleto, correo, rol, estado...}) o null. */
 function obtenerUsuarioActual() {
     return usuarioActual;

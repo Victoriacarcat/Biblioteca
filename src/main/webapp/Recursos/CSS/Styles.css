@@ -34,6 +34,20 @@
   --fuente-marca:    'Caveat', cursive;
   --fuente-titulos:  'Lora', Georgia, serif;
   --fuente-cuerpo:   'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /*  Esquinas redondeadas: los mismos tres tamaños en toda la app.
+      Los botones e insignias "píldora" siguen usando 999px. */
+  --radio-sm:        8px;    /* elementos pequeños: campos, íconos, menús */
+  --radio-md:        12px;   /* tarjetas: KPI, paneles, tablas, tips */
+  --radio-lg:        16px;   /* bloques grandes: fotos, paneles con imagen */
+
+  /*  Sombras (tinta casi negra con poca opacidad, para no ensuciar el fondo arena) */
+  --sombra-suave:    0 4px 12px rgba(28, 28, 24, 0.04);   /* tarjeta en reposo */
+  --sombra-hover:    0 12px 24px rgba(28, 28, 24, 0.09);  /* tarjeta al pasar el mouse */
+
+  /*  Movimiento: duración y curva comunes para hovers y animaciones */
+  --transicion:      0.2s ease;
+  --elevar-hover:    translateY(-3px);  /* cuánto sube una tarjeta clicable */
 }
 
 body {
@@ -415,7 +429,7 @@ h1, h2, h3, h4 {
 
 .panel-foto-titulo {
   position: relative;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   overflow: hidden;
   min-height: 420px;
   background-size: cover;
@@ -503,7 +517,7 @@ h1, h2, h3, h4 {
 .franja-titulo-foto-fondo {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   margin: 2rem auto 0;
   max-width: 1100px;
   padding: 3.5rem 2rem;
@@ -823,7 +837,7 @@ h1, h2, h3, h4 {
   background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 18px 18px;
   color: #fff;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   padding: 2.5rem 2rem;
   margin-bottom: 2.5rem;
 }
@@ -926,7 +940,7 @@ h1, h2, h3, h4 {
 .sidebar-filtros {
   background: var(--gris-panel);
   border: 1px solid rgba(0,0,0,0.04);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 1.5rem;
   align-self: start;
 }
@@ -1003,13 +1017,13 @@ h1, h2, h3, h4 {
   flex-direction: column;
   padding-bottom: 1.1rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition: box-shadow var(--transicion), transform var(--transicion);
 }
 
 .tarjeta-libro:hover,
 .tarjeta-favorito:hover {
-  box-shadow: 0 12px 24px rgba(28, 28, 24, 0.09);
-  transform: translateY(-4px);
+  box-shadow: var(--sombra-hover);
+  transform: var(--elevar-hover);
 }
 
 .portada-libro {
@@ -1338,7 +1352,8 @@ h1, h2, h3, h4 {
 .seccion-como-funciona,
 .seccion-destacados-home,
 .seccion-categorias-home,
-.seccion-testimonios-home {
+.seccion-testimonios-home,
+.seccion-pendientes-home {
   padding: 3rem 0;
 }
 
@@ -1353,7 +1368,8 @@ h1, h2, h3, h4 {
 
 .seccion-destacados-home h2,
 .seccion-categorias-home h2,
-.seccion-testimonios-home h2 {
+.seccion-testimonios-home h2,
+.seccion-pendientes-home h2 {
   margin-bottom: 1.5rem;
 }
 
@@ -1396,7 +1412,7 @@ h1, h2, h3, h4 {
 .paso-home {
   background: #fff;
   border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 1.5rem;
   height: 100%;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -1432,8 +1448,12 @@ h1, h2, h3, h4 {
   margin: 0;
 }
 
+/* Fondo menta: así no se funde con "Novedades" y "Testimonios", que van en
+   arena justo antes y después. Los bordes finos marcan el cambio de color. */
 .seccion-tips-lectura {
-  background: var(--arena-fondo);
+  background: var(--menta);
+  border-top: 1px solid var(--menta-borde);
+  border-bottom: 1px solid var(--menta-borde);
   padding: 3.5rem 0;
 }
 
@@ -1445,7 +1465,7 @@ h1, h2, h3, h4 {
 .tarjeta-tip {
   background: #fff;
   border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 1.5rem;
   height: 100%;
 }
@@ -1625,7 +1645,7 @@ h1, h2, h3, h4 {
 .tarjeta-metrica {
   background: #fff;
   border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 1.5rem;
   text-align: center;
   height: 100%;
@@ -1722,7 +1742,7 @@ h1, h2, h3, h4 {
 .tarjeta-tabla {
   background: #fff;
   border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   padding: 0.5rem 1.25rem;
   overflow-x: auto;
   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
@@ -1899,18 +1919,18 @@ h1, h2, h3, h4 {
   gap: 0.65rem;
   padding: 1.5rem 0.75rem;
   border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 12px;
+  border-radius: var(--radio-md);
   background: #fff;
   text-decoration: none;
   color: var(--tinta);
   text-align: center;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--transicion), transform var(--transicion), box-shadow var(--transicion);
 }
 
 .tarjeta-categoria:hover {
   border-color: var(--dorado);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(28, 28, 24, 0.06);
+  transform: var(--elevar-hover);
+  box-shadow: var(--sombra-hover);
   color: var(--dorado-hover);
 }
 
@@ -1990,10 +2010,13 @@ h1, h2, h3, h4 {
   text-align: left;
 }
 
+/* Antes era transparente y se perdía sobre el fondo: ahora es una tarjeta */
 .tarjeta-testimonio {
-  background: transparent;
-  border: none;
-  padding: 0;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-suave);
+  padding: 1.5rem;
   height: 100%;
 }
 
@@ -2016,6 +2039,7 @@ h1, h2, h3, h4 {
 .autor-testimonio {
   display: flex;
   align-items: center;
+  justify-content: center;  /* centrado, como la cita de arriba */
   gap: 0.6rem;
 }
 
@@ -2121,7 +2145,7 @@ h1, h2, h3, h4 {
   position: relative;
   background-size: cover;
   background-position: center;
-  border-radius: 16px;
+  border-radius: var(--radio-lg);
   overflow: hidden;
   color: #fff;
   padding: 4rem 2rem;
@@ -2246,6 +2270,8 @@ h1, h2, h3, h4 {
 .tarjeta-kpi {
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-suave);
   padding: 1.1rem;
   display: flex;
   flex-direction: column;
@@ -2273,12 +2299,15 @@ h1, h2, h3, h4 {
 .tarjeta-kpi-barra {
   height: 4px;
   background: #EDE8DA;
+  border-radius: 999px;
+  overflow: hidden;  /* la parte rellena respeta las puntas redondeadas */
 }
 
 .tarjeta-kpi-barra > span {
   display: block;
   height: 4px;
   background: var(--verde-oscuro);
+  border-radius: 999px;
 }
 
 .tarjeta-kpi-nota {
@@ -2299,6 +2328,8 @@ h1, h2, h3, h4 {
 .tarjeta-panel {
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-suave);
   padding: 1.35rem;
   display: flex;
   flex-direction: column;
@@ -2615,5 +2646,151 @@ h1, h2, h3, h4 {
 
   .panel-metricas-acciones {
     width: 100%;
+  }
+}
+/* ============================================================
+   Interacciones: hover y foco con teclado
+   Criterio:
+     - Tarjeta CLICABLE (es un enlace): sube un poco, más sombra
+       y borde verde, para que se note que se puede pulsar.
+     - Tarjeta INFORMATIVA: solo un poco más de sombra, sin subir,
+       para no dar a entender que es un botón.
+   Los valores vienen de :root (--transicion, --sombra-hover...).
+   ============================================================ */
+
+/* Transición común de las tarjetas */
+.tarjeta-kpi,
+.tarjeta-panel,
+.tarjeta-tip,
+.tarjeta-testimonio {
+  transition: box-shadow var(--transicion), transform var(--transicion), border-color var(--transicion);
+}
+
+.tarjeta-kpi-valor {
+  transition: color var(--transicion);
+}
+
+/* Clicable: la tarjeta KPI cuando es un enlace ("Pendientes de hoy" del inicio) */
+a.tarjeta-kpi:hover {
+  transform: var(--elevar-hover);
+  box-shadow: var(--sombra-hover);
+}
+
+/* El borde y el número se vuelven verdes, salvo en las de alerta (siguen en rojo) */
+a.tarjeta-kpi:not(.tarjeta-kpi--alerta):hover {
+  border-color: rgba(47, 107, 76, 0.4);  /* --verde con transparencia */
+}
+
+a.tarjeta-kpi:not(.tarjeta-kpi--alerta):hover .tarjeta-kpi-valor {
+  color: var(--verde);
+}
+
+/* Informativas: solo la sombra */
+div.tarjeta-kpi:hover,
+.tarjeta-panel:hover,
+.tarjeta-tip:hover,
+.tarjeta-testimonio:hover {
+  box-shadow: var(--sombra-hover);
+}
+
+/* Foco con teclado (Tab): contorno visible en todo lo que se puede activar.
+   :focus-visible no aparece al hacer clic con el mouse, solo con teclado. */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 3px;
+}
+
+/* Sobre fondos oscuros el verde casi no se ve: ahí el contorno es dorado */
+.seccion-hero-home a:focus-visible,
+.banner-seccion-oscuro a:focus-visible,
+.banner-boletin :focus-visible,
+.pie-app a:focus-visible {
+  outline-color: var(--dorado);
+}
+
+/* ============================================================
+   Animaciones (solo inicio y Dashboard)
+   ============================================================ */
+
+/* Entrada: desde transparente y un poco más abajo hasta su lugar */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 1. Secciones que aparecen al hacer scroll.
+      La clase "animar-al-aparecer" la pone animarAlAparecer() (Utilidades.js)
+      y "visible" se agrega cuando la sección entra en pantalla. Si el JS no
+      corre, ninguna de las dos clases existe y todo se ve normal. */
+.animar-al-aparecer {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.animar-al-aparecer.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* 2. Tarjetas que pinta el JS: aparecen una tras otra.
+      "backwards" (y no "both"): al terminar, la animación suelta el
+      transform y así el hover puede volver a elevar la tarjeta. */
+#home-pendientes > *,
+#home-libros-destacados > *,
+.panel-metricas-kpis > * {
+  animation: aparecer 0.45s ease backwards;
+}
+
+#home-pendientes > :nth-child(2),
+#home-libros-destacados > :nth-child(2),
+.panel-metricas-kpis > :nth-child(2) { animation-delay: 60ms; }
+
+#home-pendientes > :nth-child(3),
+#home-libros-destacados > :nth-child(3),
+.panel-metricas-kpis > :nth-child(3) { animation-delay: 120ms; }
+
+#home-pendientes > :nth-child(4),
+.panel-metricas-kpis > :nth-child(4) { animation-delay: 180ms; }
+
+#home-pendientes > :nth-child(5),
+.panel-metricas-kpis > :nth-child(5) { animation-delay: 240ms; }
+
+#home-pendientes > :nth-child(6),
+.panel-metricas-kpis > :nth-child(6) { animation-delay: 300ms; }
+
+/* 3. "Reducir movimiento" activado en el sistema: sin animaciones ni
+      tarjetas que suben. Los cambios de color y sombra se mantienen. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animar-al-aparecer {
+    opacity: 1;
+    transform: none;
+  }
+
+  a.tarjeta-kpi:hover,
+  .tarjeta-libro:hover,
+  .tarjeta-libro:hover .portada-libro,
+  .tarjeta-favorito:hover,
+  .tarjeta-categoria:hover,
+  .paso-home:hover,
+  .tarjeta-foto-intro:hover {
+    transform: none;
   }
 }

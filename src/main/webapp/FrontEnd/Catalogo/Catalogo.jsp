@@ -27,8 +27,8 @@
                             </svg>
                             Catálogo completo
                         </span>
-                        <h1 class="titulo-catalogo">Encontrá tu próxima lectura</h1>
-                        <p class="texto-introductorio">Buscá por título, autor o categoría entre los libros disponibles en WiseBooks.</p>
+                        <h1 class="titulo-catalogo">Encuentra tu próxima lectura</h1>
+                        <p class="texto-introductorio">Busca por título, autor o categoría entre los libros disponibles en WiseBooks.</p>
                     </div>
                     <div class="pila-libros-decorativa" aria-hidden="true">
                         <img class="libro-apilado" src="${pageContext.request.contextPath}/Recursos/Imagenes/portada-1984.jpg" alt="">

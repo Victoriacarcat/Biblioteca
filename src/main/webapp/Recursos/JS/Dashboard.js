@@ -134,7 +134,7 @@ function pintarCategoriasMasPedidas(idContenedor, categorias) {
 // ---- Franja de estado de las copias ----
 
 /*
- Reparte las copias en disponibles, apartadas por una reserva aprobada y en
+ Reparte las copias en disponibles, apartadas por una reserva (pendiente o aprobada) y en
  préstamo (el resto). Los porcentajes se redondean, así que pueden sumar 99 o 101.
 */
 function pintarEstadoCopias(idFranja, idLeyenda, estadisticas) {
@@ -264,10 +264,11 @@ function construirAvisosLector(resumen) {
             texto: `Tienes ${cantidadConTexto(resumen.prestamosVencidos, "libro vencido", "libros vencidos")}.` + mora,
             enlace: pagina("Prestamos/MisPrestamos.jsp"), textoEnlace: "Ver mis préstamos" });
     }
+    // Cada reserva viva tiene una copia apartada y un plazo para recogerla
     resumen.reservasVivas
-        .filter((reserva) => reserva.estado === "APROBADA")
         .forEach((reserva) => avisos.push({ tipo: "atencion",
-            texto: `Tu reserva de «${reserva.tituloLibro}» está lista. `
+            texto: `Tu reserva de «${reserva.tituloLibro}» `
+                + (reserva.estado === "APROBADA" ? "está lista. " : "tiene una copia apartada. ")
                 + `Recógela en la biblioteca antes del ${formatearFechaHora(reserva.fechaLimiteRetiro)}.`,
             enlace: pagina("Reservas/Reservas.jsp"), textoEnlace: "Ver mis reservas" }));
     if (resumen.sancionesPendientes > 0) {
@@ -302,9 +303,9 @@ function construirKpisLector(resumen) {
     let notaReservas = "Sin reservas activas";
     if (resumen.reservasParaRetirar > 0) {
         notaReservas = cantidadConTexto(resumen.reservasParaRetirar, "lista para recoger", "listas para recoger")
-            + (pendientes > 0 ? ` · ${pendientes} en espera` : "");
+            + (pendientes > 0 ? ` · ${pendientes} apartada${pendientes === 1 ? "" : "s"}` : "");
     } else if (pendientes > 0) {
-        notaReservas = "Esperando aprobación";
+        notaReservas = "Copia apartada: tienes 3 días para recogerla";
     }
 
     return [
@@ -336,9 +337,9 @@ function pintarReservasLector(reservas) {
         const aprobada = reserva.estado === "APROBADA";
         const div = document.createElement("div");
         div.className = "item-vencimiento";
-        const detalle = aprobada
-            ? "Lista para recoger hasta el " + formatearFechaHora(reserva.fechaLimiteRetiro)
-            : "Pedida el " + formatearFecha(reserva.fechaReserva) + " · esperando aprobación";
+        // Pendiente o aprobada, la copia ya está apartada y el plazo corre desde que se reservó
+        const detalle = (aprobada ? "Lista para recoger" : "Copia apartada")
+            + " · recógela antes del " + formatearFechaHora(reserva.fechaLimiteRetiro);
         div.innerHTML = `
             <span class="item-vencimiento-texto">
                 <span class="item-vencimiento-titulo">${escaparHtml(reserva.tituloLibro)}</span>
@@ -457,6 +458,9 @@ function pintarPanelAdministrador(e) {
 sesionLista.then(async () => {
     // Muestra solo el panel del rol actual (Utilidades.js)
     mostrarSegunRol();
+    // Las filas de paneles y los recomendados aparecen suavemente al bajar
+    // (las tarjetas KPI ya entran escalonadas solo con CSS)
+    animarAlAparecer(".panel-metricas-fila, .seccion-recomendados");
     const rol = obtenerRolActual();
     try {
         // El lector solo necesita su resumen personal

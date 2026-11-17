@@ -55,26 +55,13 @@ public class ReservaDAO {
                 .getSingleResult();
     }
 
-    /* true si OTRO usuario esta esperando (PENDIENTE) una copia de ese libro. */
-    public boolean existePendienteDeOtro(EntityManager em, Long idLibro, Long idUsuarioExcluido) {
-        Long total = em.createQuery(
-                "SELECT COUNT(r) FROM Reserva r "
-                + "WHERE r.libro.id = :libro AND r.estado = :estado AND r.usuario.id <> :usuario",
-                Long.class)
-                .setParameter("libro", idLibro)
-                .setParameter("estado", EstadoReserva.PENDIENTE)
-                .setParameter("usuario", idUsuarioExcluido)
-                .getSingleResult();
-        return total > 0;
-    }
-
-    /* Reservas aprobadas cuyo plazo de retiro ya paso (hay que vencerlas). */
-    public List<Reserva> buscarAprobadasVencidas(EntityManager em, LocalDateTime ahora) {
+    /* Reservas vivas (pendientes o aprobadas) cuyo plazo para recoger ya paso (hay que vencerlas). */
+    public List<Reserva> buscarVivasVencidas(EntityManager em, LocalDateTime ahora) {
         return em.createQuery(
                 "SELECT r FROM Reserva r "
-                + "WHERE r.estado = :estado AND r.fechaLimiteRetiro < :ahora",
+                + "WHERE r.estado IN (:estados) AND r.fechaLimiteRetiro < :ahora",
                 Reserva.class)
-                .setParameter("estado", EstadoReserva.APROBADA)
+                .setParameter("estados", VIVAS)
                 .setParameter("ahora", ahora)
                 .getResultList();
     }

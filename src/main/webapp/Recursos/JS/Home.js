@@ -1,9 +1,13 @@
 /** Home.js
 La página de bienvenida, visible para todos los roles (visitante, lector,
-bibliotecario, administrador). El bloque del hero alterna con [data-rol].
+bibliotecario, administrador). Lo que cambia según el rol se marca con
+[data-rol] en Home.jsp: el hero, las secciones para lectores (categorías,
+club, tips, testimonios, boletín) y las columnas del pie de página.
 
     GET /api/libros?soloDisponibles=true -> las "Novedades del catálogo": los
                                             3 libros más recientes con copias disponibles
+    GET /api/estadisticas                -> "Pendientes de hoy" (solo bibliotecario y
+                                            administrador; el mismo que usa el Dashboard)
 
 El formulario del boletín todavía no tiene backend: solo muestra un mensaje.
 */
@@ -11,13 +15,16 @@ El formulario del boletín todavía no tiene backend: solo muestra un mensaje.
 // Cuántos libros se muestran en "Novedades del catálogo"
 const CANTIDAD_NOVEDADES = 3;
 
+/* Pone el nombre en los saludos (el del lector y el del personal; solo se ve el del rol actual). */
 function pintarSaludoUsuario() {
     const usuario = obtenerUsuarioActual();
-    const elementoNombre = document.getElementById("home-nombre-usuario");
-    if (elementoNombre && usuario) {
-        // textContent: el nombre se muestra como texto
-        elementoNombre.textContent = usuario.nombre;
+    if (!usuario) {
+        return;
     }
+    document.querySelectorAll(".home-nombre-usuario").forEach((elemento) => {
+        // textContent: el nombre se muestra como texto
+        elemento.textContent = usuario.nombre;
+    });
 }
 
 function crearTarjetaNovedad(libro) {
@@ -59,6 +66,63 @@ async function pintarNovedades() {
     }
 }
 
+// ---- Pendientes de hoy (bibliotecario y administrador) ----
+
+/*
+ Tarjeta de un pendiente: {label, valor, nota, alerta, pagina}. Usa los mismos
+ estilos que las tarjetas del Dashboard (tarjeta-kpi), pero es un enlace a la
+ página donde se atiende. "alerta" = true la resalta (hay algo por hacer).
+*/
+function crearTarjetaPendiente(pendiente) {
+    const tarjeta = document.createElement("a");
+    tarjeta.className = "tarjeta-kpi text-decoration-none"
+        + (pendiente.alerta ? " tarjeta-kpi--alerta" : "");
+    tarjeta.href = contextPath + "/FrontEnd/" + pendiente.pagina;
+    tarjeta.innerHTML = `
+        <div class="tarjeta-kpi-encabezado">
+            <span>${escaparHtml(pendiente.label)}</span>
+        </div>
+        <span class="tarjeta-kpi-valor">${escaparHtml(pendiente.valor)}</span>
+        <span class="tarjeta-kpi-nota">${escaparHtml(pendiente.nota)}</span>
+    `;
+    return tarjeta;
+}
+
+/* Arma las 5 tarjetas con los números de GET /api/estadisticas. */
+function construirPendientes(e) {
+    return [
+        { label: "Reservas pendientes", valor: e.reservasPendientes,
+            nota: e.reservasPendientes > 0 ? "Por confirmar" : "Al día",
+            alerta: e.reservasPendientes > 0, pagina: "Reservas/Reservas.jsp" },
+        { label: "Préstamos vencidos", valor: e.prestamosVencidos,
+            nota: e.prestamosVencidos > 0 ? "Por recibir" : "Al día",
+            alerta: e.prestamosVencidos > 0, pagina: "Devoluciones/Devoluciones.jsp" },
+        { label: "Sanciones pendientes", valor: e.sancionesPendientes,
+            nota: e.sancionesPendientes > 0
+                ? "Por cobrar: " + formatearDinero(e.montoSancionesPendientes)
+                : "Al día",
+            alerta: e.sancionesPendientes > 0, pagina: "Sanciones/Sanciones.jsp" },
+        { label: "Préstamos de hoy", valor: e.prestamosHoy,
+            nota: "Entregados hoy", alerta: false, pagina: "Prestamos/Prestamos.jsp" },
+        { label: "Copias disponibles", valor: e.copiasDisponibles,
+            nota: "de " + e.copiasTotales + " en total", alerta: false, pagina: "Inventario/Inventario.jsp" }
+    ];
+}
+
+async function pintarPendientes() {
+    const contenedor = document.getElementById("home-pendientes");
+    try {
+        const estadisticas = await api.get("/estadisticas");
+        contenedor.innerHTML = "";
+        construirPendientes(estadisticas)
+            .forEach((pendiente) => contenedor.appendChild(crearTarjetaPendiente(pendiente)));
+    } catch (error) {
+        // Como en "Novedades": se deja un texto en el lugar de las tarjetas
+        contenedor.innerHTML = "<p>No se pudieron cargar los pendientes.</p>";
+        console.error("No se pudieron cargar los pendientes:", error.message);
+    }
+}
+
 // Boletín: no hay backend todavía, así que "suscribirse" solo muestra
 // un mensaje de confirmación.
 function manejarSuscripcionBoletin(evento) {
@@ -80,8 +144,17 @@ function manejarSuscripcionBoletin(evento) {
 sesionLista.then(() => {
     // Muestra el hero del rol actual (Utilidades.js)
     mostrarSegunRol();
+    // Las secciones aparecen suavemente al bajar. El hero no: ya está a la vista
+    // y su fondo oscuro "parpadearía" al cargar
+    animarAlAparecer(".contenedor-home > section:not(.seccion-hero-home)");
     pintarSaludoUsuario();
     pintarNovedades();
+
+    // Solo el personal ve los pendientes (y el backend solo a él le da esos números)
+    const rol = obtenerRolActual();
+    if (rol === "bibliotecario" || rol === "administrador") {
+        pintarPendientes();
+    }
 
     const formularioBoletin = document.getElementById("form-boletin");
     if (formularioBoletin) {

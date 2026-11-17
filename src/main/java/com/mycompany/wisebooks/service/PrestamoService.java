@@ -89,7 +89,7 @@ public class PrestamoService {
 
     /*
      * Entrega el libro de una reserva APROBADA. La copia ya estaba apartada
-     * desde la aprobacion, asi que el stock no vuelve a bajar.
+     * desde que se hizo la reserva, asi que el stock no vuelve a bajar.
      * La reserva pasa a RETIRADA y queda ligada al prestamo.
      */
     public PrestamoDTO entregarReserva(UsuarioDTO actor, Long idReserva) {
@@ -122,8 +122,8 @@ public class PrestamoService {
 
     /*
      * Prestamo directo en el mostrador, sin reserva previa. Toma una copia
-     * disponible. Si otro lector esta esperando ese libro (reserva PENDIENTE),
-     * se le da prioridad: primero hay que atender su reserva.
+     * disponible. Las copias apartadas por reservas ya no cuentan como
+     * disponibles, asi que no hace falta revisar si otro lector esta esperando.
      */
     public PrestamoDTO entregarDirecto(UsuarioDTO actor, Long idUsuario, Long idLibro) {
         reservaService.vencerVencidas();
@@ -144,10 +144,6 @@ public class PrestamoService {
                 throw new ValidacionException("Este lector tiene una reserva de este libro: "
                         + "apruébala y entrégalo desde la reserva.");
             }
-            if (reservaDAO.existePendienteDeOtro(em, libro.getId(), lector.getId())) {
-                throw new ValidacionException("Otro lector está esperando este libro (reserva pendiente). "
-                        + "Atiende primero su reserva.");
-            }
             if (libro.getStockDisponible() < 1) {
                 throw new ValidacionException("No hay copias disponibles de este libro.");
             }
@@ -166,8 +162,8 @@ public class PrestamoService {
 
     /*
      * El lector renueva SU prestamo: suma DIAS_RENOVACION a la fecha limite.
-     * No se puede si esta vencido, si ya llego a MAX_RENOVACIONES, si la
-     * cuenta esta suspendida o si otro lector esta esperando el libro.
+     * No se puede si esta vencido, si ya llego a MAX_RENOVACIONES o si la
+     * cuenta esta suspendida.
      */
     public PrestamoDTO renovar(UsuarioDTO actor, Long idPrestamo) {
         return Transaccion.ejecutar(em -> {
@@ -186,9 +182,6 @@ public class PrestamoService {
             if (prestamo.getRenovaciones() >= ReglasBiblioteca.MAX_RENOVACIONES) {
                 throw new ValidacionException("Ya renovaste este préstamo "
                         + ReglasBiblioteca.MAX_RENOVACIONES + " veces, que es el máximo.");
-            }
-            if (reservaDAO.existePendienteDeOtro(em, prestamo.getLibro().getId(), lector.getId())) {
-                throw new ValidacionException("Otro lector reservó este libro: no se puede renovar.");
             }
 
             prestamo.setFechaLimite(prestamo.getFechaLimite().plusDays(ReglasBiblioteca.DIAS_RENOVACION));

@@ -124,7 +124,7 @@ public class DashboardService {
                 : redondearUnDecimal((double) dashboardDAO.contarPrestamosNoAnulados(em) / lectores);
 
         dto.agregarCirculacion(
-                dashboardDAO.contarReservasAprobadas(em),
+                dashboardDAO.contarCopiasApartadas(em),
                 prestamosHoy,
                 circulacionSemanal(em),
                 duracionMedia,

@@ -19,6 +19,7 @@ import com.mycompany.wisebooks.service.LibroService;
 import com.mycompany.wisebooks.service.ReservaService;
 import com.mycompany.wisebooks.service.UsuarioService;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,7 @@ import java.util.List;
  * Las lineas importantes empiezan con ">>"; busca [OK] y [FALLO].
  *
  * Usa al administrador (por su correo, sin contrasena) y dos lectores de prueba
- * (se crean una sola vez). En cada ejecucion crea 3 libros nuevos de prueba y
+ * (se crean una sola vez). En cada ejecucion crea 4 libros nuevos de prueba y
  * al terminar deja a los lectores sin reservas vivas y en estado ACTIVO.
  */
 public class PruebaReservas {
@@ -78,16 +79,21 @@ public class PruebaReservas {
         final ReservaService reservaService = new ReservaService();
 
         String sufijo = String.valueOf(System.currentTimeMillis());
-        final Long idA = crearLibro(libroService, admin, "Libro A reservas " + sufijo, "RA-" + sufijo).getId();
-        final Long idB = crearLibro(libroService, admin, "Libro B reservas " + sufijo, "RB-" + sufijo).getId();
-        final Long idC = crearLibro(libroService, admin, "Libro C reservas " + sufijo, "RC-" + sufijo).getId();
+        final Long idA = crearLibro(libroService, admin, "Libro A reservas " + sufijo, "RA-" + sufijo, 1).getId();
+        final Long idB = crearLibro(libroService, admin, "Libro B reservas " + sufijo, "RB-" + sufijo, 1).getId();
+        final Long idC = crearLibro(libroService, admin, "Libro C reservas " + sufijo, "RC-" + sufijo, 1).getId();
+        final Long idD = crearLibro(libroService, admin, "Libro D reservas " + sufijo, "RD-" + sufijo, 2).getId();
 
-        // 1. Reservar
+        // 1. Reservar: aparta una copia y fija el plazo para recogerla
         System.out.println(">> 1. Reservar");
         final ReservaDTO r1 = reservaService.crear(lector1, idA);
         comprobar("la reserva nace PENDIENTE", r1.getEstado() == EstadoReserva.PENDIENTE);
-        comprobar("reservar no aparta copia (A sigue con 1 disponible)",
-                disponibles(libroService, admin, idA) == 1);
+        comprobar("reservar aparta la copia (A con 0 disponibles)",
+                disponibles(libroService, admin, idA) == 0);
+        comprobar("tiene plazo para recogerla de unos " + ReglasBiblioteca.DIAS_RETIRO_RESERVA + " días",
+                r1.getFechaLimiteRetiro() != null
+                && r1.getFechaLimiteRetiro().isAfter(LocalDateTime.now().plusDays(ReglasBiblioteca.DIAS_RETIRO_RESERVA - 1))
+                && r1.getFechaLimiteRetiro().isBefore(LocalDateTime.now().plusDays(ReglasBiblioteca.DIAS_RETIRO_RESERVA + 1)));
         esperarRechazo("reservar dos veces el mismo libro", ValidacionException.class,
                 () -> reservaService.crear(lector1, idA));
         esperarRechazo("un visitante intenta reservar", PermisoException.class,
@@ -99,28 +105,27 @@ public class PruebaReservas {
         esperarRechazo("un lector intenta aprobar", PermisoException.class,
                 () -> reservaService.aprobar(lector1, r1.getId()));
 
-        // 2. Aprobar
-        System.out.println(">> 2. Aprobar");
+        // 2. Sin copias no se puede reservar
+        System.out.println(">> 2. Sin copias disponibles");
+        esperarRechazo("reservar cuando no quedan copias", ValidacionException.class,
+                () -> reservaService.crear(lector2, idA));
+
+        // 3. Aprobar: solo confirma; no toca el stock ni el plazo
+        System.out.println(">> 3. Aprobar");
         ReservaDTO r1aprobada = reservaService.aprobar(admin, r1.getId());
         comprobar("queda APROBADA", r1aprobada.getEstado() == EstadoReserva.APROBADA);
-        comprobar("tiene plazo de retiro de unos 3 días", r1aprobada.getFechaLimiteRetiro() != null
-                && r1aprobada.getFechaLimiteRetiro().isAfter(LocalDateTime.now().plusDays(2)));
-        comprobar("aprobar aparta la copia (A con 0 disponibles)",
+        comprobar("aprobar no vuelve a bajar el stock (A sigue con 0)",
                 disponibles(libroService, admin, idA) == 0);
+        comprobar("aprobar no cambia el plazo para recogerla",
+                // Se compara al segundo: la base guarda microsegundos y Java puede tener mas precision
+                r1aprobada.getFechaLimiteRetiro().truncatedTo(ChronoUnit.SECONDS)
+                        .equals(r1.getFechaLimiteRetiro().truncatedTo(ChronoUnit.SECONDS)));
         esperarRechazo("aprobar una reserva ya aprobada", ValidacionException.class,
                 () -> reservaService.aprobar(admin, r1.getId()));
-
-        // 3. Sin copias
-        System.out.println(">> 3. Sin copias disponibles");
-        final ReservaDTO r2 = reservaService.crear(lector2, idA);
-        esperarRechazo("aprobar cuando no hay copias", ValidacionException.class,
-                () -> reservaService.aprobar(admin, r2.getId()));
-        comprobar("esa reserva sigue PENDIENTE",
-                estadoDe(reservaService, lector2, r2.getId()) == EstadoReserva.PENDIENTE);
         esperarRechazo("un lector intenta cancelar la reserva de otro", PermisoException.class,
                 () -> reservaService.cancelar(lector2, r1.getId()));
 
-        // 4. Cancelar libera la copia
+        // 4. Cancelar libera la copia (aprobada o pendiente)
         System.out.println(">> 4. Cancelar");
         ReservaDTO r1cancelada = reservaService.cancelar(lector1, r1.getId());
         comprobar("queda CANCELADA", r1cancelada.getEstado() == EstadoReserva.CANCELADA);
@@ -128,27 +133,39 @@ public class PruebaReservas {
                 disponibles(libroService, admin, idA) == 1);
         esperarRechazo("cancelar una reserva ya cancelada", ValidacionException.class,
                 () -> reservaService.cancelar(lector1, r1.getId()));
-        ReservaDTO r2aprobada = reservaService.aprobar(admin, r2.getId());
-        comprobar("ahora sí se aprueba la reserva que esperaba",
-                r2aprobada.getEstado() == EstadoReserva.APROBADA
-                && disponibles(libroService, admin, idA) == 0);
+        final ReservaDTO r2 = reservaService.crear(lector2, idA);
+        comprobar("con la copia libre, otro lector ya puede reservar A (A con 0)",
+                r2.getEstado() == EstadoReserva.PENDIENTE && disponibles(libroService, admin, idA) == 0);
         reservaService.cancelar(lector2, r2.getId());
-        comprobar("al cancelarla, A vuelve a 1", disponibles(libroService, admin, idA) == 1);
+        comprobar("cancelar una pendiente devuelve la copia (A con 1)",
+                disponibles(libroService, admin, idA) == 1);
 
-        // 5. Rechazar
-        System.out.println(">> 5. Rechazar");
+        // 5. Varios lectores pueden reservar el mismo libro (una copia cada uno)
+        System.out.println(">> 5. Varios lectores, mismo libro");
+        final ReservaDTO d1 = reservaService.crear(lector1, idD);
+        final ReservaDTO d2 = reservaService.crear(lector2, idD);
+        comprobar("dos lectores reservan D y cada uno aparta su copia (D con 0 de 2)",
+                d1.getEstado() == EstadoReserva.PENDIENTE && d2.getEstado() == EstadoReserva.PENDIENTE
+                && disponibles(libroService, admin, idD) == 0);
+        reservaService.cancelar(lector1, d1.getId());
+        reservaService.cancelar(lector2, d2.getId());
+        comprobar("al cancelar las dos, D vuelve a 2", disponibles(libroService, admin, idD) == 2);
+
+        // 6. Rechazar devuelve la copia
+        System.out.println(">> 6. Rechazar");
         final ReservaDTO r3 = reservaService.crear(lector1, idB);
         ReservaDTO r3rechazada = reservaService.rechazar(admin, r3.getId(), "Sin inventario");
         comprobar("queda RECHAZADA con su observación",
                 r3rechazada.getEstado() == EstadoReserva.RECHAZADA
                 && "Sin inventario".equals(r3rechazada.getObservaciones()));
+        comprobar("rechazar devuelve la copia (B con 1)", disponibles(libroService, admin, idB) == 1);
         esperarRechazo("cancelar una reserva rechazada", ValidacionException.class,
                 () -> reservaService.cancelar(lector1, r3.getId()));
         esperarRechazo("un lector intenta rechazar", PermisoException.class,
                 () -> reservaService.rechazar(lector1, r3.getId(), null));
 
-        // 6. Usuario suspendido
-        System.out.println(">> 6. Usuario suspendido");
+        // 7. Usuario suspendido
+        System.out.println(">> 7. Usuario suspendido");
         fijarEstado(lector2.getId(), EstadoUsuario.SUSPENDIDO);
         final ReservaDTO s1 = reservaService.crear(lector2, idA);
         final ReservaDTO s2 = reservaService.crear(lector2, idB);
@@ -161,21 +178,35 @@ public class PruebaReservas {
         reservaService.cancelar(lector2, s2.getId());
         fijarEstado(lector2.getId(), EstadoUsuario.ACTIVO);
 
-        // 7. Vencimiento
-        System.out.println(">> 7. Vencimiento");
+        comprobar("al cancelarlas, A y B vuelven a 1",
+                disponibles(libroService, admin, idA) == 1 && disponibles(libroService, admin, idB) == 1);
+
+        // 8. Vencimiento: una PENDIENTE que nadie atendio y una APROBADA que nadie recogio
+        System.out.println(">> 8. Vencimiento");
         final ReservaDTO r4 = reservaService.crear(lector1, idC);
-        reservaService.aprobar(admin, r4.getId());
-        comprobar("C con 0 disponibles tras aprobar", disponibles(libroService, admin, idC) == 0);
+        comprobar("C con 0 disponibles tras reservar", disponibles(libroService, admin, idC) == 0);
         envejecer(r4.getId());
-        comprobar("la reserva sin retirar pasó a VENCIDA",
-                estadoDe(reservaService, lector1, r4.getId()) == EstadoReserva.VENCIDA);
+        ReservaDTO r4vencida = buscarEnMisReservas(reservaService, lector1, r4.getId());
+        comprobar("la reserva PENDIENTE con el plazo cumplido pasó a VENCIDA",
+                r4vencida != null && r4vencida.getEstado() == EstadoReserva.VENCIDA);
+        comprobar("queda la observación de por qué venció",
+                r4vencida != null && r4vencida.getObservaciones() != null
+                && r4vencida.getObservaciones().contains("no se recogió"));
         comprobar("al vencer, la copia volvió (C con 1)", disponibles(libroService, admin, idC) == 1);
 
-        // 8. Listados
-        System.out.println(">> 8. Listados");
-        comprobar("el personal ve la reserva vencida en el listado",
+        final ReservaDTO r5 = reservaService.crear(lector1, idC);
+        reservaService.aprobar(admin, r5.getId());
+        envejecer(r5.getId());
+        comprobar("la reserva APROBADA sin recoger también pasó a VENCIDA",
+                estadoDe(reservaService, lector1, r5.getId()) == EstadoReserva.VENCIDA);
+        comprobar("y su copia volvió (C con 1)", disponibles(libroService, admin, idC) == 1);
+
+        // 9. Listados
+        System.out.println(">> 9. Listados");
+        comprobar("el personal ve las dos reservas vencidas en el listado",
                 reservaService.listar(admin, EstadoReserva.VENCIDA).stream()
-                        .anyMatch(x -> x.getId().equals(r4.getId())));
+                        .filter(x -> x.getId().equals(r4.getId()) || x.getId().equals(r5.getId()))
+                        .count() == 2);
         esperarRechazo("un lector intenta listar todas las reservas", PermisoException.class,
                 () -> reservaService.listar(lector1, null));
     }
@@ -207,7 +238,7 @@ public class PruebaReservas {
     }
 
     private static LibroDTO crearLibro(LibroService libroService, UsuarioDTO admin,
-            String titulo, String isbn) {
+            String titulo, String isbn, int copias) {
         LibroFormDTO f = new LibroFormDTO();
         f.setTitulo(titulo);
         f.setIsbn(isbn);
@@ -217,7 +248,7 @@ public class PruebaReservas {
         f.setCategoria("Novela");
         f.setGenero("Realismo mágico");
         f.setAutores(new ArrayList<>(List.of("Autor de prueba")));
-        f.setStockInicial(1);
+        f.setStockInicial(copias);
         return libroService.crear(admin, f);
     }
 
@@ -229,9 +260,17 @@ public class PruebaReservas {
      * Estado actual de una reserva, leyendola desde "mis reservas" del lector.
      */
     private static EstadoReserva estadoDe(ReservaService reservaService, UsuarioDTO lector, Long idReserva) {
+        ReservaDTO reserva = buscarEnMisReservas(reservaService, lector, idReserva);
+        return reserva == null ? null : reserva.getEstado();
+    }
+
+    /**
+     * Una reserva tal como la ve el lector en "mis reservas" (o null si no esta).
+     */
+    private static ReservaDTO buscarEnMisReservas(ReservaService reservaService, UsuarioDTO lector,
+            Long idReserva) {
         return reservaService.misReservas(lector).stream()
                 .filter(x -> x.getId().equals(idReserva))
-                .map(ReservaDTO::getEstado)
                 .findFirst()
                 .orElse(null);
     }
@@ -257,7 +296,9 @@ public class PruebaReservas {
     }
 
     /**
-     * Deja a los lectores en ACTIVO y sin reservas vivas.
+     * Deja a los lectores en ACTIVO y sin reservas vivas. No devuelve las
+     * copias apartadas: solo afecta a los libros de prueba de una ejecucion
+     * anterior, que no se vuelven a usar (cada ejecucion crea los suyos).
      */
     private static void limpiar(UsuarioDTO lector1, UsuarioDTO lector2) {
         fijarEstado(lector2.getId(), EstadoUsuario.ACTIVO);

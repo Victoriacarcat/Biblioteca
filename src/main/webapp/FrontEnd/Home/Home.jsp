@@ -51,9 +51,9 @@
                     </span>
                     <h1>Tu próxima gran lectura empieza aquí</h1>
                     <p>
-                        Explorá el catálogo, reservá tus libros favoritos y llevá el control
-                        de tus préstamos desde un solo lugar. Sumate a la comunidad de WiseBooks
-                        y hacé de la lectura un hábito.
+                        Explora el catálogo, reserva tus libros favoritos y lleva el control
+                        de tus préstamos desde un solo lugar. Únete a la comunidad de WiseBooks
+                        y haz de la lectura un hábito.
                     </p>
                     <div class="hero-home-acciones">
                         <a href="${pageContext.request.contextPath}/FrontEnd/Catalogo/Catalogo.jsp" class="btn btn-dorado">Explorar catálogo</a>
@@ -62,18 +62,18 @@
                     </div>
                 </div>
 
-                <!-- Lector / Bibliotecario / Administrador: saludo personalizado -->
-                <div class="hero-home-texto" data-rol="lector,bibliotecario,administrador" hidden>
+                <!-- Lector: saludo personalizado -->
+                <div class="hero-home-texto" data-rol="lector" hidden>
                     <span class="etiqueta-seccion">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
                             <path d="M6.174 1.184a2 2 0 0 1 3.652 0A2 2 0 0 1 12.99 3.01a2 2 0 0 1 1.826 3.164 2 2 0 0 1 0 3.652 2 2 0 0 1-1.826 3.164 2 2 0 0 1-3.164 1.826 2 2 0 0 1-3.652 0A2 2 0 0 1 3.01 12.99a2 2 0 0 1-1.826-3.164 2 2 0 0 1 0-3.652A2 2 0 0 1 3.01 3.01a2 2 0 0 1 3.164-1.826M8 1a1 1 0 0 0-.998 1.03l.01.091q.017.116.054.296c.049.241.122.542.213.887.182.688.428 1.513.676 2.314L8 5.762l.045-.144c.248-.8.494-1.626.676-2.314.091-.345.164-.646.213-.887a5 5 0 0 0 .064-.386L9 2a1 1 0 0 0-1-1M2 9l.03-.002.091-.01a5 5 0 0 0 .296-.054c.241-.049.542-.122.887-.213a61 61 0 0 0 2.314-.676L5.762 8l-.144-.045a61 61 0 0 0-2.314-.676 17 17 0 0 0-.887-.213 5 5 0 0 0-.386-.064L2 7a1 1 0 1 0 0 2m7 5-.002-.03a5 5 0 0 0-.064-.386 16 16 0 0 0-.213-.888 61 61 0 0 0-.676-2.314L8 10.238l-.045.144c-.248.8-.494 1.626-.676 2.314-.091.345-.164.646-.213.887a5 5 0 0 0-.064.386L7 14a1 1 0 1 0 2 0m-5.696-2.134.025-.017a5 5 0 0 0 .303-.248c.184-.164.408-.377.661-.629A61 61 0 0 0 5.96 9.23l.103-.111-.147.033a61 61 0 0 0-2.343.572c-.344.093-.64.18-.874.258a5 5 0 0 0-.367.138l-.027.014a1 1 0 1 0 1 1.732zM4.5 14.062a1 1 0 0 0 1.366-.366l.014-.027q.014-.03.036-.084a5 5 0 0 0 .102-.283c.078-.233.165-.53.258-.874a61 61 0 0 0 .572-2.343l.033-.147-.11.102a61 61 0 0 0-1.743 1.667 17 17 0 0 0-.629.66 5 5 0 0 0-.248.304l-.017.025a1 1 0 0 0 .366 1.366m9.196-8.196a1 1 0 0 0-1-1.732l-.025.017a5 5 0 0 0-.303.248 17 17 0 0 0-.661.629A61 61 0 0 0 10.04 6.77l-.102.111.147-.033a61 61 0 0 0 2.342-.572c.345-.093.642-.18.875-.258a5 5 0 0 0 .367-.138zM11.5 1.938a1 1 0 0 0-1.366.366l-.014.027q-.014.03-.036.084a5 5 0 0 0-.102.283c-.078.233-.165.53-.258.875a61 61 0 0 0-.572 2.342l-.033.147.11-.102a61 61 0 0 0 1.743-1.667c.252-.253.465-.477.629-.66a5 5 0 0 0 .248-.304l.017-.025a1 1 0 0 0-.366-1.366M14 9a1 1 0 0 0 0-2l-.03.002a5 5 0 0 0-.386.064c-.242.049-.543.122-.888.213-.688.182-1.513.428-2.314.676L10.238 8l.144.045c.8.248 1.626.494 2.314.676.345.091.646.164.887.213a5 5 0 0 0 .386.064zM1.938 4.5a1 1 0 0 0 .393 1.38l.084.035q.108.045.283.103c.233.078.53.165.874.258a61 61 0 0 0 2.343.572l.147.033-.103-.111a61 61 0 0 0-1.666-1.742 17 17 0 0 0-.66-.629 5 5 0 0 0-.304-.248l-.025-.017a1 1 0 0 0-1.366.366m2.196-1.196.017.025a5 5 0 0 0 .248.303c.164.184.377.408.629.661A61 61 0 0 0 6.77 5.96l.111.102-.033-.147a61 61 0 0 0-.572-2.342c-.093-.345-.18-.642-.258-.875a5 5 0 0 0-.138-.367l-.014-.027a1 1 0 1 0-1.732 1m9.928 8.196a1 1 0 0 0-.366-1.366l-.027-.014a5 5 0 0 0-.367-.138c-.233-.078-.53-.165-.875-.258a61 61 0 0 0-2.342-.572l-.147-.033.102.111a61 61 0 0 0 1.667 1.742c.253.252.477.465.66.629a5 5 0 0 0 .304.248l.025.017a1 1 0 0 0 1.366-.366m-3.928 2.196a1 1 0 0 0 1.732-1l-.017-.025a5 5 0 0 0-.248-.303 17 17 0 0 0-.629-.661A61 61 0 0 0 9.23 10.04l-.111-.102.033.147a61 61 0 0 0 .572 2.342c.093.345.18.642.258.875a5 5 0 0 0 .138.367zM8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
                         </svg>
                         Qué bueno verte de nuevo
                     </span>
-                    <h1>Hola, <span id="home-nombre-usuario"></span>.<br>Retomá tu lectura.</h1>
+                    <h1>Hola, <span class="home-nombre-usuario"></span>.<br>Retoma tu lectura.</h1>
                     <p>
                         Nuevos títulos, más lectores y siempre algo interesante para
-                        descubrir. Volvé a donde lo dejaste o date una vuelta por el
+                        descubrir. Vuelve a donde lo dejaste o date una vuelta por el
                         catálogo.
                     </p>
                     <div class="hero-home-acciones">
@@ -82,9 +82,39 @@
                     </div>
                 </div>
 
+                <!-- Bibliotecario / Administrador: saludo de trabajo con accesos a sus tareas -->
+                <div class="hero-home-texto" data-rol="bibliotecario,administrador" hidden>
+                    <span class="etiqueta-seccion">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
+                            <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5m1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0M1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5"/>
+                        </svg>
+                        Panel de trabajo
+                    </span>
+                    <h1>Hola, <span class="home-nombre-usuario"></span>.<br>Esto es lo que necesita tu atención hoy.</h1>
+                    <p>
+                        Atiende las reservas, registra préstamos y devoluciones y revisa
+                        el estado del inventario.
+                    </p>
+                    <div class="hero-home-acciones">
+                        <a href="${pageContext.request.contextPath}/FrontEnd/Dashboard/Dashboard.jsp" class="btn btn-dorado">Ir al panel</a>
+                        <a href="${pageContext.request.contextPath}/FrontEnd/Reservas/Reservas.jsp" class="btn btn-outline-primary">Atender reservas</a>
+                        <a href="${pageContext.request.contextPath}/FrontEnd/Prestamos/Prestamos.jsp" class="btn btn-outline-secondary">Registrar préstamo</a>
+                    </div>
+                </div>
+
             </div>
         </section>
-        <section class="seccion-categorias-home">
+        <!-- Bibliotecario / Administrador: lo pendiente hoy. Home.js pinta las tarjetas -->
+        <section class="seccion-pendientes-home" data-rol="bibliotecario,administrador" hidden>
+            <div class="container">
+                <span class="etiqueta-seccion">Hoy en la biblioteca</span>
+                <h2>Pendientes de hoy</h2>
+                <div class="panel-metricas-kpis" id="home-pendientes"></div>
+            </div>
+        </section>
+
+        <!-- Secciones para lectores: el personal no las ve (data-rol, Utilidades.js) -->
+        <section class="seccion-categorias-home" data-rol="visitante,lector" hidden>
             <div class="container">
                 <span class="etiqueta-seccion">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
@@ -93,7 +123,7 @@
                     </svg>
                     Para cada lector
                 </span>
-                <h2>Explorá por categoría</h2>
+                <h2>Explora por categoría</h2>
 
                 <div class="fila-categorias">
                     <a class="tarjeta-categoria" href="${pageContext.request.contextPath}/FrontEnd/Catalogo/Catalogo.jsp">
@@ -186,7 +216,8 @@
                 </a>
             </div>
         </section>
-        <section class="banner-seccion-oscuro">
+        <!-- Club de lectura: invita a crear cuenta, así que solo lo ve el visitante -->
+        <section class="banner-seccion-oscuro" data-rol="visitante" hidden>
             <div class="container banner-cta">
                 <div class="banner-cta-texto">
                     <div class="banner-cta-icono">
@@ -196,7 +227,7 @@
                     </div>
                     <div>
                         <span class="etiqueta-seccion">Sé parte de la comunidad</span>
-                        <h2>Sumate al Club de Lectura WiseBooks</h2>
+                        <h2>Únete al Club de Lectura WiseBooks</h2>
                         <p>Un libro por mes, charlas con otros lectores y recomendaciones curadas por el equipo de la biblioteca.</p>
                     </div>
                 </div>
@@ -206,7 +237,7 @@
             </div>
         </section>
 
-        <section class="seccion-tips-lectura">
+        <section class="seccion-tips-lectura" data-rol="visitante,lector" hidden>
             <div class="container">
                 <span class="etiqueta-seccion">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
@@ -228,27 +259,27 @@
                         <div class="tarjeta-tip">
                             <span class="numero-tip">02</span>
                             <h3>La regla de las 50 páginas</h3>
-                            <p>Si un libro no te atrapó a las 50 páginas, no pasa nada: dejalo y probá otro.</p>
+                            <p>Si un libro no te atrapó a las 50 páginas, no pasa nada: déjalo y prueba otro.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="tarjeta-tip">
                             <span class="numero-tip">03</span>
-                            <h3>Alterná géneros</h3>
-                            <p>Combiná ficción con no ficción para no perder el ritmo de lectura.</p>
+                            <h3>Alterna géneros</h3>
+                            <p>Combina ficción con no ficción para no perder el ritmo de lectura.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="tarjeta-tip">
                             <span class="numero-tip">04</span>
-                            <h3>Llevá un diario de lectura</h3>
-                            <p>Anotá una frase o idea por libro: te ayuda a recordarlo meses después.</p>
+                            <h3>Lleva un diario de lectura</h3>
+                            <p>Anota una frase o idea por libro: te ayuda a recordarlo meses después.</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="tarjeta-tip">
                             <span class="numero-tip">05</span>
-                            <h3>Sumate a un club de lectura</h3>
+                            <h3>Únete a un club de lectura</h3>
                             <p>Comentar un libro con otras personas multiplica lo que te deja.</p>
                         </div>
                     </div>
@@ -256,7 +287,7 @@
             </div>
         </section>
 
-        <section class="seccion-testimonios-home">
+        <section class="seccion-testimonios-home" data-rol="visitante,lector" hidden>
             <div class="container">
                 <span class="etiqueta-seccion">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
@@ -333,20 +364,20 @@
         </section>
 
         <!-- Boletín -->
-        <section class="banner-boletin">
+        <section class="banner-boletin" data-rol="visitante,lector" hidden>
             <div class="container banner-boletin-contenido">
                 <div class="banner-boletin-texto">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" style="width:28px;height:28px;flex-shrink:0;" aria-hidden="true">
                         <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
                     </svg>
                     <div>
-                        <h2>Mantenete al día</h2>
+                        <h2>Mantente al día</h2>
                         <p>Novedades del catálogo y tips de lectura, directo a tu correo.</p>
                     </div>
                 </div>
                 <div>
                     <form id="form-boletin" novalidate>
-                        <input type="email" id="boletin-correo" class="campo-boletin" placeholder="Ingresá tu correo" required>
+                        <input type="email" id="boletin-correo" class="campo-boletin" placeholder="Ingresa tu correo" required>
                         <button type="submit" class="btn btn-dorado">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="icono-svg" aria-hidden="true">
                                 <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
@@ -374,17 +405,24 @@
                         <li><a href="${pageContext.request.contextPath}/FrontEnd/Catalogo/Catalogo.jsp">Catálogo</a></li>
                     </ul>
                 </div>
-                <div class="col-6 col-md-3">
+                <!-- Visitante: entrar o crear cuenta -->
+                <div class="col-6 col-md-3" data-rol="visitante" hidden>
                     <h6>Cuenta</h6>
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/FrontEnd/Auth/Login.jsp">Iniciar sesión</a></li>
                         <li><a href="${pageContext.request.contextPath}/FrontEnd/Auth/CrearCuenta.jsp">Crear cuenta</a></li>
                     </ul>
                 </div>
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3" data-rol="visitante" hidden>
                     <h6>¿Listo para explorar?</h6>
-                    <p>Entrá a tu cuenta y continuá donde lo dejaste.</p>
+                    <p>Entra a tu cuenta y continúa donde lo dejaste.</p>
                     <a href="${pageContext.request.contextPath}/FrontEnd/Auth/Login.jsp" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
+                </div>
+                <!-- Con sesión iniciada: ya tiene cuenta, se le lleva a su panel -->
+                <div class="col-6 col-md-3" data-rol="lector,bibliotecario,administrador" hidden>
+                    <h6>Tu cuenta</h6>
+                    <p>Revisa tu panel para ver lo pendiente.</p>
+                    <a href="${pageContext.request.contextPath}/FrontEnd/Dashboard/Dashboard.jsp" class="btn btn-outline-light btn-sm">Ir a mi panel</a>
                 </div>
             </div>
         </div>

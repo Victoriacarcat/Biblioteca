@@ -245,8 +245,10 @@ function mostrarLibros() {
 async function reservarLibro(libro, boton) {
     boton.disabled = true;
     try {
-        await api.post("/reservas", { idLibro: libro.id });
-        avisarCatalogo("exito", `Reservaste "${libro.titulo}". Puedes ver su estado en Mis reservas.`);
+        // El servidor devuelve la reserva creada, con la fecha límite para recogerla
+        const reserva = await api.post("/reservas", { idLibro: libro.id });
+        avisarCatalogo("exito", `Reservaste "${libro.titulo}". Tienes 3 días para recogerlo `
+            + `(hasta el ${formatearFechaHora(reserva.fechaLimiteRetiro)}).`);
     } catch (error) {
         avisarCatalogo("error", error.message);
     }

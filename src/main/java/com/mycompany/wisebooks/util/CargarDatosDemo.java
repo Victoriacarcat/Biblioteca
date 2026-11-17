@@ -746,14 +746,17 @@ public class CargarDatosDemo {
     // ===================== Reservas =====================
 
     private void crearReservas() {
-        // Pendientes: esperan que el personal las apruebe
+        // Toda reserva viva aparta una copia y vence a los 3 dias de hecha,
+        // asi que las vivas deben tener menos de 3 dias.
+
+        // Pendientes: la copia esta apartada; falta que el personal la confirme
         pendiente("antonia", "hp1", 1);
         pendiente("paula", "sombra", 1);
         pendiente("david", "dune", 2);
         pendiente("sebastian", "principito", 2);
-        pendiente("tomas", "comunidad", 3);
+        pendiente("tomas", "comunidad", 2);
 
-        // Aprobadas: la copia esta apartada y el lector tiene 3 dias para retirarla
+        // Aprobadas: el personal confirmo que la copia esta lista para recoger
         aprobada("mariana", "sapiens", 1);
         aprobada("juanjose", "cosmos", 2);
         aprobada("lucia", "rayuela", 1);
@@ -767,18 +770,28 @@ public class CargarDatosDemo {
         vencida("sara", "quijote", 35);
     }
 
+    /* Pendiente: aparta una copia desde que se hace, como ReservaService.crear. */
     private void pendiente(String lector, String libro, int haceDias) {
-        nuevaReserva(lector, libro, hace(haceDias), EstadoReserva.PENDIENTE);
+        Reserva reserva = nuevaReserva(lector, libro, hace(haceDias), EstadoReserva.PENDIENTE);
+        exigirDentroDelPlazo(reserva);
+        apartarCopia(reserva.getLibro());
     }
 
-    /* Aprobada hace poco: aparta una copia, como ReservaService.aprobar. */
+    /* Aprobada: tambien aparta su copia; el personal la confirmo 2 horas despues. */
     private void aprobada(String lector, String libro, int haceDias) {
         Reserva reserva = nuevaReserva(lector, libro, hace(haceDias), EstadoReserva.APROBADA);
         resolver(reserva, reserva.getFechaReserva().plusHours(2));
-        if (reserva.getFechaLimiteRetiro().isBefore(ahora)) {
-            throw new IllegalStateException("La reserva aprobada ya estaría vencida: " + libro);
-        }
+        exigirDentroDelPlazo(reserva);
         apartarCopia(reserva.getLibro());
+    }
+
+    /* Una reserva viva de la demo no puede tener el plazo cumplido (el sistema la venceria). */
+    private void exigirDentroDelPlazo(Reserva reserva) {
+        if (reserva.getFechaLimiteRetiro().isBefore(ahora)) {
+            throw new IllegalStateException("La reserva de \"" + reserva.getLibro().getTitulo()
+                    + "\" ya estaría vencida: debe tener menos de "
+                    + ReglasBiblioteca.DIAS_RETIRO_RESERVA + " días.");
+        }
     }
 
     private void rechazada(String lector, String libro, int haceDias, String motivo) {
@@ -793,11 +806,12 @@ public class CargarDatosDemo {
         nuevaReserva(lector, libro, hace(haceDias), EstadoReserva.CANCELADA);
     }
 
-    /* Se aprobo pero el lector no la retiro en 3 dias (la copia ya volvio al stock). */
+    /* Se aprobo pero el lector no la recogio en 3 dias (la copia ya volvio al stock). */
     private void vencida(String lector, String libro, int haceDias) {
         Reserva reserva = nuevaReserva(lector, libro, hace(haceDias), EstadoReserva.VENCIDA);
         resolver(reserva, reserva.getFechaReserva().plusHours(3));
-        reserva.setObservaciones("Venció: no se retiró en el plazo.");
+        reserva.setObservaciones("Venció: no se recogió en los "
+                + ReglasBiblioteca.DIAS_RETIRO_RESERVA + " días.");
     }
 
     /* Reserva que termino en este prestamo: se aprobo el dia anterior a la entrega. */
@@ -806,6 +820,7 @@ public class CargarDatosDemo {
         reserva.setUsuario(prestamo.getUsuario());
         reserva.setLibro(prestamo.getLibro());
         reserva.setFechaReserva(prestamo.getFechaPrestamo().minusDays(2));
+        reserva.setFechaLimiteRetiro(reserva.getFechaReserva().plusDays(ReglasBiblioteca.DIAS_RETIRO_RESERVA));
         reserva.setEstado(EstadoReserva.RETIRADA);
         resolver(reserva, prestamo.getFechaPrestamo().minusDays(1));
         em.persist(reserva);
@@ -818,17 +833,18 @@ public class CargarDatosDemo {
         reserva.setUsuario(usuarios.get(lector));
         reserva.setLibro(libros.get(libro));
         reserva.setFechaReserva(fecha);
+        // Como en ReservaService.crear: el plazo para recoger corre desde que se reserva
+        reserva.setFechaLimiteRetiro(fecha.plusDays(ReglasBiblioteca.DIAS_RETIRO_RESERVA));
         reserva.setEstado(estado);
         em.persist(reserva);
         totalReservas++;
         return reserva;
     }
 
-    /* Aprobacion: quien y cuando, y el plazo de retiro (DIAS_RETIRO_RESERVA). */
+    /* Aprobacion: quien y cuando (el plazo ya se fijo al crear la reserva). */
     private void resolver(Reserva reserva, LocalDateTime cuando) {
         reserva.setResueltaPor(personalDeTurno());
         reserva.setResueltaEn(cuando);
-        reserva.setFechaLimiteRetiro(cuando.plusDays(ReglasBiblioteca.DIAS_RETIRO_RESERVA));
     }
 
     // ===================== Sanciones =====================
@@ -956,7 +972,7 @@ public class CargarDatosDemo {
         em.persist(registro);
     }
 
-    /* Una copia deja de estar disponible (prestamo activo o reserva aprobada). */
+    /* Una copia deja de estar disponible (prestamo activo o reserva viva). */
     private void apartarCopia(Libro libro) {
         if (libro.getStockDisponible() < 1) {
             throw new IllegalStateException("No quedan copias disponibles de \"" + libro.getTitulo() + "\"");

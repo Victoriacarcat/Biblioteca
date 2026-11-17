@@ -112,6 +112,7 @@ public class PruebaPrestamos {
         fijarEstado(lector2.getId(), EstadoUsuario.ACTIVO);
 
         System.out.println(">> 2. Entrega de una reserva aprobada");
+        // La copia de B se aparta al reservar; entregar no la vuelve a descontar
         ReservaDTO rB = reservaService.crear(lector2, idB);
         esperarRechazo("entregar una reserva que todavía está pendiente", ValidacionException.class,
                 () -> prestamoService.entregarReserva(admin, rB.getId()));
@@ -123,13 +124,23 @@ public class PruebaPrestamos {
         esperarRechazo("entregar dos veces la misma reserva", ValidacionException.class,
                 () -> prestamoService.entregarReserva(admin, rB.getId()));
 
-        System.out.println(">> 3. Prioridad de las reservas pendientes");
+        System.out.println(">> 3. Reservas y préstamo directo");
+        // Cada reserva aparta su copia: esa copia no se puede prestar a otro
         ReservaDTO rC = reservaService.crear(lector2, idC);
-        esperarRechazo("prestar directo un libro que otro lector está esperando", ValidacionException.class,
+        comprobar("reservar aparta la copia (C con 0)", disponibles(libroService, admin, idC) == 0);
+        esperarRechazo("prestar directo la única copia, apartada por una reserva", ValidacionException.class,
                 () -> prestamoService.entregarDirecto(admin, lector1.getId(), idC));
         esperarRechazo("prestar directo un libro que el propio lector tiene reservado", ValidacionException.class,
                 () -> prestamoService.entregarDirecto(admin, lector2.getId(), idC));
         reservaService.cancelar(lector2, rC.getId());
+        // Si quedan otras copias, una reserva de otro lector ya no bloquea el préstamo
+        Long idD = crearLibro(libroService, admin, "Libro D préstamos " + sufijo, "PD-" + sufijo, 2).getId();
+        ReservaDTO rD = reservaService.crear(lector2, idD);
+        PrestamoDTO pD = prestamoService.entregarDirecto(admin, lector1.getId(), idD);
+        comprobar("se presta la otra copia aunque otro lector tenga una reserva (D con 0 de 2)",
+                pD.getEstado() == EstadoPrestamo.ACTIVO && disponibles(libroService, admin, idD) == 0);
+        prestamoService.devolver(admin, pD.getId());
+        reservaService.cancelar(lector2, rD.getId());
 
         System.out.println(">> 4. Renovar");
         PrestamoDTO renovado = prestamoService.renovar(lector1, pA.getId());
@@ -140,12 +151,11 @@ public class PruebaPrestamos {
         comprobar("lleva 1 renovación", renovado.getRenovaciones() == 1);
         esperarRechazo("un lector intenta renovar el préstamo de otro", PermisoException.class,
                 () -> prestamoService.renovar(lector2, pA.getId()));
+        // La reserva de otro lector tiene su propia copia: no impide renovar
         ReservaDTO rA = reservaService.crear(lector2, idA);
-        esperarRechazo("renovar cuando otro lector reservó el libro", ValidacionException.class,
-                () -> prestamoService.renovar(lector1, pA.getId()));
-        reservaService.cancelar(lector2, rA.getId());
-        comprobar("sin reservas de otros, se renueva otra vez (2)",
+        comprobar("se renueva aunque otro lector reservó el libro (2)",
                 prestamoService.renovar(lector1, pA.getId()).getRenovaciones() == 2);
+        reservaService.cancelar(lector2, rA.getId());
         esperarRechazo("renovar más de " + ReglasBiblioteca.MAX_RENOVACIONES + " veces", ValidacionException.class,
                 () -> prestamoService.renovar(lector1, pA.getId()));
 

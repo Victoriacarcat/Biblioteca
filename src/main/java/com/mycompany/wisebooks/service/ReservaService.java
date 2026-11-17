@@ -33,10 +33,11 @@ import java.util.List;
  *   - Aprobar, rechazar y ver todas: ADMINISTRADOR y BIBLIOTECARIO.
  *
  * Ciclo de una reserva:
- *   PENDIENTE --aprobar--> APROBADA (se aparta una copia y corren 3 dias para retirarla)
- *   PENDIENTE --rechazar--> RECHAZADA
- *   PENDIENTE o APROBADA --cancelar--> CANCELADA (si estaba aprobada, la copia se libera)
- *   APROBADA --pasan 3 dias sin retirar--> VENCIDA (la copia se libera)
+ *   reservar --> PENDIENTE (se aparta una copia y corren 3 dias para recogerla)
+ *   PENDIENTE --aprobar--> APROBADA (el personal confirma que la copia esta lista)
+ *   PENDIENTE --rechazar--> RECHAZADA (la copia se libera)
+ *   PENDIENTE o APROBADA --cancelar--> CANCELADA (la copia se libera)
+ *   PENDIENTE o APROBADA --pasan 3 dias sin recoger--> VENCIDA (la copia se libera)
  *   APROBADA --entrega del libro--> RETIRADA (lo hace PrestamoService)
  *
  * El vencimiento no usa un proceso programado: se aplica al consultar o actuar
@@ -77,7 +78,10 @@ public class ReservaService {
     // Acciones del lector
 
 
-    /* Crea una reserva PENDIENTE. Se puede reservar aunque haya copias disponibles. */
+    /*
+     * Crea una reserva PENDIENTE y aparta una copia del libro: el lector tiene
+     * DIAS_RETIRO_RESERVA dias para recogerla. Sin copias disponibles no se puede reservar.
+     */
     public ReservaDTO crear(UsuarioDTO actor, Long idLibro) {
         vencerVencidas();
         return Transaccion.ejecutar(em -> {
@@ -100,14 +104,24 @@ public class ReservaService {
                 throw new ValidacionException("Tu cuenta está suspendida: solo puedes tener "
                         + ReglasBiblioteca.MAX_RESERVAS_SUSPENDIDO + " reservas activas.");
             }
+            if (libro.getStockDisponible() < 1) {
+                throw new ValidacionException("No hay copias disponibles para reservar este libro.");
+            }
+
+            // Se aparta la copia desde ya y empieza a correr el plazo para recogerla
+            LocalDateTime ahora = LocalDateTime.now();
+            libro.setStockDisponible(libro.getStockDisponible() - 1);
 
             Reserva reserva = new Reserva();
             reserva.setUsuario(lector);
             reserva.setLibro(libro);
+            reserva.setFechaReserva(ahora);
+            reserva.setFechaLimiteRetiro(ahora.plusDays(ReglasBiblioteca.DIAS_RETIRO_RESERVA));
             reservaDAO.guardar(em, reserva);
 
             auditoriaService.registrar(em, lector, AccionAuditoria.CREAR, "Reserva", reserva.getId(),
-                    "Reservó \"" + libro.getTitulo() + "\".");
+                    "Reservó \"" + libro.getTitulo() + "\". Plazo para recogerlo: "
+                    + ReglasBiblioteca.DIAS_RETIRO_RESERVA + " días.");
             return ReservaDTO.desde(reserva);
         });
     }
@@ -138,7 +152,11 @@ public class ReservaService {
 
     // Acciones del personal
 
-    /* Aprueba una reserva PENDIENTE: aparta una copia y fija el plazo de retiro. */
+    /*
+     * Aprueba una reserva PENDIENTE: el personal confirma que la copia esta
+     * lista en el mostrador. La copia ya se aparto al reservar y el plazo para
+     * recogerla ya esta fijado, asi que aqui no se tocan.
+     */
     public ReservaDTO aprobar(UsuarioDTO actor, Long idReserva) {
         vencerVencidas();
         return Transaccion.ejecutar(em -> {
@@ -152,21 +170,14 @@ public class ReservaService {
             if (!libro.isActivo()) {
                 throw new ValidacionException("El libro está desactivado.");
             }
-            if (libro.getStockDisponible() < 1) {
-                throw new ValidacionException("No hay copias disponibles. "
-                        + "La reserva sigue pendiente hasta que se libere una.");
-            }
 
-            LocalDateTime ahora = LocalDateTime.now();
-            libro.setStockDisponible(libro.getStockDisponible() - 1);
             reserva.setEstado(EstadoReserva.APROBADA);
-            reserva.setFechaLimiteRetiro(ahora.plusDays(ReglasBiblioteca.DIAS_RETIRO_RESERVA));
             reserva.setResueltaPor(personal);
-            reserva.setResueltaEn(ahora);
+            reserva.setResueltaEn(LocalDateTime.now());
 
             auditoriaService.registrar(em, personal, AccionAuditoria.CAMBIO_ESTADO, "Reserva", reserva.getId(),
-                    "Aprobó la reserva de \"" + libro.getTitulo() + "\". Plazo de retiro: "
-                    + ReglasBiblioteca.DIAS_RETIRO_RESERVA + " días.");
+                    "Aprobó la reserva de \"" + libro.getTitulo() + "\". El lector puede recogerlo hasta el "
+                    + reserva.getFechaLimiteRetiro().toLocalDate() + ".");
             return ReservaDTO.desde(reserva);
         });
     }
@@ -182,7 +193,7 @@ public class ReservaService {
                 throw new ValidacionException("Solo se pueden rechazar reservas pendientes.");
             }
 
-            reserva.setEstado(EstadoReserva.RECHAZADA);
+            cerrar(reserva, EstadoReserva.RECHAZADA); // devuelve la copia apartada
             reserva.setResueltaPor(personal);
             reserva.setResueltaEn(LocalDateTime.now());
             reserva.setObservaciones(Texto.opcional(observaciones, "Las observaciones", MAX_OBSERVACIONES));
@@ -196,8 +207,8 @@ public class ReservaService {
     // Vencimiento automatico
 
     /*
-     * Pasa a VENCIDA las reservas aprobadas cuyo plazo de retiro ya termino y
-     * devuelve cada copia al stock. Se llama al inicio de cada operacion
+     * Pasa a VENCIDA las reservas vivas (pendientes o aprobadas) cuyo plazo
+     * para recoger ya termino y devuelve cada copia al stock. Se llama al inicio de cada operacion
      * (tambien desde PrestamoService), en su propia transaccion.
      * Si otra persona las vencio al mismo tiempo, se ignora el choque.
      */
@@ -205,13 +216,14 @@ public class ReservaService {
         try {
             Transaccion.ejecutarAccion(em -> {
                 LocalDateTime ahora = LocalDateTime.now();
-                for (Reserva reserva : reservaDAO.buscarAprobadasVencidas(em, ahora)) {
+                for (Reserva reserva : reservaDAO.buscarVivasVencidas(em, ahora)) {
                     cerrar(reserva, EstadoReserva.VENCIDA);
-                    reserva.setObservaciones("Venció: no se retiró en el plazo.");
+                    reserva.setObservaciones("Venció: no se recogió en los "
+                            + ReglasBiblioteca.DIAS_RETIRO_RESERVA + " días.");
                     // Sin actor: la accion la hace el sistema
                     auditoriaService.registrar(em, null, AccionAuditoria.CAMBIO_ESTADO, "Reserva",
                             reserva.getId(), "La reserva de \"" + reserva.getLibro().getTitulo()
-                            + "\" venció sin retirarse.");
+                            + "\" venció sin recogerse.");
                 }
             });
         } catch (ValidacionException e) {
@@ -221,11 +233,12 @@ public class ReservaService {
 
     // Ayudas internas
     /*
-     * Cambia el estado a uno que cierra la reserva (cancelada, vencida...).
-     * Si estaba APROBADA tenia una copia apartada: se devuelve al stock.
+     * Cambia el estado a uno que cierra la reserva (rechazada, cancelada, vencida...).
+     * Si seguia viva (PENDIENTE o APROBADA) tenia una copia apartada: se devuelve al stock.
      */
     private void cerrar(Reserva reserva, EstadoReserva nuevoEstado) {
-        if (reserva.getEstado() == EstadoReserva.APROBADA) {
+        if (reserva.getEstado() == EstadoReserva.PENDIENTE
+                || reserva.getEstado() == EstadoReserva.APROBADA) {
             Libro libro = reserva.getLibro();
             libro.setStockDisponible(libro.getStockDisponible() + 1);
         }

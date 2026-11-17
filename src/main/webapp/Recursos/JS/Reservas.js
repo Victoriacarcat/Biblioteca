@@ -9,7 +9,7 @@ Bloque del Lector (datos reales):
 
 Bloque del personal:
     GET  /api/reservas?estado=PENDIENTE      -> todas (el servidor filtra por estado)
-    PUT  /api/reservas?id=5&accion=aprobar   -> aparta una copia (plazo de retiro: 3 días)
+    PUT  /api/reservas?id=5&accion=aprobar   -> confirma que la copia (apartada al reservar) está lista
     PUT  /api/reservas?id=5&accion=rechazar {observaciones}
     POST /api/prestamos {idReserva}          -> entrega el libro de una reserva APROBADA
 */
@@ -21,11 +21,16 @@ function sePuedeCancelar(reserva) {
     return reserva.estado === "PENDIENTE" || reserva.estado === "APROBADA";
 }
 
-/* Estado de la reserva; si está aprobada, recuerda hasta cuándo se puede retirar el libro. */
-function celdaEstadoReserva(reserva) {
+/*
+ Estado de la reserva; si sigue viva (pendiente o aprobada) recuerda hasta
+ cuándo se puede recoger el libro: la copia se aparta desde que se reserva.
+ La tabla del personal tiene su propia columna para el plazo, así que pasa
+ mostrarPlazo = false.
+*/
+function celdaEstadoReserva(reserva, mostrarPlazo = true) {
     let html = pastillaEstado("reserva", reserva.estado);
-    if (reserva.estado === "APROBADA" && reserva.fechaLimiteRetiro) {
-        html += `<small class="d-block">Retíralo antes del ${formatearFechaHora(reserva.fechaLimiteRetiro)}</small>`;
+    if (mostrarPlazo && sePuedeCancelar(reserva) && reserva.fechaLimiteRetiro) {
+        html += `<small class="d-block">Recoger antes del ${formatearFechaHora(reserva.fechaLimiteRetiro)}</small>`;
     }
     if (reserva.observaciones) {
         html += `<small class="d-block">${escaparHtml(reserva.observaciones)}</small>`;
@@ -116,13 +121,51 @@ function botonesReservaStaff(reserva) {
     return "—";
 }
 
+/*
+ Cuánto le queda a una reserva viva para que la recojan, contando días de
+ calendario: "vence hoy a las 14:30", "vence mañana" o "quedan 2 días".
+ new Date("2026-10-15T14:30:00") (sin zona) se interpreta en hora local.
+*/
+function tiempoRestante(fechaLimiteIso) {
+    const limite = new Date(fechaLimiteIso);
+    const ahora = new Date();
+    if (limite < ahora) {
+        // El servidor la pasa a VENCIDA en la siguiente consulta
+        return "plazo cumplido";
+    }
+    const unDia = 24 * 60 * 60 * 1000;
+    const diaLimite = new Date(limite.getFullYear(), limite.getMonth(), limite.getDate());
+    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+    const dias = Math.round((diaLimite - hoy) / unDia);
+    if (dias === 0) {
+        return "vence hoy a las " + fechaLimiteIso.substring(11, 16);
+    }
+    if (dias === 1) {
+        return "vence mañana";
+    }
+    return "quedan " + dias + " días";
+}
+
+/* Columna "Recoger antes de": la fecha límite y, si sigue viva, cuánto le queda. */
+function celdaPlazoReserva(reserva) {
+    if (!reserva.fechaLimiteRetiro) {
+        return "—";
+    }
+    let html = formatearFechaHora(reserva.fechaLimiteRetiro);
+    if (sePuedeCancelar(reserva)) {
+        html += `<small class="d-block">${tiempoRestante(reserva.fechaLimiteRetiro)}</small>`;
+    }
+    return html;
+}
+
 function crearFilaReservaStaff(reserva) {
     const fila = document.createElement("tr");
     fila.innerHTML = `
         <td>${celdaUsuarioConIcono(reserva.nombreUsuario)}</td>
         <td>${celdaLibroConPortada(reserva.tituloLibro)}</td>
-        <td>${formatearFecha(reserva.fechaReserva)}</td>
-        <td>${celdaEstadoReserva(reserva)}</td>
+        <td>${formatearFechaHora(reserva.fechaReserva)}</td>
+        <td>${celdaPlazoReserva(reserva)}</td>
+        <td>${celdaEstadoReserva(reserva, false)}</td>
         <td>${botonesReservaStaff(reserva)}</td>
     `;
 
@@ -147,7 +190,7 @@ async function cargarReservasStaff() {
         const lista = await api.get("/reservas" + (estado ? "?estado=" + estado : ""));
         cuerpo.innerHTML = "";
         if (lista.length === 0) {
-            cuerpo.innerHTML = '<tr><td colspan="5">No hay reservas con ese estado.</td></tr>';
+            cuerpo.innerHTML = '<tr><td colspan="6">No hay reservas con ese estado.</td></tr>';
             return;
         }
         lista.forEach((reserva) => {
@@ -178,7 +221,7 @@ async function ejecutarAccionReserva(boton, peticion, mensajeExito) {
 function aprobarReserva(reserva, boton) {
     ejecutarAccionReserva(boton,
         () => api.put("/reservas?id=" + reserva.id + "&accion=aprobar"),
-        `Aprobaste la reserva de "${reserva.tituloLibro}". Se apartó una copia para ${reserva.nombreUsuario}.`);
+        `Aprobaste la reserva de "${reserva.tituloLibro}". La copia está lista para ${reserva.nombreUsuario}.`);
 }
 
 function rechazarReserva(reserva, boton) {

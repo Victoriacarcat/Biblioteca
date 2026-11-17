@@ -24,7 +24,7 @@ public final class ReglasBiblioteca {
     public static final int MAX_PRESTAMOS_ACTIVOS = 10;
 
     // Reservas
-    public static final int DIAS_RETIRO_RESERVA = 3;          // desde que se aprueba
+    public static final int DIAS_RETIRO_RESERVA = 3;          // desde que se reserva
     public static final int MAX_RESERVAS_SUSPENDIDO = 2;      // reservas vivas de un suspendido
 
     // Multa por dia de retraso (COP)

@@ -32,6 +32,10 @@ import java.util.logging.Logger;
  * Ademas, POST/PUT/DELETE deben enviar Content-Type: application/json.
  * Un formulario de otra pagina web no puede enviar ese tipo, asi nadie puede
  * usar la sesion abierta de un bibliotecario desde un sitio ajeno (CSRF).
+ *
+ * Ninguna respuesta de la API se guarda en la cache del navegador
+ * (Cache-Control: no-store): traen datos personales y quien inicio sesion,
+ * y no deben quedar disponibles despues de cerrar sesion.
  */
 @WebFilter("/api/*")
 public class ApiFilter implements Filter {
@@ -45,6 +49,8 @@ public class ApiFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
         req.setCharacterEncoding("UTF-8");
+        // Antes de todo, para que tambien aplique a las respuestas de error
+        resp.setHeader("Cache-Control", "no-store");
 
         String metodo = req.getMethod();
         String tipo = req.getContentType();

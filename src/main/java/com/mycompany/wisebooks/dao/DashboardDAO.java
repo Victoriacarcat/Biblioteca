@@ -89,10 +89,13 @@ public class DashboardDAO {
 
     // ---- Circulacion ----
 
-    /* Copias apartadas: cada reserva APROBADA (sin retirar) aparta una copia. */
-    public long contarReservasAprobadas(EntityManager em) {
-        return em.createQuery("SELECT COUNT(r) FROM Reserva r WHERE r.estado = :estado", Long.class)
-                .setParameter("estado", EstadoReserva.APROBADA)
+    /*
+     * Copias apartadas: cada reserva viva (PENDIENTE o APROBADA, sin retirar)
+     * aparta una copia desde que se hace.
+     */
+    public long contarCopiasApartadas(EntityManager em) {
+        return em.createQuery("SELECT COUNT(r) FROM Reserva r WHERE r.estado IN (:estados)", Long.class)
+                .setParameter("estados", List.of(EstadoReserva.PENDIENTE, EstadoReserva.APROBADA))
                 .getSingleResult();
     }
 
